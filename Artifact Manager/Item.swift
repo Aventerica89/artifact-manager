@@ -8,26 +8,6 @@
 import Foundation
 import SwiftData
 
-enum ArtifactType: String, Codable, CaseIterable {
-    case file = "File"
-    case image = "Image"
-    case document = "Document"
-    case code = "Code"
-    case archive = "Archive"
-    case other = "Other"
-
-    var systemImage: String {
-        switch self {
-        case .file: return "doc"
-        case .image: return "photo"
-        case .document: return "doc.text"
-        case .code: return "chevron.left.forwardslash.chevron.right"
-        case .archive: return "archivebox"
-        case .other: return "questionmark.folder"
-        }
-    }
-}
-
 @Model
 final class Item {
     var name: String
@@ -65,9 +45,6 @@ final class Item {
 
     var formattedFileSize: String? {
         guard let size = fileSize else { return nil }
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useAll]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: size)
+        return FileSizeFormatter.format(size)
     }
 }
