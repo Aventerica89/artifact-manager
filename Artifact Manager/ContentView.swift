@@ -13,6 +13,7 @@ struct ContentView: View {
     @Query(sort: \Item.modifiedAt, order: .reverse) private var items: [Item]
     @State private var selectedItem: Item?
     @State private var showingAddSheet = false
+    @State private var showingCleanupUtility = false
 
     var body: some View {
         NavigationSplitView {
@@ -31,6 +32,15 @@ struct ContentView: View {
                         Label("Add Artifact", systemImage: "plus")
                     }
                 }
+                ToolbarItem {
+                    Menu {
+                        Button(action: { showingCleanupUtility = true }) {
+                            Label("Cleanup Placeholder Names", systemImage: "wand.and.stars")
+                        }
+                    } label: {
+                        Label("More", systemImage: "ellipsis.circle")
+                    }
+                }
             }
         } detail: {
             if let item = selectedItem {
@@ -45,6 +55,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingAddSheet) {
             AddItemView(modelContext: modelContext)
+        }
+        .sheet(isPresented: $showingCleanupUtility) {
+            CleanupUtilityView()
         }
     }
 
@@ -267,8 +280,18 @@ struct AddItemView: View {
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
 
+        // Validate and sanitize the name
+        let sanitizedName = NameValidator.sanitize(name)
+
+        // Get existing names to ensure uniqueness
+        let existingNames = (try? modelContext.fetch(FetchDescriptor<Item>())) ?? []
+        let uniqueName = NameValidator.generateUniqueName(
+            baseName: sanitizedName,
+            existingNames: existingNames.map { $0.name }
+        )
+
         let newItem = Item(
-            name: name.trimmingCharacters(in: .whitespaces),
+            name: uniqueName,
             itemDescription: description,
             artifactType: artifactType,
             tags: tags

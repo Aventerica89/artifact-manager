@@ -12,7 +12,11 @@ let package = Package(
         .target(
             name: "ArtifactManagerCore",
             path: "Artifact Manager",
-            sources: ["ArtifactType.swift"]
+            sources: [
+                "ArtifactType.swift",
+                "NameValidator.swift",
+                "Item.swift"
+            ]
         ),
         .testTarget(
             name: "ArtifactManagerTests",

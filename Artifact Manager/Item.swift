@@ -30,7 +30,8 @@ final class Item {
         fileSize: Int64? = nil,
         tags: [String] = []
     ) {
-        self.name = name
+        // Sanitize name to prevent placeholder names
+        self.name = NameValidator.sanitize(name)
         self.itemDescription = itemDescription
         self.artifactType = artifactType
         self.filePath = filePath
