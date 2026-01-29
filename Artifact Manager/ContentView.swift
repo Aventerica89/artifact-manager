@@ -129,6 +129,20 @@ struct ContentView: View {
 
             let result = try ImportExportService.importFromJSON(url: url, modelContext: modelContext)
             importResult = result
+        } catch let error as DecodingError {
+            // Detailed JSON decoding errors
+            switch error {
+            case .keyNotFound(let key, let context):
+                importError = "Missing field '\(key.stringValue)' in JSON at: \(context.codingPath.map(\.stringValue).joined(separator: "."))"
+            case .typeMismatch(let type, let context):
+                importError = "Wrong type for \(type) at: \(context.codingPath.map(\.stringValue).joined(separator: "."))"
+            case .valueNotFound(let type, let context):
+                importError = "Missing value for \(type) at: \(context.codingPath.map(\.stringValue).joined(separator: "."))"
+            case .dataCorrupted(let context):
+                importError = "Invalid JSON at: \(context.codingPath.map(\.stringValue).joined(separator: "."))"
+            @unknown default:
+                importError = "JSON error: \(error.localizedDescription)"
+            }
         } catch {
             importError = "Import failed: \(error.localizedDescription)"
         }
