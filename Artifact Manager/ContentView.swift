@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
@@ -14,6 +15,9 @@ struct ContentView: View {
     @State private var selectedItem: Item?
     @State private var showingAddSheet = false
     @State private var showingCleanupUtility = false
+    @State private var showingImporter = false
+    @State private var importResult: (imported: Int, skipped: Int)?
+    @State private var importError: String?
 
     var body: some View {
         NavigationSplitView {
@@ -34,6 +38,9 @@ struct ContentView: View {
                 }
                 ToolbarItem {
                     Menu {
+                        Button(action: { showingImporter = true }) {
+                            Label("Import from Web App", systemImage: "square.and.arrow.down")
+                        }
                         Button(action: { showingCleanupUtility = true }) {
                             Label("Cleanup Placeholder Names", systemImage: "wand.and.stars")
                         }
@@ -59,6 +66,31 @@ struct ContentView: View {
         .sheet(isPresented: $showingCleanupUtility) {
             CleanupUtilityView()
         }
+        .fileImporter(
+            isPresented: $showingImporter,
+            allowedContentTypes: [.json],
+            allowsMultipleSelection: false
+        ) { result in
+            handleImport(result: result)
+        }
+        .alert("Import Complete", isPresented: .constant(importResult != nil), actions: {
+            Button("OK") {
+                importResult = nil
+            }
+        }, message: {
+            if let result = importResult {
+                Text("Imported \(result.imported) artifacts.\nSkipped \(result.skipped) duplicates.")
+            }
+        })
+        .alert("Import Error", isPresented: .constant(importError != nil), actions: {
+            Button("OK") {
+                importError = nil
+            }
+        }, message: {
+            if let error = importError {
+                Text(error)
+            }
+        })
     }
 
     private func deleteItems(offsets: IndexSet) {
@@ -71,6 +103,24 @@ struct ContentView: View {
                 }
                 modelContext.delete(item)
             }
+        }
+    }
+
+    private func handleImport(result: Result<[URL], Error>) {
+        do {
+            guard let url = try result.get().first else { return }
+
+            // Start accessing security-scoped resource
+            guard url.startAccessingSecurityScopedResource() else {
+                importError = "Unable to access file"
+                return
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+
+            let result = try ImportExportService.importFromJSON(url: url, modelContext: modelContext)
+            importResult = result
+        } catch {
+            importError = "Import failed: \(error.localizedDescription)"
         }
     }
 }
