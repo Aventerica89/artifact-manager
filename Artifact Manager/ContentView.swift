@@ -58,14 +58,18 @@ struct ContentView: View {
         } detail: {
             if let item = selectedItem {
                 ItemDetailView(item: item)
+                    .background(Color.appBackground)
             } else {
                 ContentUnavailableView(
                     "No Artifact Selected",
                     systemImage: "archivebox",
                     description: Text("Select an artifact from the sidebar to view its details.")
                 )
+                .foregroundStyle(.white)
+                .background(Color.appBackground)
             }
         }
+        .preferredColorScheme(.dark)
         .sheet(isPresented: $showingAddSheet) {
             AddItemView(modelContext: modelContext)
         }
@@ -301,6 +305,8 @@ struct ItemDetailView: View {
             }
         }
         .formStyle(.grouped)
+        .scrollContentBackground(.hidden)
+        .background(Color.appBackground)
         .navigationTitle(item.name)
         .onChange(of: item.name) { _, _ in
             item.modifiedAt = Date()
@@ -450,6 +456,8 @@ struct AddItemView: View {
                 }
             }
             .formStyle(.grouped)
+            .scrollContentBackground(.hidden)
+            .background(Color.appBackground)
             .navigationTitle("New Artifact")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
