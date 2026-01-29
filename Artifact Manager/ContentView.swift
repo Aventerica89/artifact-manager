@@ -159,10 +159,7 @@ struct ItemDetailView: View {
             }
 
             Section("Description") {
-                TextEditor(text: Binding(
-                    get: { item.itemDescription ?? "" },
-                    set: { item.itemDescription = $0.isEmpty ? nil : $0 }
-                ))
+                TextEditor(text: $item.itemDescription)
                 .frame(minHeight: 100)
             }
 
@@ -405,7 +402,7 @@ struct AddItemView: View {
 
         let newItem = Item(
             name: uniqueName,
-            itemDescription: description.isEmpty ? nil : description,
+            itemDescription: description,
             artifactType: artifactType,
             sourceType: sourceType,
             publishedUrl: publishedUrl.isEmpty ? nil : publishedUrl,
