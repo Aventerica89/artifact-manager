@@ -112,11 +112,16 @@ struct ItemDetailView: View {
 
     var body: some View {
         Form {
-            Section("Details") {
+            Section("Basic Info") {
                 LabeledContent("Name") {
                     TextField("Name", text: $item.name)
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.trailing)
+                }
+
+                Picker("Source", selection: $item.sourceType) {
+                    Text("Published").tag(SourceType.published)
+                    Text("Downloaded").tag(SourceType.downloaded)
                 }
 
                 Picker("Type", selection: $item.artifactType) {
@@ -125,19 +130,57 @@ struct ItemDetailView: View {
                             .tag(type)
                     }
                 }
+            }
 
-                if let path = item.filePath, !path.isEmpty {
-                    LabeledContent("Path", value: path)
+            if item.sourceType == .published {
+                Section("Published Artifact") {
+                    if let url = item.publishedUrl, !url.isEmpty {
+                        LabeledContent("URL") {
+                            Link(url, destination: URL(string: url) ?? URL(string: "about:blank")!)
+                                .font(.caption)
+                        }
+                    }
+                    if let id = item.artifactId, !id.isEmpty {
+                        LabeledContent("Artifact ID", value: id)
+                    }
                 }
-
-                if let size = item.formattedFileSize {
-                    LabeledContent("Size", value: size)
+            } else {
+                Section("Downloaded Artifact") {
+                    if let fileName = item.fileName, !fileName.isEmpty {
+                        LabeledContent("File Name", value: fileName)
+                    }
+                    if let path = item.filePath, !path.isEmpty {
+                        LabeledContent("Path", value: path)
+                    }
+                    if let size = item.formattedFileSize {
+                        LabeledContent("Size", value: size)
+                    }
                 }
             }
 
             Section("Description") {
-                TextEditor(text: $item.itemDescription)
-                    .frame(minHeight: 100)
+                TextEditor(text: Binding(
+                    get: { item.itemDescription ?? "" },
+                    set: { item.itemDescription = $0.isEmpty ? nil : $0 }
+                ))
+                .frame(minHeight: 100)
+            }
+
+            Section("Metadata") {
+                if let language = item.language, !language.isEmpty {
+                    LabeledContent("Language", value: language)
+                }
+                if let framework = item.framework, !framework.isEmpty {
+                    LabeledContent("Framework", value: framework)
+                }
+                if let model = item.claudeModel, !model.isEmpty {
+                    LabeledContent("Claude Model", value: model)
+                }
+                if let convUrl = item.conversationUrl, !convUrl.isEmpty {
+                    LabeledContent("Conversation") {
+                        Link("View", destination: URL(string: convUrl) ?? URL(string: "about:blank")!)
+                    }
+                }
             }
 
             Section("Tags") {
@@ -158,9 +201,22 @@ struct ItemDetailView: View {
                 }
             }
 
+            if let notes = item.notes, !notes.isEmpty {
+                Section("Notes") {
+                    TextEditor(text: Binding(
+                        get: { item.notes ?? "" },
+                        set: { item.notes = $0.isEmpty ? nil : $0 }
+                    ))
+                    .frame(minHeight: 60)
+                }
+            }
+
             Section("Timestamps") {
                 LabeledContent("Created", value: item.createdAt.formatted(date: .abbreviated, time: .shortened))
                 LabeledContent("Modified", value: item.modifiedAt.formatted(date: .abbreviated, time: .shortened))
+                if let artifactDate = item.artifactCreatedAt {
+                    LabeledContent("Artifact Created", value: artifactDate.formatted(date: .abbreviated, time: .shortened))
+                }
             }
         }
         .formStyle(.grouped)
@@ -226,17 +282,39 @@ struct FlowLayout: Layout {
 struct AddItemView: View {
     let modelContext: ModelContext
     @Environment(\.dismiss) private var dismiss
+    @Query private var collections: [Collection]
 
     @State private var name = ""
     @State private var description = ""
     @State private var artifactType: ArtifactType = .file
+    @State private var sourceType: SourceType = .downloaded
     @State private var tagsText = ""
+    @State private var selectedCollectionId: String?
+
+    // Published artifact fields
+    @State private var publishedUrl = ""
+    @State private var artifactId = ""
+
+    // Downloaded artifact fields
+    @State private var fileName = ""
+    @State private var fileContent = ""
+
+    // Metadata fields
+    @State private var language = ""
+    @State private var framework = ""
+    @State private var conversationUrl = ""
+    @State private var notes = ""
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Basic Info") {
                     TextField("Name", text: $name)
+
+                    Picker("Source", selection: $sourceType) {
+                        Text("Published").tag(SourceType.published)
+                        Text("Downloaded").tag(SourceType.downloaded)
+                    }
 
                     Picker("Type", selection: $artifactType) {
                         ForEach(ArtifactType.allCases, id: \.self) { type in
@@ -246,13 +324,48 @@ struct AddItemView: View {
                     }
                 }
 
+                if sourceType == .published {
+                    Section("Published Artifact") {
+                        TextField("Published URL", text: $publishedUrl)
+                            .textContentType(.URL)
+                        TextField("Artifact ID (optional)", text: $artifactId)
+                    }
+                } else {
+                    Section("Downloaded Artifact") {
+                        TextField("File Name", text: $fileName)
+                        TextEditor(text: $fileContent)
+                            .frame(minHeight: 100)
+                            .font(.system(.body, design: .monospaced))
+                    }
+                }
+
                 Section("Description") {
                     TextEditor(text: $description)
                         .frame(minHeight: 80)
                 }
 
+                Section("Organization") {
+                    Picker("Collection", selection: $selectedCollectionId) {
+                        Text("None").tag(nil as String?)
+                        ForEach(collections) { collection in
+                            Text(collection.name).tag(collection.id as String?)
+                        }
+                    }
+                }
+
+                Section("Metadata") {
+                    TextField("Language/Framework", text: $language)
+                    TextField("Conversation URL", text: $conversationUrl)
+                        .textContentType(.URL)
+                }
+
                 Section("Tags") {
                     TextField("Tags (comma separated)", text: $tagsText)
+                }
+
+                Section("Notes") {
+                    TextEditor(text: $notes)
+                        .frame(minHeight: 60)
                 }
             }
             .formStyle(.grouped)
@@ -271,7 +384,7 @@ struct AddItemView: View {
                 }
             }
         }
-        .frame(minWidth: 400, minHeight: 350)
+        .frame(minWidth: 500, minHeight: 600)
     }
 
     private func addItem() {
@@ -292,8 +405,17 @@ struct AddItemView: View {
 
         let newItem = Item(
             name: uniqueName,
-            itemDescription: description,
+            itemDescription: description.isEmpty ? nil : description,
             artifactType: artifactType,
+            sourceType: sourceType,
+            publishedUrl: publishedUrl.isEmpty ? nil : publishedUrl,
+            artifactId: artifactId.isEmpty ? nil : artifactId,
+            fileName: fileName.isEmpty ? nil : fileName,
+            fileContent: fileContent.isEmpty ? nil : fileContent,
+            language: language.isEmpty ? nil : language,
+            conversationUrl: conversationUrl.isEmpty ? nil : conversationUrl,
+            notes: notes.isEmpty ? nil : notes,
+            collectionId: selectedCollectionId,
             tags: tags
         )
 

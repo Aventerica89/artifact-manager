@@ -23,8 +23,9 @@ When making changes to core functionality, **ALWAYS apply the same changes to bo
    - Web: Cleanup modal + API endpoints (`/api/cleanup/scan`, `/api/cleanup/fix`)
 
 4. **Artifact Model**
-   - macOS: SwiftData model in `Item.swift`
+   - macOS: SwiftData models in `Item.swift` and `Collection.swift`
    - Web: Database schema in `migrations.sql`
+   - Required fields: name, description, artifactType, sourceType, publishedUrl, artifactId, fileName, fileContent, language, framework, claudeModel, conversationUrl, notes, collectionId, isFavorite, tags, timestamps
 
 ### When Adding Features:
 
@@ -66,7 +67,8 @@ open "Artifact Manager.xcodeproj"
 Artifact Manager/
 ├── Artifact_ManagerApp.swift    # App entry point
 ├── ContentView.swift             # Main UI + Add/Edit views
-├── Item.swift                    # SwiftData model
+├── Item.swift                    # SwiftData artifact model
+├── Collection.swift              # SwiftData collection model
 ├── ArtifactType.swift            # Type enum
 ├── NameValidator.swift           # Placeholder name validation
 └── CleanupUtility.swift          # Cleanup UI and logic
@@ -87,9 +89,18 @@ swift test
 
 ## Recent Changes
 
-### 2026-01-28: Placeholder Name Validation
+### 2026-01-28: Full Feature Parity with Web Version
 - Added NameValidator to prevent "Saving...", "Loading...", "Downloading..." names
 - Added CleanupUtility with SwiftUI for scanning and fixing existing placeholders
 - Validation in Item initializer and AddItemView
-- Comprehensive test suite (15 new tests)
-- ✅ Synced to web version
+- Comprehensive test suite (42 tests total)
+- **Full model expansion**:
+  - Added SourceType enum (published/downloaded)
+  - Added publishedUrl, artifactId for published artifacts
+  - Added fileName, fileContent for downloaded artifacts
+  - Added language, framework, claudeModel, conversationUrl, notes
+  - Added collectionId, isFavorite
+  - Added artifactCreatedAt timestamp
+- Created Collection model with SwiftData
+- Updated AddItemView and ItemDetailView with all fields
+- ✅ Full feature parity with web version
