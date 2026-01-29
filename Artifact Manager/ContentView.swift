@@ -26,15 +26,21 @@ struct ContentView: View {
                     NavigationLink(value: item) {
                         ItemRowView(item: item)
                     }
+                    .listRowBackground(Color.appBackground)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                 }
                 .onDelete(perform: deleteItems)
             }
-            .navigationSplitViewColumnWidth(min: 200, ideal: 250)
+            .scrollContentBackground(.hidden)
+            .background(Color.appBackground)
+            .navigationSplitViewColumnWidth(min: 280, ideal: 320)
             .toolbar {
                 ToolbarItem {
                     Button(action: { showingAddSheet = true }) {
                         Label("Add Artifact", systemImage: "plus")
                     }
+                    .buttonStyle(GradientButtonStyle())
                 }
                 ToolbarItem {
                     Menu {
@@ -130,30 +136,58 @@ struct ItemRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: item.artifactType.systemImage)
-                .font(.title2)
-                .foregroundStyle(.secondary)
-                .frame(width: 24)
+            // Icon with gradient background
+            ZStack {
+                AppGradients.indigoViolet
+                    .frame(width: 36, height: 36)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(item.name)
-                    .font(.headline)
-                    .lineLimit(1)
+                Image(systemName: item.artifactType.systemImage)
+                    .font(.system(size: 16))
+                    .foregroundStyle(.white)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(item.name)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+
+                    if item.isFavorite {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(Color.amber)
+                    }
+                }
 
                 HStack(spacing: 8) {
-                    Text(item.artifactType.rawValue)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Label(item.artifactType.rawValue, systemImage: "")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Color.mutedForeground)
+                        .labelStyle(.titleOnly)
 
                     if let size = item.formattedFileSize {
+                        Text("•")
+                            .foregroundStyle(Color.mutedForeground.opacity(0.5))
+                            .font(.system(size: 11))
                         Text(size)
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .font(.system(size: 11))
+                            .foregroundStyle(Color.mutedForeground)
                     }
                 }
             }
+
+            Spacer()
         }
-        .padding(.vertical, 4)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.cardBackground)
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.border, lineWidth: 1)
+        )
     }
 }
 
