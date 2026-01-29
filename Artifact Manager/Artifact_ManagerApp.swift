@@ -21,6 +21,7 @@ struct Artifact_ManagerApp: App {
     init() {
         let schema = Schema([
             Item.self,
+            Collection.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -37,7 +38,7 @@ struct Artifact_ManagerApp: App {
             } catch {
                 // Last resort: create minimal container
                 logger.critical("All storage options failed: \(error.localizedDescription)")
-                sharedModelContainer = try! ModelContainer(for: Item.self)
+                sharedModelContainer = try! ModelContainer(for: Item.self, Collection.self)
             }
         }
     }
