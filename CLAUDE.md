@@ -4,7 +4,41 @@ A native macOS app to track and organize Claude.ai artifacts using SwiftUI and S
 
 ## Project Sync Rule (CRITICAL)
 
-**This project has a companion web app** at `/Users/jb/cf-url-shortener/artifacts-app/`
+**This project has companion apps:**
+- **Web App**: `/Users/jb/cf-url-shortener/artifacts-app/`
+- **Chrome Extension**: `/Users/jb/cf-url-shortener/chrome-extension/`
+- **Safari Extension**: `/Users/jb/cf-url-shortener/safari-extension/`
+
+### Browser Extensions
+
+The browser extensions capture artifacts directly from Claude.ai and send them to the web app.
+
+**Chrome Extension** (`/Users/jb/cf-url-shortener/chrome-extension/`):
+- Injects "Save" buttons on Claude.ai artifact panels
+- Extracts artifact data (name, type, content, published URL)
+- Posts to web app API
+- Has matching `isPlaceholder()` validation logic
+
+**Safari Extension** (`/Users/jb/cf-url-shortener/safari-extension/`):
+- Converted from Chrome extension via `xcrun safari-web-extension-converter`
+- Xcode project at `safari-extension/Artifact Manager/Artifact Manager.xcodeproj`
+- Build with Xcode, enable in Safari > Settings > Extensions
+
+**To convert Chrome extension to Safari:**
+```bash
+cd /Users/jb/cf-url-shortener
+xcrun safari-web-extension-converter chrome-extension --app-name "Artifact Manager" --force
+```
+
+### Data Flow
+
+```
+Claude.ai ──[browser extension]──> Web App (Cloudflare Worker) <──[import]── macOS App
+                                          │
+                                          └── D1 Database
+```
+
+When making changes to core functionality, **ALWAYS apply the same changes to all projects**:
 
 When making changes to core functionality, **ALWAYS apply the same changes to both projects**:
 
