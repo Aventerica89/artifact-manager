@@ -4070,30 +4070,45 @@ function getAppHtml(userEmail) {
       // Check if already shared
       let renderUrl = currentViewingArtifact.renderUrl;
 
-      if (!renderUrl) {
-        // Generate share token first
-        try {
-          const res = await fetch('/api/artifacts/' + currentViewingArtifact.id + '/share', {
-            method: 'POST'
-          });
-
-          if (res.ok) {
-            const data = await res.json();
-            renderUrl = data.renderUrl;
-            currentViewingArtifact.share_token = data.shareToken;
-            currentViewingArtifact.renderUrl = renderUrl;
-            updateShareButton();
-          } else {
-            showToast('Failed to generate share link', 'error');
-            return;
-          }
-        } catch (error) {
-          showToast('Failed to generate share link', 'error');
-          return;
-        }
+      if (renderUrl) {
+        // Already have a render URL, open directly
+        window.open(renderUrl, '_blank');
+        return;
       }
 
-      window.open(renderUrl, '_blank');
+      // Open window immediately to avoid popup blocker
+      // (must be synchronous with user click)
+      const newWindow = window.open('about:blank', '_blank');
+      if (!newWindow) {
+        showToast('Popup blocked - please allow popups', 'error');
+        return;
+      }
+
+      // Show loading state in new window
+      newWindow.document.write('<html><head><title>Loading...</title></head><body style="background:#1a1a2e;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;"><p>Generating share link...</p></body></html>');
+
+      // Generate share token
+      try {
+        const res = await fetch('/api/artifacts/' + currentViewingArtifact.id + '/share', {
+          method: 'POST'
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          renderUrl = data.renderUrl;
+          currentViewingArtifact.share_token = data.shareToken;
+          currentViewingArtifact.renderUrl = renderUrl;
+          updateShareButton();
+          // Navigate the already-opened window to the render URL
+          newWindow.location.href = renderUrl;
+        } else {
+          newWindow.close();
+          showToast('Failed to generate share link', 'error');
+        }
+      } catch (error) {
+        newWindow.close();
+        showToast('Failed to generate share link', 'error');
+      }
     }
 
     // Toggle share status for artifact
