@@ -148,35 +148,30 @@
       }
     }
 
-    // Strategy 2: Check "Open in new tab" links (target="_blank")
+    // Strategies 2 & 3: Find published URL from links
     if (!data.published_url) {
-      const openLinks = panel.querySelectorAll('a[target="_blank"]');
-      for (const link of openLinks) {
-        if (link.href?.includes('claude.site/artifacts')) {
-          data.published_url = link.href;
-          data.source_type = 'published';
-          const match = data.published_url.match(/\/artifacts\/([a-zA-Z0-9-]+)/);
-          if (match) {
-            data.artifact_id = match[1];
-          }
-          break;
+      const setPublishedData = (url) => {
+        data.published_url = url;
+        data.source_type = 'published';
+        const match = url.match(/\/artifacts\/([a-zA-Z0-9-]+)/);
+        if (match) {
+          data.artifact_id = match[1];
         }
-      }
-    }
+      };
 
-    // Strategy 3: Check links that contain SVG icons (globe/external link icons)
-    if (!data.published_url) {
-      const iconLinks = panel.querySelectorAll('a svg');
-      for (const svg of iconLinks) {
-        const link = svg.closest('a');
-        if (link?.href?.includes('claude.site/artifacts')) {
-          data.published_url = link.href;
-          data.source_type = 'published';
-          const match = data.published_url.match(/\/artifacts\/([a-zA-Z0-9-]+)/);
-          if (match) {
-            data.artifact_id = match[1];
-          }
-          break;
+      // Strategy 2: Check "Open in new tab" links (target="_blank")
+      const linkFromTarget = Array.from(panel.querySelectorAll('a[target="_blank"]'))
+        .find(link => link.href?.includes('claude.site/artifacts'));
+
+      if (linkFromTarget) {
+        setPublishedData(linkFromTarget.href);
+      } else {
+        // Strategy 3: Check links with SVG icons (globe/external link icons)
+        const linkFromSvg = Array.from(panel.querySelectorAll('a svg'))
+          .map(svg => svg.closest('a'))
+          .find(link => link?.href?.includes('claude.site/artifacts'));
+        if (linkFromSvg) {
+          setPublishedData(linkFromSvg.href);
         }
       }
     }
@@ -459,8 +454,7 @@
       panel.setAttribute(PROCESSED_ATTR, 'true');
 
       // Find the actual Copy button (not Code/Preview tabs)
-      const copyButton = panel.querySelector('button[aria-label*="Copy"]') ||
-                         panel.querySelector('button[aria-label*="copy"]') ||
+      const copyButton = panel.querySelector('button[aria-label*="copy" i]') ||
                          Array.from(panel.querySelectorAll('button')).find(b =>
                            b.textContent.trim() === 'Copy'
                          );
