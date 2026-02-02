@@ -9,7 +9,7 @@ const ARTIFACT_MANAGER_FAVICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': 'https://claude.ai',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Cf-Access-Jwt-Assertion',
+  'Access-Control-Allow-Headers': 'Content-Type, Cf-Access-Jwt-Assertion, cf-access-token',
   'Access-Control-Allow-Credentials': 'true',
   'Access-Control-Max-Age': '86400'
 };
@@ -59,6 +59,27 @@ export default {
 
     // Get authenticated user
     const userEmail = await getUserEmail(request);
+
+    // Debug endpoint to diagnose auth issues (temporary)
+    if (path === 'api/auth-debug') {
+      const headers = {};
+      for (const [key, value] of request.headers.entries()) {
+        // Mask sensitive values but show they exist
+        if (key.toLowerCase().includes('auth') || key.toLowerCase().includes('cookie') || key.toLowerCase().includes('jwt') || key.toLowerCase().includes('access')) {
+          headers[key] = value ? `[present, ${value.length} chars]` : '[empty]';
+        } else {
+          headers[key] = value;
+        }
+      }
+      return corsResponse(Response.json({
+        authenticated: !!userEmail,
+        userEmail: userEmail || null,
+        headersReceived: headers,
+        hasCfAccessHeader: !!request.headers.get('Cf-Access-Jwt-Assertion'),
+        hasCfAccessTokenHeader: !!request.headers.get('cf-access-token'),
+        hasCookieHeader: !!request.headers.get('Cookie'),
+      }));
+    }
 
     // API routes require authentication
     if (path.startsWith('api/')) {
@@ -836,10 +857,14 @@ async function handleApiRequest(path, request, env, userEmail, url) {
 // ============ AUTHENTICATION ============
 
 async function getUserEmail(request) {
-  // Check for JWT in header first (API clients, mobile app)
-  let jwt = request.headers.get('Cf-Access-Jwt-Assertion');
+  // Try multiple sources for the JWT token
+  // 1. Cf-Access-Jwt-Assertion header (standard Cloudflare Access header)
+  // 2. cf-access-token header (alternative header)
+  // 3. CF_Authorization cookie (browser-based auth)
+  let jwt = request.headers.get('Cf-Access-Jwt-Assertion')
+         || request.headers.get('cf-access-token');
 
-  // If no header, check for CF_Authorization cookie (browser-based auth)
+  // If no header, check for CF_Authorization cookie
   if (!jwt) {
     const cookieHeader = request.headers.get('Cookie');
     if (cookieHeader) {
@@ -857,8 +882,16 @@ async function getUserEmail(request) {
 
   try {
     const parts = jwt.split('.');
+    if (parts.length !== 3) return null;
+
     const payload = JSON.parse(atob(parts[1]));
-    return payload.email;
+
+    // Try multiple possible email locations in the payload
+    return payload.email
+        || payload.identity?.email
+        || payload.common_name
+        || payload.sub
+        || null;
   } catch (e) {
     return null;
   }
