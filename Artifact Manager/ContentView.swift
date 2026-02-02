@@ -234,20 +234,24 @@ struct ItemDetailView: View {
                 }
             }
 
-            if item.sourceType == .published {
-                Section("Published Artifact") {
-                    if let url = item.publishedUrl, !url.isEmpty {
-                        LabeledContent("URL") {
-                            Link(url, destination: URL(string: url) ?? URL(string: "about:blank")!)
-                                .font(.caption)
-                        }
+            // Show Published URL section if publishedUrl exists (regardless of sourceType)
+            if let url = item.publishedUrl, !url.isEmpty {
+                Section("Published URL") {
+                    LabeledContent("URL") {
+                        Link(url, destination: URL(string: url) ?? URL(string: "about:blank")!)
+                            .font(.caption)
                     }
                     if let id = item.artifactId, !id.isEmpty {
                         LabeledContent("Artifact ID", value: id)
                     }
                 }
-            } else {
-                Section("Downloaded Artifact") {
+            }
+
+            // Show Downloaded section if file info exists (regardless of sourceType)
+            if (item.fileName != nil && !item.fileName!.isEmpty) ||
+               (item.filePath != nil && !item.filePath!.isEmpty) ||
+               item.fileSize != nil {
+                Section("Downloaded File") {
                     if let fileName = item.fileName, !fileName.isEmpty {
                         LabeledContent("File Name", value: fileName)
                     }
@@ -425,19 +429,19 @@ struct AddItemView: View {
                     }
                 }
 
-                if sourceType == .published {
-                    Section("Published Artifact") {
-                        TextField("Published URL", text: $publishedUrl)
-                            .textContentType(.URL)
-                        TextField("Artifact ID (optional)", text: $artifactId)
-                    }
-                } else {
-                    Section("Downloaded Artifact") {
-                        TextField("File Name", text: $fileName)
-                        TextEditor(text: $fileContent)
-                            .frame(minHeight: 100)
-                            .font(.system(.body, design: .monospaced))
-                    }
+                // Always show Published URL section (can have both published URL and downloaded file)
+                Section("Published URL") {
+                    TextField("Published URL (e.g., claude.site/...)", text: $publishedUrl)
+                        .textContentType(.URL)
+                    TextField("Artifact ID (optional)", text: $artifactId)
+                }
+
+                // Always show Downloaded File section
+                Section("Downloaded File") {
+                    TextField("File Name", text: $fileName)
+                    TextEditor(text: $fileContent)
+                        .frame(minHeight: 100)
+                        .font(.system(.body, design: .monospaced))
                 }
 
                 Section("Description") {
