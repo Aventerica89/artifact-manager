@@ -1006,22 +1006,22 @@ ${getSharePageScript()}
 function getSharePageStyles() {
   return `
     :root {
-      --bg: #09090b;
-      --bg-secondary: #18181b;
-      --card: rgba(24, 24, 27, 0.7);
-      --card-hover: rgba(39, 39, 42, 0.8);
-      --border: rgba(63, 63, 70, 0.5);
-      --border-hover: rgba(99, 102, 241, 0.5);
-      --text: #fafafa;
-      --text-muted: #a1a1aa;
-      --text-dim: #71717a;
+      --bg: #ffffff;
+      --bg-secondary: #f9fafb;
+      --card: #ffffff;
+      --card-hover: #f3f4f6;
+      --border: #e5e7eb;
+      --border-hover: #6366f1;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --text-dim: #9ca3af;
       --accent: #6366f1;
-      --accent-hover: #818cf8;
+      --accent-hover: #4f46e5;
       --html: #6366f1;
-      --code: #10b981;
-      --document: #f59e0b;
-      --image: #ec4899;
-      --data: #06b6d4;
+      --code: #059669;
+      --document: #d97706;
+      --image: #db2777;
+      --data: #0891b2;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1037,10 +1037,7 @@ function getSharePageStyles() {
     .gradient-bg {
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
-        radial-gradient(ellipse 60% 40% at 80% 50%, rgba(139, 92, 246, 0.1), transparent),
-        radial-gradient(ellipse 50% 30% at 20% 80%, rgba(16, 185, 129, 0.08), transparent);
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
       pointer-events: none;
       z-index: 0;
     }
@@ -1050,6 +1047,7 @@ function getSharePageStyles() {
       z-index: 1;
       padding: 4rem 2rem 3rem;
       text-align: center;
+      border-bottom: 1px solid var(--border);
     }
 
     .header-content {
@@ -1060,8 +1058,8 @@ function getSharePageStyles() {
     .header-badge {
       display: inline-block;
       padding: 0.375rem 1rem;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
+      background: #f0f0ff;
+      border: 1px solid #e0e0ff;
       border-radius: 2rem;
       font-size: 0.75rem;
       font-weight: 500;
@@ -1072,13 +1070,10 @@ function getSharePageStyles() {
     }
 
     .header-title {
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700;
       letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--text);
       margin-bottom: 1rem;
     }
 
@@ -1100,12 +1095,11 @@ function getSharePageStyles() {
       align-items: center;
       gap: 0.5rem;
       padding: 0.5rem 1rem;
-      background: var(--card);
+      background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 0.5rem;
       font-size: 0.875rem;
       color: var(--text-muted);
-      backdrop-filter: blur(8px);
     }
 
     .stat-badge svg { opacity: 0.7; }
@@ -1113,9 +1107,9 @@ function getSharePageStyles() {
     .main-content {
       position: relative;
       z-index: 1;
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 1.5rem 4rem;
+      padding: 2rem 1.5rem 4rem;
     }
 
     .tag-section { margin-bottom: 3rem; }
@@ -1130,7 +1124,7 @@ function getSharePageStyles() {
     }
 
     .tag-header h2 {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       font-weight: 600;
       color: var(--text);
     }
@@ -1142,7 +1136,7 @@ function getSharePageStyles() {
 
     .bento-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.25rem;
     }
 
@@ -1150,39 +1144,14 @@ function getSharePageStyles() {
       position: relative;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 1rem;
+      border-radius: 0.75rem;
       padding: 1.5rem;
-      backdrop-filter: blur(12px);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow: hidden;
-    }
-
-    .artifact-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 1rem;
-      padding: 1px;
-      background: linear-gradient(135deg, transparent 0%, transparent 100%);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0;
-      transition: opacity 0.3s;
+      transition: all 0.2s ease;
     }
 
     .artifact-card:hover {
-      transform: translateY(-4px);
       border-color: var(--border-hover);
-      box-shadow:
-        0 20px 40px -12px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(99, 102, 241, 0.1);
-    }
-
-    .artifact-card:hover::before {
-      opacity: 1;
-      background: linear-gradient(135deg, var(--accent) 0%, transparent 50%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .artifact-card.featured {
@@ -1192,31 +1161,31 @@ function getSharePageStyles() {
     .card-header {
       display: flex;
       align-items: flex-start;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 0.875rem;
+      margin-bottom: 0.75rem;
     }
 
     .card-icon {
       flex-shrink: 0;
-      width: 2.5rem;
-      height: 2.5rem;
+      width: 2.25rem;
+      height: 2.25rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 0.75rem;
-      background: rgba(99, 102, 241, 0.15);
+      border-radius: 0.5rem;
+      background: #f0f0ff;
       color: var(--html);
     }
 
-    .card-icon.type-code { background: rgba(16, 185, 129, 0.15); color: var(--code); }
-    .card-icon.type-document { background: rgba(245, 158, 11, 0.15); color: var(--document); }
-    .card-icon.type-image { background: rgba(236, 72, 153, 0.15); color: var(--image); }
-    .card-icon.type-data { background: rgba(6, 182, 212, 0.15); color: var(--data); }
+    .card-icon.type-code { background: #ecfdf5; color: var(--code); }
+    .card-icon.type-document { background: #fffbeb; color: var(--document); }
+    .card-icon.type-image { background: #fdf2f8; color: var(--image); }
+    .card-icon.type-data { background: #ecfeff; color: var(--data); }
 
     .card-info { flex: 1; min-width: 0; }
 
     .card-name {
-      font-size: 1.125rem;
+      font-size: 1rem;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 0.25rem;
@@ -1227,7 +1196,7 @@ function getSharePageStyles() {
 
     .card-badges {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.375rem;
       flex-wrap: wrap;
     }
 
@@ -1251,7 +1220,7 @@ function getSharePageStyles() {
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
       min-height: 2.625rem;
     }
 
@@ -1266,26 +1235,25 @@ function getSharePageStyles() {
       align-items: center;
       justify-content: center;
       gap: 0.375rem;
-      padding: 0.625rem 1rem;
+      padding: 0.5rem 0.875rem;
       font-size: 0.8125rem;
       font-weight: 500;
-      border-radius: 0.5rem;
+      border-radius: 0.375rem;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
       border: none;
       flex: 1;
       min-width: 0;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+      background: var(--accent);
       color: white;
     }
 
     .btn-primary:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
+      background: var(--accent-hover);
     }
 
     .btn-secondary {
@@ -1296,7 +1264,7 @@ function getSharePageStyles() {
 
     .btn-secondary:hover {
       background: var(--card-hover);
-      border-color: var(--border-hover);
+      border-color: var(--text-dim);
       color: var(--text);
     }
 
@@ -1321,12 +1289,13 @@ function getSharePageStyles() {
       padding: 2rem;
       color: var(--text-dim);
       font-size: 0.875rem;
+      border-top: 1px solid var(--border);
     }
 
     .footer a {
       color: var(--accent);
       text-decoration: none;
-      transition: color 0.2s;
+      transition: color 0.15s;
     }
 
     .footer a:hover { color: var(--accent-hover); }
@@ -1335,8 +1304,8 @@ function getSharePageStyles() {
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
       z-index: 1000;
       display: flex;
       align-items: center;
@@ -1344,7 +1313,7 @@ function getSharePageStyles() {
       padding: 1rem;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
     }
 
     .modal-overlay.active {
@@ -1354,17 +1323,18 @@ function getSharePageStyles() {
 
     .modal-container {
       width: 100%;
-      max-width: 1200px;
-      height: 90vh;
-      max-height: 800px;
-      background: var(--bg-secondary);
+      max-width: 1100px;
+      height: 85vh;
+      max-height: 750px;
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 1rem;
+      border-radius: 0.75rem;
       display: flex;
       flex-direction: column;
-      transform: scale(0.95) translateY(10px);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: scale(0.98) translateY(8px);
+      transition: transform 0.2s ease;
       overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     }
 
     .modal-overlay.active .modal-container {
@@ -1375,9 +1345,9 @@ function getSharePageStyles() {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.5rem;
+      padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--border);
-      background: var(--bg);
+      background: var(--bg-secondary);
     }
 
     .modal-title-section {
@@ -1387,19 +1357,19 @@ function getSharePageStyles() {
     }
 
     .modal-title-section h3 {
-      font-size: 1rem;
+      font-size: 0.9375rem;
       font-weight: 600;
       color: var(--text);
     }
 
     .modal-badge {
-      padding: 0.25rem 0.625rem;
+      padding: 0.25rem 0.5rem;
       font-size: 0.6875rem;
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.03em;
       border-radius: 0.25rem;
-      background: rgba(99, 102, 241, 0.15);
+      background: #f0f0ff;
       color: var(--accent);
     }
 
@@ -1416,10 +1386,10 @@ function getSharePageStyles() {
       padding: 0.5rem 0.75rem;
       font-size: 0.8125rem;
       font-weight: 500;
-      border-radius: 0.5rem;
+      border-radius: 0.375rem;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
       border: none;
     }
 
@@ -1442,7 +1412,7 @@ function getSharePageStyles() {
 
     .modal-btn-close:hover {
       color: var(--text);
-      background: var(--card);
+      background: var(--card-hover);
     }
 
     .modal-body {
@@ -1464,7 +1434,7 @@ function getSharePageStyles() {
 
     @media (max-width: 768px) {
       .header { padding: 3rem 1rem 2rem; }
-      .main-content { padding: 0 1rem 3rem; }
+      .main-content { padding: 1.5rem 1rem 3rem; }
       .bento-grid { grid-template-columns: 1fr; gap: 1rem; }
       .artifact-card { padding: 1.25rem; }
       .card-actions { flex-direction: column; }
