@@ -969,8 +969,8 @@ ${getSharePageStyles()}
     <p>Powered by <a href="https://artifacts.jbcloud.app" target="_blank">Artifact Manager</a></p>
   </footer>
 
-  <div id="preview-modal" class="modal-overlay" onclick="closePreviewModal(event)">
-    <div class="modal-container" onclick="event.stopPropagation()">
+  <div id="preview-modal" class="modal-overlay">
+    <div class="modal-container">
       <div class="modal-header">
         <div class="modal-title-section">
           <h3 id="modal-title">Artifact Preview</h3>
@@ -983,7 +983,7 @@ ${getSharePageStyles()}
             </svg>
             Open in New Tab
           </a>
-          <button onclick="closePreviewModal()" class="modal-btn modal-btn-close">
+          <button id="modal-close-btn" class="modal-btn modal-btn-close">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -1100,12 +1100,11 @@ function getSharePageStyles() {
       align-items: center;
       gap: 0.5rem;
       padding: 0.5rem 1rem;
-      background: var(--card);
+      background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 0.5rem;
       font-size: 0.875rem;
       color: var(--text-muted);
-      backdrop-filter: blur(8px);
     }
 
     .stat-badge svg { opacity: 0.7; }
@@ -1113,9 +1112,9 @@ function getSharePageStyles() {
     .main-content {
       position: relative;
       z-index: 1;
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 1.5rem 4rem;
+      padding: 2rem 1.5rem 4rem;
     }
 
     .tag-section { margin-bottom: 3rem; }
@@ -1130,7 +1129,7 @@ function getSharePageStyles() {
     }
 
     .tag-header h2 {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       font-weight: 600;
       color: var(--text);
     }
@@ -1142,7 +1141,7 @@ function getSharePageStyles() {
 
     .bento-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.25rem;
     }
 
@@ -1150,39 +1149,14 @@ function getSharePageStyles() {
       position: relative;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 1rem;
+      border-radius: 0.75rem;
       padding: 1.5rem;
-      backdrop-filter: blur(12px);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow: hidden;
-    }
-
-    .artifact-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 1rem;
-      padding: 1px;
-      background: linear-gradient(135deg, transparent 0%, transparent 100%);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0;
-      transition: opacity 0.3s;
+      transition: all 0.2s ease;
     }
 
     .artifact-card:hover {
-      transform: translateY(-4px);
       border-color: var(--border-hover);
-      box-shadow:
-        0 20px 40px -12px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(99, 102, 241, 0.1);
-    }
-
-    .artifact-card:hover::before {
-      opacity: 1;
-      background: linear-gradient(135deg, var(--accent) 0%, transparent 50%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .artifact-card.featured {
@@ -1192,8 +1166,8 @@ function getSharePageStyles() {
     .card-header {
       display: flex;
       align-items: flex-start;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 0.875rem;
+      margin-bottom: 0.75rem;
     }
 
     .card-icon {
@@ -1216,7 +1190,7 @@ function getSharePageStyles() {
     .card-info { flex: 1; min-width: 0; }
 
     .card-name {
-      font-size: 1.125rem;
+      font-size: 1rem;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 0.25rem;
@@ -1227,7 +1201,7 @@ function getSharePageStyles() {
 
     .card-badges {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.375rem;
       flex-wrap: wrap;
     }
 
@@ -1251,7 +1225,7 @@ function getSharePageStyles() {
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
       min-height: 2.625rem;
     }
 
@@ -1266,26 +1240,25 @@ function getSharePageStyles() {
       align-items: center;
       justify-content: center;
       gap: 0.375rem;
-      padding: 0.625rem 1rem;
+      padding: 0.5rem 0.875rem;
       font-size: 0.8125rem;
       font-weight: 500;
-      border-radius: 0.5rem;
+      border-radius: 0.375rem;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
       border: none;
       flex: 1;
       min-width: 0;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+      background: var(--accent);
       color: white;
     }
 
     .btn-primary:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
+      background: var(--accent-hover);
     }
 
     .btn-secondary {
@@ -1296,7 +1269,7 @@ function getSharePageStyles() {
 
     .btn-secondary:hover {
       background: var(--card-hover);
-      border-color: var(--border-hover);
+      border-color: var(--text-dim);
       color: var(--text);
     }
 
@@ -1321,12 +1294,13 @@ function getSharePageStyles() {
       padding: 2rem;
       color: var(--text-dim);
       font-size: 0.875rem;
+      border-top: 1px solid var(--border);
     }
 
     .footer a {
       color: var(--accent);
       text-decoration: none;
-      transition: color 0.2s;
+      transition: color 0.15s;
     }
 
     .footer a:hover { color: var(--accent-hover); }
@@ -1335,8 +1309,8 @@ function getSharePageStyles() {
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
       z-index: 1000;
       display: flex;
       align-items: center;
@@ -1344,7 +1318,7 @@ function getSharePageStyles() {
       padding: 1rem;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
     }
 
     .modal-overlay.active {
@@ -1354,17 +1328,18 @@ function getSharePageStyles() {
 
     .modal-container {
       width: 100%;
-      max-width: 1200px;
-      height: 90vh;
-      max-height: 800px;
-      background: var(--bg-secondary);
+      max-width: 1100px;
+      height: 85vh;
+      max-height: 750px;
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 1rem;
+      border-radius: 0.75rem;
       display: flex;
       flex-direction: column;
-      transform: scale(0.95) translateY(10px);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: scale(0.98) translateY(8px);
+      transition: transform 0.2s ease;
       overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     }
 
     .modal-overlay.active .modal-container {
@@ -1375,9 +1350,9 @@ function getSharePageStyles() {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.5rem;
+      padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--border);
-      background: var(--bg);
+      background: var(--bg-secondary);
     }
 
     .modal-title-section {
@@ -1387,7 +1362,7 @@ function getSharePageStyles() {
     }
 
     .modal-title-section h3 {
-      font-size: 1rem;
+      font-size: 0.9375rem;
       font-weight: 600;
       color: var(--text);
     }
@@ -1416,10 +1391,10 @@ function getSharePageStyles() {
       padding: 0.5rem 0.75rem;
       font-size: 0.8125rem;
       font-weight: 500;
-      border-radius: 0.5rem;
+      border-radius: 0.375rem;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
       border: none;
     }
 
@@ -1442,7 +1417,7 @@ function getSharePageStyles() {
 
     .modal-btn-close:hover {
       color: var(--text);
-      background: var(--card);
+      background: var(--card-hover);
     }
 
     .modal-body {
@@ -1464,7 +1439,7 @@ function getSharePageStyles() {
 
     @media (max-width: 768px) {
       .header { padding: 3rem 1rem 2rem; }
-      .main-content { padding: 0 1rem 3rem; }
+      .main-content { padding: 1.5rem 1rem 3rem; }
       .bento-grid { grid-template-columns: 1fr; gap: 1rem; }
       .artifact-card { padding: 1.25rem; }
       .card-actions { flex-direction: column; }
@@ -1495,47 +1470,63 @@ function getSharePageScript() {
     const modalTitle = document.getElementById('modal-title');
     const modalBadge = document.getElementById('modal-badge');
     const modalNewtab = document.getElementById('modal-newtab');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
 
-    function openPreviewModal(name, content, shareToken, type) {
-      modalTitle.textContent = name;
-      modalBadge.textContent = type || 'HTML';
-      modalNewtab.href = '/render/' + shareToken;
-      iframe.srcdoc = content;
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closePreviewModal(e) {
-      if (e && e.target !== modal) return;
+    function closeModal() {
       modal.classList.remove('active');
       document.body.style.overflow = '';
-      iframe.srcdoc = '';
+      setTimeout(() => { iframe.srcdoc = ''; }, 300);
     }
 
+    document.querySelectorAll('.preview-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = new TextDecoder().decode(Uint8Array.from(atob(btn.dataset.name), c => c.charCodeAt(0)));
+        const content = new TextDecoder().decode(Uint8Array.from(atob(btn.dataset.content), c => c.charCodeAt(0)));
+        const shareToken = btn.dataset.token;
+        const type = btn.dataset.type;
+        modalTitle.textContent = name;
+        modalBadge.textContent = type || 'HTML';
+        modalNewtab.href = '/render/' + shareToken;
+        iframe.srcdoc = content;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    // Close button
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Close on Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && modal.classList.contains('active')) {
-        closePreviewModal();
+        closeModal();
       }
     });
   `;
 }
 
 function renderPublicCard(artifact, settings, index) {
-  const name = escapeHtmlServer(artifact.name);
+  const rawName = artifact.name || '';
+  const name = escapeHtmlServer(rawName);
   const desc = artifact.description ? escapeHtmlServer(artifact.description) : '';
-  const type = escapeHtmlServer(artifact.artifact_type || 'code');
+  const rawType = artifact.artifact_type || 'code';
+  const type = escapeHtmlServer(rawType);
   const lang = artifact.language ? escapeHtmlServer(artifact.language) : '';
   const shareToken = artifact.share_token || '';
   const hasContent = artifact.file_content && artifact.file_content.length > 0;
-  const isHtml = type === 'html' || (lang && lang.toLowerCase() === 'html');
+  const isHtml = rawType === 'html' || (artifact.language && artifact.language.toLowerCase() === 'html');
   const isFeatured = index === 0 && isHtml;
 
-  const iconClass = getTypeIconClass(type);
-  const icon = getTypeIcon(type);
+  const iconClass = getTypeIconClass(rawType);
+  const icon = getTypeIcon(rawType);
 
-  const escapedContent = hasContent ? escapeHtmlServer(artifact.file_content)
-    .replace(/'/g, "\\'")
-    .replace(/\n/g, '\\n') : '';
+  const base64Content = hasContent ? toBase64(artifact.file_content) : '';
+  const base64Name = toBase64(rawName);
 
   return `
     <article class="artifact-card${isFeatured ? ' featured' : ''}">
@@ -1556,7 +1547,7 @@ function renderPublicCard(artifact, settings, index) {
 
       <div class="card-actions">
         ${isHtml && hasContent && shareToken ? `
-          <button class="btn btn-primary" onclick="openPreviewModal('${name.replace(/'/g, "\\'")}', '${escapedContent}', '${shareToken}', '${type}')">
+          <button class="btn btn-primary preview-btn" data-name="${base64Name}" data-content="${base64Content}" data-token="${shareToken}" data-type="${rawType}">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -1744,6 +1735,15 @@ function escapeHtmlServer(text) {
     .replace(/'/g, '&#39;');
 }
 
+function toBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
 // Name validation - prevents placeholder names
 function sanitizeName(name) {
   const placeholderPatterns = [
@@ -1779,10 +1779,11 @@ function sanitizeName(name) {
 
 function getLandingPageHtml() {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background:#09090b">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09090b">
   <title>Artifact Manager - Save & Organize Claude.ai Artifacts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1952,7 +1953,7 @@ function getLandingPageHtml() {
 function getAppHtml(userEmail) {
   const safeEmail = escapeHtmlServer(userEmail);
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background:#09090b">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -1962,7 +1963,7 @@ function getAppHtml(userEmail) {
   <!-- PWA Meta Tags -->
   <!-- PWA manifest disabled due to Cloudflare Access CORS issues -->
   <!-- <link rel="manifest" href="/manifest.json"> -->
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#09090b">
   <meta name="mobile-web-app-capable" content="yes">
 
   <!-- iOS PWA Meta Tags -->
