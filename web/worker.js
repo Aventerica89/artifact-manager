@@ -1480,8 +1480,8 @@ function getSharePageScript() {
 
     document.querySelectorAll('.preview-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const name = decodeURIComponent(escape(atob(btn.dataset.name)));
-        const content = decodeURIComponent(escape(atob(btn.dataset.content)));
+        const name = new TextDecoder().decode(Uint8Array.from(atob(btn.dataset.name), c => c.charCodeAt(0)));
+        const content = new TextDecoder().decode(Uint8Array.from(atob(btn.dataset.content), c => c.charCodeAt(0)));
         const shareToken = btn.dataset.token;
         const type = btn.dataset.type;
         modalTitle.textContent = name;
