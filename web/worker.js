@@ -389,7 +389,7 @@ async function handleApiRequest(path, request, env, userEmail, url) {
         const result = await env.DB.prepare(
           `DELETE FROM artifacts WHERE id IN (${placeholders}) AND user_email = ?`
         ).bind(...validIds, userEmail).run();
-        return Response.json({ success: true, deleted: result.meta?.changes || validIds.length });
+        return Response.json({ success: true, deleted: result.meta?.changes ?? 0 });
       }
 
       // PUT /api/artifacts/bulk - Bulk update artifacts (e.g., move to collection)
@@ -417,7 +417,7 @@ async function handleApiRequest(path, request, env, userEmail, url) {
         const result = await env.DB.prepare(
           `UPDATE artifacts SET collection_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id IN (${placeholders}) AND user_email = ?`
         ).bind(collId, ...validIds, userEmail).run();
-        return Response.json({ success: true, updated: result.meta?.changes || validIds.length });
+        return Response.json({ success: true, updated: result.meta?.changes ?? 0 });
       }
 
       // POST /api/artifacts/:id/favorite - Toggle favorite
