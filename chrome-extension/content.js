@@ -135,7 +135,7 @@
       data.artifact_id = url.searchParams.get('artifactId');
     }
 
-    // Look for published claude.site URL in the panel first (more accurate)
+    // Strategy 1: Look for direct claude.site links in the panel
     const panelLinks = panel.querySelectorAll('a[href*="claude.site/artifacts"]');
     if (panelLinks.length > 0) {
       data.published_url = panelLinks[0].href;
@@ -148,7 +148,35 @@
       }
     }
 
-    // Fallback: Check all page links
+    // Strategies 2 & 3: Find published URL from links
+    if (!data.published_url) {
+      const setPublishedData = (url) => {
+        data.published_url = url;
+        data.source_type = 'published';
+        const match = url.match(/\/artifacts\/([a-zA-Z0-9-]+)/);
+        if (match) {
+          data.artifact_id = match[1];
+        }
+      };
+
+      // Strategy 2: Check "Open in new tab" links (target="_blank")
+      const linkFromTarget = Array.from(panel.querySelectorAll('a[target="_blank"]'))
+        .find(link => link.href?.includes('claude.site/artifacts'));
+
+      if (linkFromTarget) {
+        setPublishedData(linkFromTarget.href);
+      } else {
+        // Strategy 3: Check links with SVG icons (globe/external link icons)
+        const linkFromSvg = Array.from(panel.querySelectorAll('a svg'))
+          .map(svg => svg.closest('a'))
+          .find(link => link?.href?.includes('claude.site/artifacts'));
+        if (linkFromSvg) {
+          setPublishedData(linkFromSvg.href);
+        }
+      }
+    }
+
+    // Strategy 4: Check all page links for claude.site
     if (!data.published_url) {
       const links = document.querySelectorAll('a[href*="claude.site"]');
       if (links.length > 0) {
@@ -157,7 +185,7 @@
       }
     }
 
-    // Also check if there's a share/publish URL visible in text
+    // Strategy 5: Check if there's a share/publish URL visible in text
     if (!data.published_url) {
       const allText = document.body.innerText;
       const claudeSiteMatch = allText.match(/https:\/\/claude\.site\/artifacts\/[a-zA-Z0-9-]+/);
@@ -425,10 +453,16 @@
       if (!panel || panel.hasAttribute(PROCESSED_ATTR)) return;
       panel.setAttribute(PROCESSED_ATTR, 'true');
 
-      // Find where to insert the button - look for the Copy button
-      const copyButton = panel.querySelector('button');
+      // Find the actual Copy button (not Code/Preview tabs)
+      const copyButton = panel.querySelector('button[aria-label*="copy" i]') ||
+                         Array.from(panel.querySelectorAll('button')).find(b =>
+                           b.textContent.trim() === 'Copy'
+                         );
+
       if (copyButton) {
-        const buttonContainer = copyButton.parentElement;
+        // Find the action buttons container (not the tabs)
+        const buttonContainer = copyButton.closest('div[class*="flex"][class*="gap"]') ||
+                                copyButton.parentElement;
 
         // Check if we already added our button
         if (buttonContainer && !buttonContainer.querySelector(`.${BUTTON_CLASS}`)) {
