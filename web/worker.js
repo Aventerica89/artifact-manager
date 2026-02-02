@@ -1395,7 +1395,8 @@ function getAppHtml(userEmail) {
   <link rel="icon" type="image/svg+xml" href="${ARTIFACT_MANAGER_FAVICON}">
 
   <!-- PWA Meta Tags -->
-  <link rel="manifest" href="/manifest.json">
+  <!-- PWA manifest disabled due to Cloudflare Access CORS issues -->
+  <!-- <link rel="manifest" href="/manifest.json"> -->
   <meta name="theme-color" content="#6366f1">
   <meta name="mobile-web-app-capable" content="yes">
 
