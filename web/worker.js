@@ -9,7 +9,7 @@ const ARTIFACT_MANAGER_FAVICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': 'https://claude.ai',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Cf-Access-Jwt-Assertion',
+  'Access-Control-Allow-Headers': 'Content-Type, Cf-Access-Jwt-Assertion, cf-access-token',
   'Access-Control-Allow-Credentials': 'true',
   'Access-Control-Max-Age': '86400'
 };
@@ -836,10 +836,14 @@ async function handleApiRequest(path, request, env, userEmail, url) {
 // ============ AUTHENTICATION ============
 
 async function getUserEmail(request) {
-  // Check for JWT in header first (API clients, mobile app)
-  let jwt = request.headers.get('Cf-Access-Jwt-Assertion');
+  // Try multiple sources for the JWT token
+  // 1. Cf-Access-Jwt-Assertion header (standard Cloudflare Access header)
+  // 2. cf-access-token header (alternative header)
+  // 3. CF_Authorization cookie (browser-based auth)
+  let jwt = request.headers.get('Cf-Access-Jwt-Assertion')
+         || request.headers.get('cf-access-token');
 
-  // If no header, check for CF_Authorization cookie (browser-based auth)
+  // If no header, check for CF_Authorization cookie
   if (!jwt) {
     const cookieHeader = request.headers.get('Cookie');
     if (cookieHeader) {
@@ -857,8 +861,16 @@ async function getUserEmail(request) {
 
   try {
     const parts = jwt.split('.');
+    if (parts.length !== 3) return null;
+
     const payload = JSON.parse(atob(parts[1]));
-    return payload.email;
+
+    // Try multiple possible email locations in the payload
+    // Note: payload.sub is intentionally excluded as it contains user ID, not email
+    return payload.email
+        || payload.identity?.email
+        || payload.common_name
+        || null;
   } catch (e) {
     return null;
   }
@@ -1862,13 +1874,13 @@ function getLandingPageHtml() {
       <h1>Save & Organize Your Claude Artifacts</h1>
       <p>One-click saving from Claude.ai. Organize with collections and tags. Share rendered HTML with anyone.</p>
       <div class="cta-buttons">
-        <a href="https://github.com/Aventerica89/cf-url-shortener/tree/main/chrome-extension" class="btn btn-primary" target="_blank">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.6 1.2 3.3.9.1-.7.4-1.2.7-1.5-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2 1-.3 2-.4 3-.4s2 .1 3 .4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6C20.6 21.8 24 17.3 24 12c0-6.6-5.4-12-12-12z"/></svg>
-          Get Chrome Extension
+        <a href="/admin" class="btn btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Sign In
         </a>
-        <a href="#" class="btn btn-secondary" onclick="alert('Safari extension coming soon!')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/></svg>
-          Safari Extension
+        <a href="https://github.com/Aventerica89/cf-url-shortener/tree/main/chrome-extension" class="btn btn-secondary" target="_blank">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.6 1.2 3.3.9.1-.7.4-1.2.7-1.5-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2 1-.3 2-.4 3-.4s2 .1 3 .4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6C20.6 21.8 24 17.3 24 12c0-6.6-5.4-12-12-12z"/></svg>
+          Get Extension
         </a>
       </div>
     </div>
