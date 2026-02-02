@@ -369,6 +369,32 @@ async function handleApiRequest(path, request, env, userEmail, url) {
         return Response.json({ success: true });
       }
 
+      // DELETE /api/artifacts/bulk - Bulk delete artifacts
+      if (path === 'api/artifacts/bulk' && request.method === 'DELETE') {
+        const { ids } = await request.json();
+        if (!Array.isArray(ids) || ids.length === 0) {
+          return Response.json({ error: 'No IDs provided' }, { status: 400 });
+        }
+        const placeholders = ids.map(() => '?').join(',');
+        await env.DB.prepare(
+          `DELETE FROM artifacts WHERE id IN (${placeholders}) AND user_email = ?`
+        ).bind(...ids, userEmail).run();
+        return Response.json({ success: true, deleted: ids.length });
+      }
+
+      // PUT /api/artifacts/bulk - Bulk update artifacts (e.g., move to collection)
+      if (path === 'api/artifacts/bulk' && request.method === 'PUT') {
+        const { ids, collection_id } = await request.json();
+        if (!Array.isArray(ids) || ids.length === 0) {
+          return Response.json({ error: 'No IDs provided' }, { status: 400 });
+        }
+        const placeholders = ids.map(() => '?').join(',');
+        await env.DB.prepare(
+          `UPDATE artifacts SET collection_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id IN (${placeholders}) AND user_email = ?`
+        ).bind(collection_id, ...ids, userEmail).run();
+        return Response.json({ success: true, updated: ids.length });
+      }
+
       // POST /api/artifacts/:id/favorite - Toggle favorite
       if (path.match(/^api\/artifacts\/\d+\/favorite$/) && request.method === 'POST') {
         const id = path.split('/')[2];
@@ -1991,6 +2017,66 @@ function getAppHtml(userEmail) {
       border-color: var(--indigo);
     }
 
+    .artifact-card.selected {
+      border-color: var(--indigo);
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .select-checkbox {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .select-checkbox input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .select-checkbox .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 18px;
+      height: 18px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .select-checkbox:hover .checkmark {
+      border-color: var(--indigo);
+    }
+
+    .select-checkbox input:checked ~ .checkmark {
+      background: var(--indigo);
+      border-color: var(--indigo);
+    }
+
+    .select-checkbox .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+      left: 5px;
+      top: 2px;
+      width: 4px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .select-checkbox input:checked ~ .checkmark:after {
+      display: block;
+    }
+
     .artifact-card-header {
       padding: 1rem;
       display: flex;
@@ -2259,6 +2345,35 @@ function getAppHtml(userEmail) {
       font-weight: 600;
       color: var(--foreground);
       margin-bottom: 0.5rem;
+    }
+
+    /* Bulk Actions Toolbar */
+    .bulk-actions-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--indigo);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+
+    .bulk-actions-info {
+      font-weight: 500;
+      color: var(--foreground);
+    }
+
+    .bulk-actions-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .bulk-actions-buttons .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
     }
 
     /* Pagination */
@@ -2789,6 +2904,30 @@ function getAppHtml(userEmail) {
         </div>
       </div>
 
+      <!-- Bulk Actions Toolbar -->
+      <div class="bulk-actions-toolbar" id="bulk-actions-toolbar" style="display: none;">
+        <div class="bulk-actions-info">
+          <span id="selected-count">0</span> selected
+        </div>
+        <div class="bulk-actions-buttons">
+          <button class="btn btn-secondary btn-sm" onclick="selectAllOnPage()">Select All</button>
+          <button class="btn btn-secondary btn-sm" onclick="clearSelection()">Clear</button>
+          <button class="btn btn-secondary btn-sm" onclick="openBulkCategorizeModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+            Move to Collection
+          </button>
+          <button class="btn btn-sm" onclick="bulkDeleteArtifacts()" style="background: var(--rose); color: white;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+
       <div class="artifacts-grid" id="artifacts-grid"></div>
 
       <div class="pagination" id="pagination"></div>
@@ -2920,6 +3059,35 @@ function getAppHtml(userEmail) {
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeCollectionModal()">Cancel</button>
         <button class="btn btn-primary" onclick="createCollection()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Categorize Modal -->
+  <div class="modal-overlay" id="bulk-categorize-modal">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>Move to Collection</h3>
+        <button class="btn btn-ghost btn-icon" onclick="closeBulkCategorizeModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 1rem; color: var(--muted-foreground);">
+          Move <strong id="bulk-move-count">0</strong> selected artifacts to:
+        </p>
+        <div class="form-group">
+          <select id="bulk-collection-select">
+            <option value="">No Collection</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeBulkCategorizeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="bulkCategorizeArtifacts()">Move</button>
       </div>
     </div>
   </div>
@@ -3138,6 +3306,7 @@ function getAppHtml(userEmail) {
     let currentTags = [];
     let currentPage = 1;
     const perPage = 12;
+    let selectedArtifactIds = new Set();
 
     let currentFilter = { type: 'all', value: null };
 
@@ -3425,8 +3594,12 @@ function getAppHtml(userEmail) {
       }
 
       grid.innerHTML = pageArtifacts.map(a => \`
-        <div class="artifact-card">
+        <div class="artifact-card \${selectedArtifactIds.has(a.id) ? 'selected' : ''}" data-artifact-id="\${a.id}">
           <div class="artifact-card-header">
+            <label class="select-checkbox" onclick="event.stopPropagation()">
+              <input type="checkbox" \${selectedArtifactIds.has(a.id) ? 'checked' : ''} onchange="toggleSelectArtifact(\${a.id})">
+              <span class="checkmark"></span>
+            </label>
             <div class="artifact-icon \${a.artifact_type}">
               \${getTypeIcon(a.artifact_type)}
             </div>
@@ -3914,6 +4087,108 @@ function getAppHtml(userEmail) {
       if (res.ok) {
         showToast('Artifact deleted', 'success');
         await Promise.all([loadStats(), loadArtifacts()]);
+      }
+    }
+
+    // Multi-select functions
+    function toggleSelectArtifact(id) {
+      if (selectedArtifactIds.has(id)) {
+        selectedArtifactIds.delete(id);
+      } else {
+        selectedArtifactIds.add(id);
+      }
+      updateBulkActionsToolbar();
+      renderArtifacts();
+    }
+
+    function selectAllOnPage() {
+      const start = (currentPage - 1) * perPage;
+      const pageArtifacts = allArtifacts.slice(start, start + perPage);
+      pageArtifacts.forEach(a => selectedArtifactIds.add(a.id));
+      updateBulkActionsToolbar();
+      renderArtifacts();
+    }
+
+    function clearSelection() {
+      selectedArtifactIds.clear();
+      updateBulkActionsToolbar();
+      renderArtifacts();
+    }
+
+    function updateBulkActionsToolbar() {
+      const toolbar = document.getElementById('bulk-actions-toolbar');
+      const countEl = document.getElementById('selected-count');
+      const count = selectedArtifactIds.size;
+
+      if (count > 0) {
+        toolbar.style.display = 'flex';
+        countEl.textContent = count;
+      } else {
+        toolbar.style.display = 'none';
+      }
+    }
+
+    async function bulkDeleteArtifacts() {
+      const count = selectedArtifactIds.size;
+      if (count === 0) return;
+
+      if (!confirm(\`Are you sure you want to delete \${count} artifact\${count > 1 ? 's' : ''}?\`)) return;
+
+      const ids = Array.from(selectedArtifactIds);
+      const res = await fetch('/api/artifacts/bulk', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids })
+      });
+
+      if (res.ok) {
+        showToast(\`\${count} artifact\${count > 1 ? 's' : ''} deleted\`, 'success');
+        selectedArtifactIds.clear();
+        updateBulkActionsToolbar();
+        await Promise.all([loadStats(), loadArtifacts()]);
+      } else {
+        showToast('Failed to delete artifacts', 'error');
+      }
+    }
+
+    function openBulkCategorizeModal() {
+      if (selectedArtifactIds.size === 0) return;
+      document.getElementById('bulk-move-count').textContent = selectedArtifactIds.size;
+      document.getElementById('bulk-categorize-modal').classList.add('active');
+      renderBulkCollectionsSelect();
+    }
+
+    function closeBulkCategorizeModal() {
+      document.getElementById('bulk-categorize-modal').classList.remove('active');
+    }
+
+    function renderBulkCollectionsSelect() {
+      const select = document.getElementById('bulk-collection-select');
+      select.innerHTML = '<option value="">No Collection</option>' +
+        allCollections.map(c => \`<option value="\${c.id}">\${escapeHtml(c.name)}</option>\`).join('');
+    }
+
+    async function bulkCategorizeArtifacts() {
+      const count = selectedArtifactIds.size;
+      if (count === 0) return;
+
+      const collectionId = document.getElementById('bulk-collection-select').value;
+      const ids = Array.from(selectedArtifactIds);
+
+      const res = await fetch('/api/artifacts/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, collection_id: collectionId || null })
+      });
+
+      if (res.ok) {
+        showToast(\`\${count} artifact\${count > 1 ? 's' : ''} updated\`, 'success');
+        selectedArtifactIds.clear();
+        updateBulkActionsToolbar();
+        closeBulkCategorizeModal();
+        await Promise.all([loadStats(), loadArtifacts()]);
+      } else {
+        showToast('Failed to update artifacts', 'error');
       }
     }
 
