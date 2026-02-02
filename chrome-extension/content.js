@@ -460,9 +460,8 @@
                          );
 
       if (copyButton) {
-        // Find the action buttons container (not the tabs)
-        const buttonContainer = copyButton.closest('div[class*="flex"][class*="gap"]') ||
-                                copyButton.parentElement;
+        // Use direct parent - closest() can find ancestors where copyButton isn't a direct child
+        const buttonContainer = copyButton.parentElement;
 
         // Check if we already added our button
         if (buttonContainer && !buttonContainer.querySelector(`.${BUTTON_CLASS}`)) {
