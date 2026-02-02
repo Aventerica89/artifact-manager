@@ -480,6 +480,16 @@
       if (card.hasAttribute(PROCESSED_ATTR)) return;
       if (card.offsetHeight < 30 || card.offsetWidth < 100) return;
 
+      // Skip if inside a modal, dialog, or popup
+      if (card.closest('[role="dialog"]') ||
+          card.closest('[role="modal"]') ||
+          card.closest('[class*="modal"]') ||
+          card.closest('[class*="dialog"]') ||
+          card.closest('[class*="popup"]') ||
+          card.closest('[class*="overlay"]')) {
+        return;
+      }
+
       card.setAttribute(PROCESSED_ATTR, 'true');
 
       // Check if we already added our button
