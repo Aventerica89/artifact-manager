@@ -1480,8 +1480,8 @@ function getSharePageScript() {
 
     document.querySelectorAll('.preview-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const name = btn.dataset.name;
-        const content = atob(btn.dataset.content);
+        const name = decodeURIComponent(escape(atob(btn.dataset.name)));
+        const content = decodeURIComponent(escape(atob(btn.dataset.content)));
         const shareToken = btn.dataset.token;
         const type = btn.dataset.type;
         modalTitle.textContent = name;
@@ -1511,19 +1511,22 @@ function getSharePageScript() {
 }
 
 function renderPublicCard(artifact, settings, index) {
-  const name = escapeHtmlServer(artifact.name);
+  const rawName = artifact.name || '';
+  const name = escapeHtmlServer(rawName);
   const desc = artifact.description ? escapeHtmlServer(artifact.description) : '';
-  const type = escapeHtmlServer(artifact.artifact_type || 'code');
+  const rawType = artifact.artifact_type || 'code';
+  const type = escapeHtmlServer(rawType);
   const lang = artifact.language ? escapeHtmlServer(artifact.language) : '';
   const shareToken = artifact.share_token || '';
   const hasContent = artifact.file_content && artifact.file_content.length > 0;
-  const isHtml = type === 'html' || (lang && lang.toLowerCase() === 'html');
+  const isHtml = rawType === 'html' || (artifact.language && artifact.language.toLowerCase() === 'html');
   const isFeatured = index === 0 && isHtml;
 
-  const iconClass = getTypeIconClass(type);
-  const icon = getTypeIcon(type);
+  const iconClass = getTypeIconClass(rawType);
+  const icon = getTypeIcon(rawType);
 
   const base64Content = hasContent ? toBase64(artifact.file_content) : '';
+  const base64Name = toBase64(rawName);
 
   return `
     <article class="artifact-card${isFeatured ? ' featured' : ''}">
@@ -1544,7 +1547,7 @@ function renderPublicCard(artifact, settings, index) {
 
       <div class="card-actions">
         ${isHtml && hasContent && shareToken ? `
-          <button class="btn btn-primary preview-btn" data-name="${name}" data-content="${base64Content}" data-token="${shareToken}" data-type="${type}">
+          <button class="btn btn-primary preview-btn" data-name="${base64Name}" data-content="${base64Content}" data-token="${shareToken}" data-type="${rawType}">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
