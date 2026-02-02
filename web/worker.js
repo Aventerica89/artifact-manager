@@ -836,8 +836,25 @@ async function handleApiRequest(path, request, env, userEmail, url) {
 // ============ AUTHENTICATION ============
 
 async function getUserEmail(request) {
-  const jwt = request.headers.get('Cf-Access-Jwt-Assertion');
+  // Check for JWT in header first (API clients, mobile app)
+  let jwt = request.headers.get('Cf-Access-Jwt-Assertion');
+
+  // If no header, check for CF_Authorization cookie (browser-based auth)
+  if (!jwt) {
+    const cookieHeader = request.headers.get('Cookie');
+    if (cookieHeader) {
+      const cookies = cookieHeader.split(';').map(c => c.trim());
+      for (const cookie of cookies) {
+        if (cookie.startsWith('CF_Authorization=')) {
+          jwt = cookie.substring('CF_Authorization='.length);
+          break;
+        }
+      }
+    }
+  }
+
   if (!jwt) return null;
+
   try {
     const parts = jwt.split('.');
     const payload = JSON.parse(atob(parts[1]));
