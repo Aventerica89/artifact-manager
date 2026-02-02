@@ -1,0 +1,1011 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		29345E0C2F2AE7B40083A6A4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29345E0B2F2AE7B40083A6A4 /* AppDelegate.swift */; };
+		29345E0E2F2AE7B40083A6A4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29345E0D2F2AE7B40083A6A4 /* SceneDelegate.swift */; };
+		29345E112F2AE7B40083A6A4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29345E0F2F2AE7B40083A6A4 /* LaunchScreen.storyboard */; };
+		29345E142F2AE7B40083A6A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29345E122F2AE7B40083A6A4 /* Main.storyboard */; };
+		29345E1D2F2AE7B40083A6A4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29345E1C2F2AE7B40083A6A4 /* AppDelegate.swift */; };
+		29345E202F2AE7B40083A6A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29345E1E2F2AE7B40083A6A4 /* Main.storyboard */; };
+		29345E272F2AE7B40083A6A4 /* Artifact Manager Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 29345E262F2AE7B40083A6A4 /* Artifact Manager Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		29345E312F2AE7B50083A6A4 /* Artifact Manager Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 29345E302F2AE7B50083A6A4 /* Artifact Manager Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		29345E362F2AE7B50083A6A4 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 29345DFB2F2AE7B30083A6A4 /* Main.html */; };
+		29345E372F2AE7B50083A6A4 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 29345DFB2F2AE7B30083A6A4 /* Main.html */; };
+		29345E382F2AE7B50083A6A4 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 29345DFD2F2AE7B30083A6A4 /* Icon.png */; };
+		29345E392F2AE7B50083A6A4 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 29345DFD2F2AE7B30083A6A4 /* Icon.png */; };
+		29345E3A2F2AE7B50083A6A4 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 29345DFE2F2AE7B30083A6A4 /* Style.css */; };
+		29345E3B2F2AE7B50083A6A4 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 29345DFE2F2AE7B30083A6A4 /* Style.css */; };
+		29345E3C2F2AE7B50083A6A4 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 29345DFF2F2AE7B30083A6A4 /* Script.js */; };
+		29345E3D2F2AE7B50083A6A4 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 29345DFF2F2AE7B30083A6A4 /* Script.js */; };
+		29345E3E2F2AE7B50083A6A4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29345E002F2AE7B30083A6A4 /* ViewController.swift */; };
+		29345E3F2F2AE7B50083A6A4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29345E002F2AE7B30083A6A4 /* ViewController.swift */; };
+		29345E402F2AE7B50083A6A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29345E012F2AE7B40083A6A4 /* Assets.xcassets */; };
+		29345E412F2AE7B50083A6A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29345E012F2AE7B40083A6A4 /* Assets.xcassets */; };
+		29345E422F2AE7B50083A6A4 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29345E032F2AE7B40083A6A4 /* SafariWebExtensionHandler.swift */; };
+		29345E432F2AE7B50083A6A4 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29345E032F2AE7B40083A6A4 /* SafariWebExtensionHandler.swift */; };
+		29345E5E2F2AE7B50083A6A4 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 29345E552F2AE7B50083A6A4 /* popup.js */; };
+		29345E5F2F2AE7B50083A6A4 /* content.css in Resources */ = {isa = PBXBuildFile; fileRef = 29345E562F2AE7B50083A6A4 /* content.css */; };
+		29345E602F2AE7B50083A6A4 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 29345E572F2AE7B50083A6A4 /* background.js */; };
+		29345E612F2AE7B50083A6A4 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 29345E582F2AE7B50083A6A4 /* popup.html */; };
+		29345E622F2AE7B50083A6A4 /* generate-icons.html in Resources */ = {isa = PBXBuildFile; fileRef = 29345E592F2AE7B50083A6A4 /* generate-icons.html */; };
+		29345E632F2AE7B50083A6A4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 29345E5A2F2AE7B50083A6A4 /* README.md */; };
+		29345E642F2AE7B50083A6A4 /* icons in Resources */ = {isa = PBXBuildFile; fileRef = 29345E5B2F2AE7B50083A6A4 /* icons */; };
+		29345E652F2AE7B50083A6A4 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 29345E5C2F2AE7B50083A6A4 /* manifest.json */; };
+		29345E662F2AE7B50083A6A4 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 29345E5D2F2AE7B50083A6A4 /* content.js */; };
+		29345E672F2AE7B50083A6A4 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 29345E552F2AE7B50083A6A4 /* popup.js */; };
+		29345E682F2AE7B50083A6A4 /* content.css in Resources */ = {isa = PBXBuildFile; fileRef = 29345E562F2AE7B50083A6A4 /* content.css */; };
+		29345E692F2AE7B50083A6A4 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 29345E572F2AE7B50083A6A4 /* background.js */; };
+		29345E6A2F2AE7B50083A6A4 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 29345E582F2AE7B50083A6A4 /* popup.html */; };
+		29345E6B2F2AE7B50083A6A4 /* generate-icons.html in Resources */ = {isa = PBXBuildFile; fileRef = 29345E592F2AE7B50083A6A4 /* generate-icons.html */; };
+		29345E6C2F2AE7B50083A6A4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 29345E5A2F2AE7B50083A6A4 /* README.md */; };
+		29345E6D2F2AE7B50083A6A4 /* icons in Resources */ = {isa = PBXBuildFile; fileRef = 29345E5B2F2AE7B50083A6A4 /* icons */; };
+		29345E6E2F2AE7B50083A6A4 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 29345E5C2F2AE7B50083A6A4 /* manifest.json */; };
+		29345E6F2F2AE7B50083A6A4 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 29345E5D2F2AE7B50083A6A4 /* content.js */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		29345E282F2AE7B40083A6A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29345DF52F2AE7B30083A6A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 29345E252F2AE7B40083A6A4;
+			remoteInfo = "Artifact Manager Extension (iOS)";
+		};
+		29345E322F2AE7B50083A6A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29345DF52F2AE7B30083A6A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 29345E2F2F2AE7B50083A6A4;
+			remoteInfo = "Artifact Manager Extension (macOS)";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		29345E492F2AE7B50083A6A4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				29345E272F2AE7B40083A6A4 /* Artifact Manager Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E502F2AE7B50083A6A4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				29345E312F2AE7B50083A6A4 /* Artifact Manager Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		29345DFC2F2AE7B30083A6A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
+		29345DFD2F2AE7B30083A6A4 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		29345DFE2F2AE7B30083A6A4 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		29345DFF2F2AE7B30083A6A4 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		29345E002F2AE7B30083A6A4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		29345E012F2AE7B40083A6A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		29345E032F2AE7B40083A6A4 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		29345E082F2AE7B40083A6A4 /* Artifact Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Artifact Manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		29345E0B2F2AE7B40083A6A4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		29345E0D2F2AE7B40083A6A4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		29345E102F2AE7B40083A6A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		29345E132F2AE7B40083A6A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		29345E152F2AE7B40083A6A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		29345E1A2F2AE7B40083A6A4 /* Artifact Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Artifact Manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		29345E1C2F2AE7B40083A6A4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		29345E1F2F2AE7B40083A6A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		29345E212F2AE7B40083A6A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		29345E262F2AE7B40083A6A4 /* Artifact Manager Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Artifact Manager Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		29345E2B2F2AE7B40083A6A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		29345E302F2AE7B50083A6A4 /* Artifact Manager Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Artifact Manager Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		29345E352F2AE7B50083A6A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		29345E552F2AE7B50083A6A4 /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = "../../../chrome-extension/popup.js"; sourceTree = "<group>"; };
+		29345E562F2AE7B50083A6A4 /* content.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = content.css; path = "../../../chrome-extension/content.css"; sourceTree = "<group>"; };
+		29345E572F2AE7B50083A6A4 /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.js; path = "../../../chrome-extension/background.js"; sourceTree = "<group>"; };
+		29345E582F2AE7B50083A6A4 /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = "../../../chrome-extension/popup.html"; sourceTree = "<group>"; };
+		29345E592F2AE7B50083A6A4 /* generate-icons.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "generate-icons.html"; path = "../../../chrome-extension/generate-icons.html"; sourceTree = "<group>"; };
+		29345E5A2F2AE7B50083A6A4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "../../../chrome-extension/README.md"; sourceTree = "<group>"; };
+		29345E5B2F2AE7B50083A6A4 /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = "../../../chrome-extension/icons"; sourceTree = "<group>"; };
+		29345E5C2F2AE7B50083A6A4 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = "../../../chrome-extension/manifest.json"; sourceTree = "<group>"; };
+		29345E5D2F2AE7B50083A6A4 /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.js; path = "../../../chrome-extension/content.js"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		29345E052F2AE7B40083A6A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E172F2AE7B40083A6A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E232F2AE7B40083A6A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E2D2F2AE7B50083A6A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		29345DF42F2AE7B30083A6A4 = {
+			isa = PBXGroup;
+			children = (
+				29345DF92F2AE7B30083A6A4 /* Shared (App) */,
+				29345E022F2AE7B40083A6A4 /* Shared (Extension) */,
+				29345E0A2F2AE7B40083A6A4 /* iOS (App) */,
+				29345E1B2F2AE7B40083A6A4 /* macOS (App) */,
+				29345E2A2F2AE7B40083A6A4 /* iOS (Extension) */,
+				29345E342F2AE7B50083A6A4 /* macOS (Extension) */,
+				29345E092F2AE7B40083A6A4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		29345DF92F2AE7B30083A6A4 /* Shared (App) */ = {
+			isa = PBXGroup;
+			children = (
+				29345E002F2AE7B30083A6A4 /* ViewController.swift */,
+				29345E012F2AE7B40083A6A4 /* Assets.xcassets */,
+				29345DFA2F2AE7B30083A6A4 /* Resources */,
+			);
+			path = "Shared (App)";
+			sourceTree = "<group>";
+		};
+		29345DFA2F2AE7B30083A6A4 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				29345DFB2F2AE7B30083A6A4 /* Main.html */,
+				29345DFD2F2AE7B30083A6A4 /* Icon.png */,
+				29345DFE2F2AE7B30083A6A4 /* Style.css */,
+				29345DFF2F2AE7B30083A6A4 /* Script.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		29345E022F2AE7B40083A6A4 /* Shared (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				29345E542F2AE7B50083A6A4 /* Resources */,
+				29345E032F2AE7B40083A6A4 /* SafariWebExtensionHandler.swift */,
+			);
+			path = "Shared (Extension)";
+			sourceTree = "<group>";
+		};
+		29345E092F2AE7B40083A6A4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				29345E082F2AE7B40083A6A4 /* Artifact Manager.app */,
+				29345E1A2F2AE7B40083A6A4 /* Artifact Manager.app */,
+				29345E262F2AE7B40083A6A4 /* Artifact Manager Extension.appex */,
+				29345E302F2AE7B50083A6A4 /* Artifact Manager Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29345E0A2F2AE7B40083A6A4 /* iOS (App) */ = {
+			isa = PBXGroup;
+			children = (
+				29345E0B2F2AE7B40083A6A4 /* AppDelegate.swift */,
+				29345E0D2F2AE7B40083A6A4 /* SceneDelegate.swift */,
+				29345E0F2F2AE7B40083A6A4 /* LaunchScreen.storyboard */,
+				29345E122F2AE7B40083A6A4 /* Main.storyboard */,
+				29345E152F2AE7B40083A6A4 /* Info.plist */,
+			);
+			path = "iOS (App)";
+			sourceTree = "<group>";
+		};
+		29345E1B2F2AE7B40083A6A4 /* macOS (App) */ = {
+			isa = PBXGroup;
+			children = (
+				29345E1C2F2AE7B40083A6A4 /* AppDelegate.swift */,
+				29345E1E2F2AE7B40083A6A4 /* Main.storyboard */,
+				29345E212F2AE7B40083A6A4 /* Info.plist */,
+			);
+			path = "macOS (App)";
+			sourceTree = "<group>";
+		};
+		29345E2A2F2AE7B40083A6A4 /* iOS (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				29345E2B2F2AE7B40083A6A4 /* Info.plist */,
+			);
+			path = "iOS (Extension)";
+			sourceTree = "<group>";
+		};
+		29345E342F2AE7B50083A6A4 /* macOS (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				29345E352F2AE7B50083A6A4 /* Info.plist */,
+			);
+			path = "macOS (Extension)";
+			sourceTree = "<group>";
+		};
+		29345E542F2AE7B50083A6A4 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				29345E552F2AE7B50083A6A4 /* popup.js */,
+				29345E562F2AE7B50083A6A4 /* content.css */,
+				29345E572F2AE7B50083A6A4 /* background.js */,
+				29345E582F2AE7B50083A6A4 /* popup.html */,
+				29345E592F2AE7B50083A6A4 /* generate-icons.html */,
+				29345E5A2F2AE7B50083A6A4 /* README.md */,
+				29345E5B2F2AE7B50083A6A4 /* icons */,
+				29345E5C2F2AE7B50083A6A4 /* manifest.json */,
+				29345E5D2F2AE7B50083A6A4 /* content.js */,
+			);
+			name = Resources;
+			path = "Shared (Extension)";
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		29345E072F2AE7B40083A6A4 /* Artifact Manager (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 29345E4A2F2AE7B50083A6A4 /* Build configuration list for PBXNativeTarget "Artifact Manager (iOS)" */;
+			buildPhases = (
+				29345E042F2AE7B40083A6A4 /* Sources */,
+				29345E052F2AE7B40083A6A4 /* Frameworks */,
+				29345E062F2AE7B40083A6A4 /* Resources */,
+				29345E492F2AE7B50083A6A4 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				29345E292F2AE7B40083A6A4 /* PBXTargetDependency */,
+			);
+			name = "Artifact Manager (iOS)";
+			packageProductDependencies = (
+			);
+			productName = "Artifact Manager (iOS)";
+			productReference = 29345E082F2AE7B40083A6A4 /* Artifact Manager.app */;
+			productType = "com.apple.product-type.application";
+		};
+		29345E192F2AE7B40083A6A4 /* Artifact Manager (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 29345E512F2AE7B50083A6A4 /* Build configuration list for PBXNativeTarget "Artifact Manager (macOS)" */;
+			buildPhases = (
+				29345E162F2AE7B40083A6A4 /* Sources */,
+				29345E172F2AE7B40083A6A4 /* Frameworks */,
+				29345E182F2AE7B40083A6A4 /* Resources */,
+				29345E502F2AE7B50083A6A4 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				29345E332F2AE7B50083A6A4 /* PBXTargetDependency */,
+			);
+			name = "Artifact Manager (macOS)";
+			packageProductDependencies = (
+			);
+			productName = "Artifact Manager (macOS)";
+			productReference = 29345E1A2F2AE7B40083A6A4 /* Artifact Manager.app */;
+			productType = "com.apple.product-type.application";
+		};
+		29345E252F2AE7B40083A6A4 /* Artifact Manager Extension (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 29345E462F2AE7B50083A6A4 /* Build configuration list for PBXNativeTarget "Artifact Manager Extension (iOS)" */;
+			buildPhases = (
+				29345E222F2AE7B40083A6A4 /* Sources */,
+				29345E232F2AE7B40083A6A4 /* Frameworks */,
+				29345E242F2AE7B40083A6A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Artifact Manager Extension (iOS)";
+			packageProductDependencies = (
+			);
+			productName = "Artifact Manager Extension (iOS)";
+			productReference = 29345E262F2AE7B40083A6A4 /* Artifact Manager Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		29345E2F2F2AE7B50083A6A4 /* Artifact Manager Extension (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 29345E4D2F2AE7B50083A6A4 /* Build configuration list for PBXNativeTarget "Artifact Manager Extension (macOS)" */;
+			buildPhases = (
+				29345E2C2F2AE7B50083A6A4 /* Sources */,
+				29345E2D2F2AE7B50083A6A4 /* Frameworks */,
+				29345E2E2F2AE7B50083A6A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Artifact Manager Extension (macOS)";
+			packageProductDependencies = (
+			);
+			productName = "Artifact Manager Extension (macOS)";
+			productReference = 29345E302F2AE7B50083A6A4 /* Artifact Manager Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29345DF52F2AE7B30083A6A4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					29345E072F2AE7B40083A6A4 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					29345E192F2AE7B40083A6A4 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					29345E252F2AE7B40083A6A4 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					29345E2F2F2AE7B50083A6A4 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+				};
+			};
+			buildConfigurationList = 29345DF82F2AE7B30083A6A4 /* Build configuration list for PBXProject "Artifact Manager" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 29345DF42F2AE7B30083A6A4;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 29345E092F2AE7B40083A6A4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				29345E072F2AE7B40083A6A4 /* Artifact Manager (iOS) */,
+				29345E192F2AE7B40083A6A4 /* Artifact Manager (macOS) */,
+				29345E252F2AE7B40083A6A4 /* Artifact Manager Extension (iOS) */,
+				29345E2F2F2AE7B50083A6A4 /* Artifact Manager Extension (macOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		29345E062F2AE7B40083A6A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29345E382F2AE7B50083A6A4 /* Icon.png in Resources */,
+				29345E112F2AE7B40083A6A4 /* LaunchScreen.storyboard in Resources */,
+				29345E362F2AE7B50083A6A4 /* Main.html in Resources */,
+				29345E3C2F2AE7B50083A6A4 /* Script.js in Resources */,
+				29345E402F2AE7B50083A6A4 /* Assets.xcassets in Resources */,
+				29345E142F2AE7B40083A6A4 /* Main.storyboard in Resources */,
+				29345E3A2F2AE7B50083A6A4 /* Style.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E182F2AE7B40083A6A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29345E392F2AE7B50083A6A4 /* Icon.png in Resources */,
+				29345E3B2F2AE7B50083A6A4 /* Style.css in Resources */,
+				29345E202F2AE7B40083A6A4 /* Main.storyboard in Resources */,
+				29345E3D2F2AE7B50083A6A4 /* Script.js in Resources */,
+				29345E412F2AE7B50083A6A4 /* Assets.xcassets in Resources */,
+				29345E372F2AE7B50083A6A4 /* Main.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E242F2AE7B40083A6A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29345E6C2F2AE7B50083A6A4 /* README.md in Resources */,
+				29345E672F2AE7B50083A6A4 /* popup.js in Resources */,
+				29345E6B2F2AE7B50083A6A4 /* generate-icons.html in Resources */,
+				29345E6A2F2AE7B50083A6A4 /* popup.html in Resources */,
+				29345E6E2F2AE7B50083A6A4 /* manifest.json in Resources */,
+				29345E692F2AE7B50083A6A4 /* background.js in Resources */,
+				29345E6F2F2AE7B50083A6A4 /* content.js in Resources */,
+				29345E6D2F2AE7B50083A6A4 /* icons in Resources */,
+				29345E682F2AE7B50083A6A4 /* content.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E2E2F2AE7B50083A6A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29345E632F2AE7B50083A6A4 /* README.md in Resources */,
+				29345E5E2F2AE7B50083A6A4 /* popup.js in Resources */,
+				29345E622F2AE7B50083A6A4 /* generate-icons.html in Resources */,
+				29345E612F2AE7B50083A6A4 /* popup.html in Resources */,
+				29345E652F2AE7B50083A6A4 /* manifest.json in Resources */,
+				29345E602F2AE7B50083A6A4 /* background.js in Resources */,
+				29345E662F2AE7B50083A6A4 /* content.js in Resources */,
+				29345E642F2AE7B50083A6A4 /* icons in Resources */,
+				29345E5F2F2AE7B50083A6A4 /* content.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		29345E042F2AE7B40083A6A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29345E3E2F2AE7B50083A6A4 /* ViewController.swift in Sources */,
+				29345E0C2F2AE7B40083A6A4 /* AppDelegate.swift in Sources */,
+				29345E0E2F2AE7B40083A6A4 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E162F2AE7B40083A6A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29345E3F2F2AE7B50083A6A4 /* ViewController.swift in Sources */,
+				29345E1D2F2AE7B40083A6A4 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E222F2AE7B40083A6A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29345E422F2AE7B50083A6A4 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29345E2C2F2AE7B50083A6A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29345E432F2AE7B50083A6A4 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		29345E292F2AE7B40083A6A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 29345E252F2AE7B40083A6A4 /* Artifact Manager Extension (iOS) */;
+			targetProxy = 29345E282F2AE7B40083A6A4 /* PBXContainerItemProxy */;
+		};
+		29345E332F2AE7B50083A6A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 29345E2F2F2AE7B50083A6A4 /* Artifact Manager Extension (macOS) */;
+			targetProxy = 29345E322F2AE7B50083A6A4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		29345DFB2F2AE7B30083A6A4 /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				29345DFC2F2AE7B30083A6A4 /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		29345E0F2F2AE7B40083A6A4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				29345E102F2AE7B40083A6A4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		29345E122F2AE7B40083A6A4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				29345E132F2AE7B40083A6A4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		29345E1E2F2AE7B40083A6A4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				29345E1F2F2AE7B40083A6A4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		29345E442F2AE7B50083A6A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		29345E452F2AE7B50083A6A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		29345E472F2AE7B50083A6A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Artifact Manager Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourCompany.Artifact-Manager.Extension";
+				PRODUCT_NAME = "Artifact Manager Extension";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		29345E482F2AE7B50083A6A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Artifact Manager Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourCompany.Artifact-Manager.Extension";
+				PRODUCT_NAME = "Artifact Manager Extension";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		29345E4B2F2AE7B50083A6A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Artifact Manager";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourCompany.Artifact-Manager";
+				PRODUCT_NAME = "Artifact Manager";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		29345E4C2F2AE7B50083A6A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Artifact Manager";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourCompany.Artifact-Manager";
+				PRODUCT_NAME = "Artifact Manager";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		29345E4E2F2AE7B50083A6A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Artifact Manager Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourCompany.Artifact-Manager.Extension";
+				PRODUCT_NAME = "Artifact Manager Extension";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		29345E4F2F2AE7B50083A6A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Artifact Manager Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourCompany.Artifact-Manager.Extension";
+				PRODUCT_NAME = "Artifact Manager Extension";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		29345E522F2AE7B50083A6A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Artifact Manager";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourCompany.Artifact-Manager";
+				PRODUCT_NAME = "Artifact Manager";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		29345E532F2AE7B50083A6A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Artifact Manager";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourCompany.Artifact-Manager";
+				PRODUCT_NAME = "Artifact Manager";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		29345DF82F2AE7B30083A6A4 /* Build configuration list for PBXProject "Artifact Manager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29345E442F2AE7B50083A6A4 /* Debug */,
+				29345E452F2AE7B50083A6A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		29345E462F2AE7B50083A6A4 /* Build configuration list for PBXNativeTarget "Artifact Manager Extension (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29345E472F2AE7B50083A6A4 /* Debug */,
+				29345E482F2AE7B50083A6A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		29345E4A2F2AE7B50083A6A4 /* Build configuration list for PBXNativeTarget "Artifact Manager (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29345E4B2F2AE7B50083A6A4 /* Debug */,
+				29345E4C2F2AE7B50083A6A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		29345E4D2F2AE7B50083A6A4 /* Build configuration list for PBXNativeTarget "Artifact Manager Extension (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29345E4E2F2AE7B50083A6A4 /* Debug */,
+				29345E4F2F2AE7B50083A6A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		29345E512F2AE7B50083A6A4 /* Build configuration list for PBXNativeTarget "Artifact Manager (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29345E522F2AE7B50083A6A4 /* Debug */,
+				29345E532F2AE7B50083A6A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29345DF52F2AE7B30083A6A4 /* Project object */;
+}

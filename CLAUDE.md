@@ -1,34 +1,75 @@
-# Artifact Manager - macOS Version
+# Artifact Manager
 
-A native macOS app to track and organize Claude.ai artifacts using SwiftUI and SwiftData.
+A unified platform to track and organize Claude.ai artifacts across all devices.
 
-## Project Sync Rule (CRITICAL)
+## Repository Structure
 
-**This project has companion apps:**
-- **Web App**: `/Users/jb/cf-url-shortener/artifacts-app/`
-- **Chrome Extension**: `/Users/jb/cf-url-shortener/chrome-extension/`
-- **Safari Extension**: `/Users/jb/cf-url-shortener/safari-extension/`
-
-### Browser Extensions
-
-The browser extensions capture artifacts directly from Claude.ai and send them to the web app.
-
-**Chrome Extension** (`/Users/jb/cf-url-shortener/chrome-extension/`):
-- Injects "Save" buttons on Claude.ai artifact panels
-- Extracts artifact data (name, type, content, published URL)
-- Posts to web app API
-- Has matching `isPlaceholder()` validation logic
-
-**Safari Extension** (`/Users/jb/cf-url-shortener/safari-extension/`):
-- Converted from Chrome extension via `xcrun safari-web-extension-converter`
-- Xcode project at `safari-extension/Artifact Manager/Artifact Manager.xcodeproj`
-- Build with Xcode, enable in Safari > Settings > Extensions
-
-**To convert Chrome extension to Safari:**
-```bash
-cd /Users/jb/cf-url-shortener
-xcrun safari-web-extension-converter chrome-extension --app-name "Artifact Manager" --force
 ```
+artifact-manager/
+├── macos/              # Native macOS app (SwiftUI + SwiftData)
+├── web/                # Web app (Cloudflare Worker)
+├── chrome-extension/   # Chrome/Firefox extension
+├── safari-extension/   # Safari extension
+└── mobile/             # Mobile app (React Native/Expo)
+```
+
+## Quick Links
+
+| Platform | Directory | Deploy/Build |
+|----------|-----------|--------------|
+| macOS | `macos/` | Open in Xcode, Cmd+R |
+| Web | `web/` | `cd web && wrangler deploy` |
+| Chrome | `chrome-extension/` | Load unpacked in chrome://extensions |
+| Safari | `safari-extension/` | Build in Xcode |
+| Mobile | `mobile/` | `cd mobile && npx expo start` |
+
+## Development
+
+### macOS App
+```bash
+cd macos
+swift build && swift test
+open "Artifact Manager.xcodeproj"
+```
+
+### Web App
+```bash
+cd web
+wrangler dev      # Local development
+wrangler deploy   # Deploy to Cloudflare
+```
+
+### Chrome Extension
+```bash
+cd chrome-extension
+# Load unpacked extension in chrome://extensions
+# Enable Developer Mode first
+```
+
+### Mobile App
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+## Project Sync Rules (CRITICAL)
+
+All platforms share core functionality. When making changes to these features, **update ALL platforms**:
+
+### Core Features That Must Stay in Sync:
+
+1. **Name Validation** (`NameValidator`)
+   - macOS: `macos/Artifact Manager/NameValidator.swift`
+   - Web: `web/worker.js` (sanitizeName function)
+   - Extension: `chrome-extension/content.js` (isPlaceholder function)
+
+2. **Placeholder Patterns**
+   - Must detect: "Saving...", "Loading...", "Downloading...", "Untitled", empty strings
+   - All platforms should reject the same patterns
+
+3. **Artifact Model**
+   - Required fields: name, description, artifactType, sourceType, publishedUrl, artifactId, fileName, fileContent, language, framework, claudeModel, conversationUrl, notes, collectionId, isFavorite, tags, timestamps
 
 ### Data Flow
 
@@ -38,103 +79,33 @@ Claude.ai ──[browser extension]──> Web App (Cloudflare Worker) <──[i
                                           └── D1 Database
 ```
 
-When making changes to core functionality, **ALWAYS apply the same changes to all projects**:
-
-When making changes to core functionality, **ALWAYS apply the same changes to both projects**:
-
-### Core Features That Must Stay in Sync:
-
-1. **Name Validation** (`NameValidator`)
-   - macOS: Swift in `Artifact Manager/NameValidator.swift`
-   - Web: JavaScript in `worker.js` (line ~2370) + Server function (line ~607)
-
-2. **Placeholder Patterns**
-   - Must detect: "Saving...", "Loading...", "Downloading...", "Untitled", empty strings
-   - Both projects should reject the same patterns
-
-3. **Cleanup Utility**
-   - macOS: `CleanupUtility.swift` with SwiftUI
-   - Web: Cleanup modal + API endpoints (`/api/cleanup/scan`, `/api/cleanup/fix`)
-
-4. **Artifact Model**
-   - macOS: SwiftData models in `Item.swift` and `Collection.swift`
-   - Web: Database schema in `migrations.sql`
-   - Required fields: name, description, artifactType, sourceType, publishedUrl, artifactId, fileName, fileContent, language, framework, claudeModel, conversationUrl, notes, collectionId, isFavorite, tags, timestamps
-
-### When Adding Features:
-
-1. Implement in the web version first (faster to test and deploy)
-2. Translate to macOS Swift version
-3. Test both versions
-4. Deploy web version: `wrangler deploy`
-5. Build and test macOS version: `swift build && swift test`
-
-### Key Differences (These DON'T need to sync):
-
-- **Storage**: macOS uses SwiftData, Web uses D1 (SQLite)
-- **Auth**: macOS is local-only, Web uses Cloudflare Access
-- **UI Framework**: macOS uses SwiftUI, Web uses vanilla HTML/JS
-- **Deployment**: macOS via Xcode, Web via Wrangler
-
-## Development
-
-### Build
-```bash
-cd /Users/jb/artifact-manager-mac
-swift build
-```
-
-### Test
-```bash
-swift test  # 42 tests should pass
-```
-
-### Run in Xcode
-```bash
-open "Artifact Manager.xcodeproj"
-# Press Cmd+R to build and run
-```
-
-## Project Structure
-
-```
-Artifact Manager/
-├── Artifact_ManagerApp.swift    # App entry point
-├── ContentView.swift             # Main UI + Add/Edit views
-├── Item.swift                    # SwiftData artifact model
-├── Collection.swift              # SwiftData collection model
-├── ArtifactType.swift            # Type enum
-├── NameValidator.swift           # Placeholder name validation
-└── CleanupUtility.swift          # Cleanup UI and logic
-
-ArtifactManagerTests/
-├── ArtifactTypeTests.swift       # Type enum tests
-├── FileSizeFormatterTests.swift  # Size formatting tests
-└── NameValidatorTests.swift      # Validation tests
-```
-
 ## Testing
 
-All tests must pass before committing:
+### macOS
 ```bash
-swift test
-# Expected: ✔ Test run with 42 tests in 3 suites passed
+cd macos && swift test
+# Expected: 42 tests passing
 ```
 
-## Recent Changes
+### Web
+```bash
+cd web && wrangler dev
+# Test at http://localhost:8787
+```
 
-### 2026-01-28: Full Feature Parity with Web Version
-- Added NameValidator to prevent "Saving...", "Loading...", "Downloading..." names
-- Added CleanupUtility with SwiftUI for scanning and fixing existing placeholders
-- Validation in Item initializer and AddItemView
-- Comprehensive test suite (42 tests total)
-- **Full model expansion**:
-  - Added SourceType enum (published/downloaded)
-  - Added publishedUrl, artifactId for published artifacts
-  - Added fileName, fileContent for downloaded artifacts
-  - Added language, framework, claudeModel, conversationUrl, notes
-  - Added collectionId, isFavorite
-  - Added artifactCreatedAt timestamp
-- Created Collection model with SwiftData
-- Updated AddItemView and ItemDetailView with all fields
-- ✅ Full feature parity with web version
+### Extension
+```bash
+# Load in Chrome, visit claude.ai
+# Check console for "Artifact Manager: Ready"
+```
+
+## Version History
+
+- **Extension v1.1.0** - Button placement fix, version display, shareable HTML rendering
+- **Extension v1.0.0** - Initial release
+- **macOS v1.0.0** - Initial release with full feature parity
+
+## Related Documentation
+
+- [jbdocs: Extension Changelog](https://docs.jbcloud.app/artifact-manager-extension/changelog)
+- [jbdocs: macOS Architecture](https://docs.jbcloud.app/artifact-manager-mac/architecture)
