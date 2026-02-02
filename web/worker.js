@@ -917,134 +917,699 @@ function renderSharePageHTML(collection, groupedArtifacts, settings) {
   let artifactsHTML = '';
   for (const [tag, artifacts] of Object.entries(groupedArtifacts)) {
     artifactsHTML += `
-      <details class="tag-group" open>
-        <summary class="tag-header">
+      <section class="tag-section">
+        <div class="tag-header">
           <h2>${escapeHtmlServer(tag)}</h2>
-          <span class="count">${artifacts.length} item${artifacts.length !== 1 ? 's' : ''}</span>
-        </summary>
-        <div class="artifacts-grid">
-          ${artifacts.map(a => renderPublicCard(a, settings)).join('')}
+          <span class="tag-count">${artifacts.length} item${artifacts.length !== 1 ? 's' : ''}</span>
         </div>
-      </details>
+        <div class="bento-grid">
+          ${artifacts.map((a, i) => renderPublicCard(a, settings, i)).join('')}
+        </div>
+      </section>
     `;
   }
 
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${name} - Shared Collection</title>
-      <style>
-        /* Reset and base styles */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #1f2937; background: #f9fafb; }
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name} - Shared Collection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+${getSharePageStyles()}
+  </style>
+</head>
+<body>
+  <div class="gradient-bg"></div>
 
-        /* Header */
-        .share-header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 3rem 2rem; text-align: center; }
-        .share-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 700; }
-        .share-header p { font-size: 1.125rem; opacity: 0.95; margin-top: 0.5rem; }
-        .artifact-count { display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 2rem; font-size: 0.875rem; }
-
-        /* Content area */
-        .share-content { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-
-        /* Tag groups */
-        .tag-group { background: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; overflow: hidden; }
-        .tag-group summary { cursor: pointer; padding: 1rem 1.5rem; background: #f9fafb; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; user-select: none; list-style: none; }
-        .tag-group summary::-webkit-details-marker { display: none; }
-        .tag-group summary:hover { background: #f3f4f6; }
-        .tag-group summary h2 { font-size: 1.25rem; font-weight: 600; color: #111827; }
-        .tag-group summary .count { color: #6b7280; font-size: 0.875rem; }
-        .tag-group[open] summary { border-bottom: 2px solid #6366f1; }
-
-        /* Artifacts grid */
-        .artifacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding: 1.5rem; }
-
-        /* Artifact cards */
-        .artifact-card { background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
-        .artifact-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .artifact-card .card-body { padding: 1rem; }
-        .artifact-card h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: #111827; }
-        .artifact-card p { color: #6b7280; font-size: 0.875rem; margin-bottom: 0.75rem; }
-
-        /* Card meta */
-        .card-meta { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .card-meta span { padding: 0.25rem 0.5rem; font-size: 0.75rem; border-radius: 0.25rem; background: #f3f4f6; color: #374151; font-weight: 500; }
-
-        /* Card actions */
-        .card-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-        .btn-primary, .btn-secondary { flex: 1; min-width: 120px; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; text-align: center; text-decoration: none; transition: all 0.2s; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; }
-        .btn-primary { background: #6366f1; color: white; }
-        .btn-primary:hover { background: #4f46e5; }
-        .btn-secondary { background: white; border: 1px solid #6366f1; color: #6366f1; }
-        .btn-secondary:hover { background: #f9fafb; }
-
-        /* Footer */
-        .share-footer { text-align: center; padding: 2rem; color: #6b7280; font-size: 0.875rem; }
-        .share-footer a { color: #6366f1; text-decoration: none; }
-        .share-footer a:hover { text-decoration: underline; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-          .artifacts-grid { grid-template-columns: 1fr; }
-          .share-header h1 { font-size: 1.75rem; }
-          .share-header p { font-size: 1rem; }
-        }
-      </style>
-    </head>
-    <body>
-      <header class="share-header">
-        <h1>${name}</h1>
-        ${desc ? `<p>${desc}</p>` : ''}
-        <span class="artifact-count">${count} artifact${count !== 1 ? 's' : ''}</span>
-      </header>
-
-      <main class="share-content">
-        ${artifactsHTML || '<p style="text-align: center; color: #6b7280;">No artifacts in this collection yet.</p>'}
-      </main>
-
-      <footer class="share-footer">
-        <p>Powered by <a href="https://artifact-manager.jbmd-creations.workers.dev">Artifact Manager</a></p>
-      </footer>
-    </body>
-    </html>
-  `;
-}
-
-function renderPublicCard(artifact, settings) {
-  const name = escapeHtmlServer(artifact.name);
-  const desc = artifact.description ? escapeHtmlServer(artifact.description) : '';
-  const type = escapeHtmlServer(artifact.artifact_type);
-  const lang = artifact.language ? escapeHtmlServer(artifact.language) : '';
-
-  return `
-    <div class="artifact-card">
-      <div class="card-body">
-        <h3>${name}</h3>
-        ${desc ? `<p>${desc}</p>` : ''}
-
-        <div class="card-meta">
-          <span>${type}</span>
-          ${lang ? `<span>${lang}</span>` : ''}
-        </div>
-
-        <div class="card-actions">
-          ${artifact.published_url ? `
-            <a href="${escapeHtmlServer(artifact.published_url)}" target="_blank" rel="noopener noreferrer" class="btn-primary">
-              View Artifact
-            </a>
-          ` : ''}
-          ${artifact.conversation_url ? `
-            <a href="${escapeHtmlServer(artifact.conversation_url)}" target="_blank" rel="noopener noreferrer" class="btn-secondary">
-              See Conversation
-            </a>
-          ` : ''}
+  <header class="header">
+    <div class="header-content">
+      <div class="header-badge">Shared Collection</div>
+      <h1 class="header-title">${name}</h1>
+      ${desc ? `<p class="header-desc">${desc}</p>` : ''}
+      <div class="header-stats">
+        <div class="stat-badge">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+          <span>${count} artifact${count !== 1 ? 's' : ''}</span>
         </div>
       </div>
     </div>
+  </header>
+
+  <main class="main-content">
+    ${artifactsHTML || '<p class="empty-state">No artifacts in this collection yet.</p>'}
+  </main>
+
+  <footer class="footer">
+    <p>Powered by <a href="https://artifacts.jbcloud.app" target="_blank">Artifact Manager</a></p>
+  </footer>
+
+  <div id="preview-modal" class="modal-overlay" onclick="closePreviewModal(event)">
+    <div class="modal-container" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-section">
+          <h3 id="modal-title">Artifact Preview</h3>
+          <span id="modal-badge" class="modal-badge">HTML</span>
+        </div>
+        <div class="modal-actions">
+          <a id="modal-newtab" href="#" target="_blank" class="modal-btn modal-btn-secondary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+            </svg>
+            Open in New Tab
+          </a>
+          <button onclick="closePreviewModal()" class="modal-btn modal-btn-close">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <iframe id="preview-iframe" class="preview-frame" sandbox="allow-scripts"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+${getSharePageScript()}
+  </script>
+</body>
+</html>`;
+}
+
+function getSharePageStyles() {
+  return `
+    :root {
+      --bg: #09090b;
+      --bg-secondary: #18181b;
+      --card: rgba(24, 24, 27, 0.7);
+      --card-hover: rgba(39, 39, 42, 0.8);
+      --border: rgba(63, 63, 70, 0.5);
+      --border-hover: rgba(99, 102, 241, 0.5);
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --html: #6366f1;
+      --code: #10b981;
+      --document: #f59e0b;
+      --image: #ec4899;
+      --data: #06b6d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .gradient-bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 50%, rgba(139, 92, 246, 0.1), transparent),
+        radial-gradient(ellipse 50% 30% at 20% 80%, rgba(16, 185, 129, 0.08), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .header {
+      position: relative;
+      z-index: 1;
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header-badge {
+      display: inline-block;
+      padding: 0.375rem 1rem;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 2rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    .header-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+
+    .header-desc {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .header-stats {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-badge svg { opacity: 0.7; }
+
+    .main-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    .tag-section { margin-bottom: 3rem; }
+
+    .tag-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tag-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .tag-count {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .artifact-card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .artifact-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem;
+      padding: 1px;
+      background: linear-gradient(135deg, transparent 0%, transparent 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .artifact-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      box-shadow:
+        0 20px 40px -12px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(99, 102, 241, 0.1);
+    }
+
+    .artifact-card:hover::before {
+      opacity: 1;
+      background: linear-gradient(135deg, var(--accent) 0%, transparent 50%);
+    }
+
+    .artifact-card.featured {
+      grid-column: span 2;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-icon {
+      flex-shrink: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.75rem;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--html);
+    }
+
+    .card-icon.type-code { background: rgba(16, 185, 129, 0.15); color: var(--code); }
+    .card-icon.type-document { background: rgba(245, 158, 11, 0.15); color: var(--document); }
+    .card-icon.type-image { background: rgba(236, 72, 153, 0.15); color: var(--image); }
+    .card-icon.type-data { background: rgba(6, 182, 212, 0.15); color: var(--data); }
+
+    .card-info { flex: 1; min-width: 0; }
+
+    .card-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .card-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-radius: 0.25rem;
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+    }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+      min-height: 2.625rem;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      padding: 0.625rem 1rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      background: var(--card-hover);
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .btn-icon {
+      flex: 0 0 auto;
+      width: 2.25rem;
+      padding: 0;
+    }
+
+    .btn svg { flex-shrink: 0; }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-dim);
+    }
+
+    .footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-dim);
+      font-size: 0.875rem;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer a:hover { color: var(--accent-hover); }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-container {
+      width: 100%;
+      max-width: 1200px;
+      height: 90vh;
+      max-height: 800px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .modal-overlay.active .modal-container {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .modal-title-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .modal-title-section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .modal-badge {
+      padding: 0.25rem 0.625rem;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-radius: 0.25rem;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent);
+    }
+
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .modal-btn-secondary {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .modal-btn-secondary:hover {
+      background: var(--card-hover);
+      color: var(--text);
+    }
+
+    .modal-btn-close {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 0.5rem;
+    }
+
+    .modal-btn-close:hover {
+      color: var(--text);
+      background: var(--card);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow: hidden;
+      background: white;
+    }
+
+    .preview-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .artifact-card.featured { grid-column: span 1; }
+    }
+
+    @media (max-width: 768px) {
+      .header { padding: 3rem 1rem 2rem; }
+      .main-content { padding: 0 1rem 3rem; }
+      .bento-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .artifact-card { padding: 1.25rem; }
+      .card-actions { flex-direction: column; }
+      .btn { width: 100%; justify-content: center; }
+      .btn-icon { width: 100%; }
+
+      .modal-container {
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+      }
+
+      .modal-header { padding: 1rem; }
+      .modal-btn-secondary span { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .header-title { font-size: 1.75rem; }
+      .header-desc { font-size: 1rem; }
+    }
   `;
+}
+
+function getSharePageScript() {
+  return `
+    const modal = document.getElementById('preview-modal');
+    const iframe = document.getElementById('preview-iframe');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBadge = document.getElementById('modal-badge');
+    const modalNewtab = document.getElementById('modal-newtab');
+
+    function openPreviewModal(name, content, shareToken, type) {
+      modalTitle.textContent = name;
+      modalBadge.textContent = type || 'HTML';
+      modalNewtab.href = '/render/' + shareToken;
+      iframe.srcdoc = content;
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePreviewModal(e) {
+      if (e && e.target !== modal) return;
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      iframe.srcdoc = '';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closePreviewModal();
+      }
+    });
+  `;
+}
+
+function renderPublicCard(artifact, settings, index) {
+  const name = escapeHtmlServer(artifact.name);
+  const desc = artifact.description ? escapeHtmlServer(artifact.description) : '';
+  const type = escapeHtmlServer(artifact.artifact_type || 'code');
+  const lang = artifact.language ? escapeHtmlServer(artifact.language) : '';
+  const shareToken = artifact.share_token || '';
+  const hasContent = artifact.file_content && artifact.file_content.length > 0;
+  const isHtml = type === 'html' || (lang && lang.toLowerCase() === 'html');
+  const isFeatured = index === 0 && isHtml;
+
+  const iconClass = getTypeIconClass(type);
+  const icon = getTypeIcon(type);
+
+  const escapedContent = hasContent ? escapeHtmlServer(artifact.file_content)
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, '\\n') : '';
+
+  return `
+    <article class="artifact-card${isFeatured ? ' featured' : ''}">
+      <div class="card-header">
+        <div class="card-icon ${iconClass}">
+          ${icon}
+        </div>
+        <div class="card-info">
+          <h3 class="card-name" title="${name}">${name}</h3>
+          <div class="card-badges">
+            <span class="card-badge">${type}</span>
+            ${lang && lang !== type ? `<span class="card-badge">${lang}</span>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <p class="card-desc">${desc || 'No description'}</p>
+
+      <div class="card-actions">
+        ${isHtml && hasContent && shareToken ? `
+          <button class="btn btn-primary" onclick="openPreviewModal('${name.replace(/'/g, "\\'")}', '${escapedContent}', '${shareToken}', '${type}')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            Preview
+          </button>
+          <a href="/render/${shareToken}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-icon" title="Open in New Tab">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+            </svg>
+          </a>
+        ` : artifact.published_url ? `
+          <a href="${escapeHtmlServer(artifact.published_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+            </svg>
+            View Artifact
+          </a>
+        ` : ''}
+        ${artifact.conversation_url ? `
+          <a href="${escapeHtmlServer(artifact.conversation_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            Conversation
+          </a>
+        ` : ''}
+      </div>
+    </article>
+  `;
+}
+
+function getTypeIconClass(type) {
+  const typeMap = {
+    'html': 'type-html',
+    'code': 'type-code',
+    'document': 'type-document',
+    'image': 'type-image',
+    'data': 'type-data',
+    'text': 'type-document'
+  };
+  return typeMap[type?.toLowerCase()] || 'type-code';
+}
+
+function getTypeIcon(type) {
+  const icons = {
+    'html': '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
+    'code': '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
+    'document': '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+    'image': '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
+    'data': '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>'
+  };
+  return icons[type?.toLowerCase()] || icons['code'];
 }
 
 // ============ PUBLIC ARTIFACT RENDER PAGE ============
