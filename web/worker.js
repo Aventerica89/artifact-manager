@@ -375,11 +375,21 @@ async function handleApiRequest(path, request, env, userEmail, url) {
         if (!Array.isArray(ids) || ids.length === 0) {
           return Response.json({ error: 'No IDs provided' }, { status: 400 });
         }
-        const placeholders = ids.map(() => '?').join(',');
-        await env.DB.prepare(
+        // Validate all IDs are positive integers
+        const validIds = ids.filter(id => Number.isInteger(id) && id > 0);
+        if (validIds.length === 0) {
+          return Response.json({ error: 'No valid IDs provided' }, { status: 400 });
+        }
+        // Limit bulk operations
+        const MAX_BULK = 100;
+        if (validIds.length > MAX_BULK) {
+          return Response.json({ error: `Maximum ${MAX_BULK} items per operation` }, { status: 400 });
+        }
+        const placeholders = validIds.map(() => '?').join(',');
+        const result = await env.DB.prepare(
           `DELETE FROM artifacts WHERE id IN (${placeholders}) AND user_email = ?`
-        ).bind(...ids, userEmail).run();
-        return Response.json({ success: true, deleted: ids.length });
+        ).bind(...validIds, userEmail).run();
+        return Response.json({ success: true, deleted: result.meta?.changes || validIds.length });
       }
 
       // PUT /api/artifacts/bulk - Bulk update artifacts (e.g., move to collection)
@@ -388,11 +398,26 @@ async function handleApiRequest(path, request, env, userEmail, url) {
         if (!Array.isArray(ids) || ids.length === 0) {
           return Response.json({ error: 'No IDs provided' }, { status: 400 });
         }
-        const placeholders = ids.map(() => '?').join(',');
-        await env.DB.prepare(
+        // Validate all IDs are positive integers
+        const validIds = ids.filter(id => Number.isInteger(id) && id > 0);
+        if (validIds.length === 0) {
+          return Response.json({ error: 'No valid IDs provided' }, { status: 400 });
+        }
+        // Validate collection_id
+        const collId = collection_id === '' ? null : collection_id;
+        if (collId !== null && (!Number.isInteger(collId) || collId < 1)) {
+          return Response.json({ error: 'Invalid collection ID' }, { status: 400 });
+        }
+        // Limit bulk operations
+        const MAX_BULK = 100;
+        if (validIds.length > MAX_BULK) {
+          return Response.json({ error: `Maximum ${MAX_BULK} items per operation` }, { status: 400 });
+        }
+        const placeholders = validIds.map(() => '?').join(',');
+        const result = await env.DB.prepare(
           `UPDATE artifacts SET collection_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id IN (${placeholders}) AND user_email = ?`
-        ).bind(collection_id, ...ids, userEmail).run();
-        return Response.json({ success: true, updated: ids.length });
+        ).bind(collId, ...validIds, userEmail).run();
+        return Response.json({ success: true, updated: result.meta?.changes || validIds.length });
       }
 
       // POST /api/artifacts/:id/favorite - Toggle favorite
@@ -3541,6 +3566,11 @@ function getAppHtml(userEmail) {
 
       allArtifacts = await fetch(url).then(r => r.json());
       currentPage = 1;
+
+      // Clear selection when data changes to avoid operating on hidden items
+      selectedArtifactIds.clear();
+      updateBulkActionsToolbar();
+
       renderArtifacts();
       updateActiveFilters();
     }
