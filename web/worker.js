@@ -1007,21 +1007,21 @@ function getSharePageStyles() {
   return `
     :root {
       --bg: #ffffff;
-      --bg-secondary: #f9fafb;
+      --bg-secondary: #f4f4f5;
       --card: #ffffff;
-      --card-hover: #f3f4f6;
-      --border: #e5e7eb;
-      --border-hover: #6366f1;
-      --text: #111827;
-      --text-muted: #6b7280;
-      --text-dim: #9ca3af;
-      --accent: #6366f1;
-      --accent-hover: #4f46e5;
-      --html: #6366f1;
-      --code: #059669;
-      --document: #d97706;
-      --image: #db2777;
-      --data: #0891b2;
+      --card-hover: #fafafa;
+      --border: #d4d4d8;
+      --border-hover: #4f46e5;
+      --text: #09090b;
+      --text-muted: #52525b;
+      --text-dim: #71717a;
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
+      --html: #4f46e5;
+      --code: #047857;
+      --document: #b45309;
+      --image: #be185d;
+      --data: #0e7490;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1466,14 +1466,20 @@ function getSharePageScript() {
     const modalBadge = document.getElementById('modal-badge');
     const modalNewtab = document.getElementById('modal-newtab');
 
-    function openPreviewModal(name, content, shareToken, type) {
-      modalTitle.textContent = name;
-      modalBadge.textContent = type || 'HTML';
-      modalNewtab.href = '/render/' + shareToken;
-      iframe.srcdoc = content;
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
+    document.querySelectorAll('.preview-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.name;
+        const content = atob(btn.dataset.content);
+        const shareToken = btn.dataset.token;
+        const type = btn.dataset.type;
+        modalTitle.textContent = name;
+        modalBadge.textContent = type || 'HTML';
+        modalNewtab.href = '/render/' + shareToken;
+        iframe.srcdoc = content;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
 
     function closePreviewModal(e) {
       if (e && e.target !== modal) return;
@@ -1503,9 +1509,7 @@ function renderPublicCard(artifact, settings, index) {
   const iconClass = getTypeIconClass(type);
   const icon = getTypeIcon(type);
 
-  const escapedContent = hasContent ? escapeHtmlServer(artifact.file_content)
-    .replace(/'/g, "\\'")
-    .replace(/\n/g, '\\n') : '';
+  const base64Content = hasContent ? toBase64(artifact.file_content) : '';
 
   return `
     <article class="artifact-card${isFeatured ? ' featured' : ''}">
@@ -1526,7 +1530,7 @@ function renderPublicCard(artifact, settings, index) {
 
       <div class="card-actions">
         ${isHtml && hasContent && shareToken ? `
-          <button class="btn btn-primary" onclick="openPreviewModal('${name.replace(/'/g, "\\'")}', '${escapedContent}', '${shareToken}', '${type}')">
+          <button class="btn btn-primary preview-btn" data-name="${name}" data-content="${base64Content}" data-token="${shareToken}" data-type="${type}">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -1712,6 +1716,15 @@ function escapeHtmlServer(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function toBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
 }
 
 // Name validation - prevents placeholder names
