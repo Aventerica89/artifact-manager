@@ -969,8 +969,8 @@ ${getSharePageStyles()}
     <p>Powered by <a href="https://artifacts.jbcloud.app" target="_blank">Artifact Manager</a></p>
   </footer>
 
-  <div id="preview-modal" class="modal-overlay" onclick="closePreviewModal(event)">
-    <div class="modal-container" onclick="event.stopPropagation()">
+  <div id="preview-modal" class="modal-overlay">
+    <div class="modal-container">
       <div class="modal-header">
         <div class="modal-title-section">
           <h3 id="modal-title">Artifact Preview</h3>
@@ -983,7 +983,7 @@ ${getSharePageStyles()}
             </svg>
             Open in New Tab
           </a>
-          <button onclick="closePreviewModal()" class="modal-btn modal-btn-close">
+          <button id="modal-close-btn" class="modal-btn modal-btn-close">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -1006,22 +1006,22 @@ ${getSharePageScript()}
 function getSharePageStyles() {
   return `
     :root {
-      --bg: #ffffff;
-      --bg-secondary: #f4f4f5;
-      --card: #ffffff;
-      --card-hover: #fafafa;
-      --border: #d4d4d8;
-      --border-hover: #4f46e5;
-      --text: #09090b;
-      --text-muted: #52525b;
+      --bg: #09090b;
+      --bg-secondary: #18181b;
+      --card: rgba(24, 24, 27, 0.7);
+      --card-hover: rgba(39, 39, 42, 0.8);
+      --border: rgba(63, 63, 70, 0.5);
+      --border-hover: rgba(99, 102, 241, 0.5);
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
       --text-dim: #71717a;
-      --accent: #4f46e5;
-      --accent-hover: #4338ca;
-      --html: #4f46e5;
-      --code: #047857;
-      --document: #b45309;
-      --image: #be185d;
-      --data: #0e7490;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --html: #6366f1;
+      --code: #10b981;
+      --document: #f59e0b;
+      --image: #ec4899;
+      --data: #06b6d4;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1037,7 +1037,10 @@ function getSharePageStyles() {
     .gradient-bg {
       position: fixed;
       inset: 0;
-      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 50%, rgba(139, 92, 246, 0.1), transparent),
+        radial-gradient(ellipse 50% 30% at 20% 80%, rgba(16, 185, 129, 0.08), transparent);
       pointer-events: none;
       z-index: 0;
     }
@@ -1047,7 +1050,6 @@ function getSharePageStyles() {
       z-index: 1;
       padding: 4rem 2rem 3rem;
       text-align: center;
-      border-bottom: 1px solid var(--border);
     }
 
     .header-content {
@@ -1058,8 +1060,8 @@ function getSharePageStyles() {
     .header-badge {
       display: inline-block;
       padding: 0.375rem 1rem;
-      background: #f0f0ff;
-      border: 1px solid #e0e0ff;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
       border-radius: 2rem;
       font-size: 0.75rem;
       font-weight: 500;
@@ -1070,10 +1072,13 @@ function getSharePageStyles() {
     }
 
     .header-title {
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-size: clamp(2rem, 5vw, 3.5rem);
       font-weight: 700;
       letter-spacing: -0.02em;
-      color: var(--text);
+      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 1rem;
     }
 
@@ -1167,20 +1172,20 @@ function getSharePageStyles() {
 
     .card-icon {
       flex-shrink: 0;
-      width: 2.25rem;
-      height: 2.25rem;
+      width: 2.5rem;
+      height: 2.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 0.5rem;
-      background: #f0f0ff;
+      border-radius: 0.75rem;
+      background: rgba(99, 102, 241, 0.15);
       color: var(--html);
     }
 
-    .card-icon.type-code { background: #ecfdf5; color: var(--code); }
-    .card-icon.type-document { background: #fffbeb; color: var(--document); }
-    .card-icon.type-image { background: #fdf2f8; color: var(--image); }
-    .card-icon.type-data { background: #ecfeff; color: var(--data); }
+    .card-icon.type-code { background: rgba(16, 185, 129, 0.15); color: var(--code); }
+    .card-icon.type-document { background: rgba(245, 158, 11, 0.15); color: var(--document); }
+    .card-icon.type-image { background: rgba(236, 72, 153, 0.15); color: var(--image); }
+    .card-icon.type-data { background: rgba(6, 182, 212, 0.15); color: var(--data); }
 
     .card-info { flex: 1; min-width: 0; }
 
@@ -1363,13 +1368,13 @@ function getSharePageStyles() {
     }
 
     .modal-badge {
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.625rem;
       font-size: 0.6875rem;
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.03em;
       border-radius: 0.25rem;
-      background: #f0f0ff;
+      background: rgba(99, 102, 241, 0.15);
       color: var(--accent);
     }
 
@@ -1465,6 +1470,13 @@ function getSharePageScript() {
     const modalTitle = document.getElementById('modal-title');
     const modalBadge = document.getElementById('modal-badge');
     const modalNewtab = document.getElementById('modal-newtab');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => { iframe.srcdoc = ''; }, 300);
+    }
 
     document.querySelectorAll('.preview-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1481,16 +1493,18 @@ function getSharePageScript() {
       });
     });
 
-    function closePreviewModal(e) {
-      if (e && e.target !== modal) return;
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-      iframe.srcdoc = '';
-    }
+    // Close button
+    modalCloseBtn.addEventListener('click', closeModal);
 
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Close on Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && modal.classList.contains('active')) {
-        closePreviewModal();
+        closeModal();
       }
     });
   `;
@@ -1762,10 +1776,11 @@ function sanitizeName(name) {
 
 function getLandingPageHtml() {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background:#09090b">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09090b">
   <title>Artifact Manager - Save & Organize Claude.ai Artifacts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1935,7 +1950,7 @@ function getLandingPageHtml() {
 function getAppHtml(userEmail) {
   const safeEmail = escapeHtmlServer(userEmail);
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background:#09090b">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -1945,7 +1960,7 @@ function getAppHtml(userEmail) {
   <!-- PWA Meta Tags -->
   <!-- PWA manifest disabled due to Cloudflare Access CORS issues -->
   <!-- <link rel="manifest" href="/manifest.json"> -->
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#09090b">
   <meta name="mobile-web-app-capable" content="yes">
 
   <!-- iOS PWA Meta Tags -->
