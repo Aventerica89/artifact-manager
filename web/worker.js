@@ -60,27 +60,6 @@ export default {
     // Get authenticated user
     const userEmail = await getUserEmail(request);
 
-    // Debug endpoint to diagnose auth issues (temporary)
-    if (path === 'api/auth-debug') {
-      const headers = {};
-      for (const [key, value] of request.headers.entries()) {
-        // Mask sensitive values but show they exist
-        if (key.toLowerCase().includes('auth') || key.toLowerCase().includes('cookie') || key.toLowerCase().includes('jwt') || key.toLowerCase().includes('access')) {
-          headers[key] = value ? `[present, ${value.length} chars]` : '[empty]';
-        } else {
-          headers[key] = value;
-        }
-      }
-      return corsResponse(Response.json({
-        authenticated: !!userEmail,
-        userEmail: userEmail || null,
-        headersReceived: headers,
-        hasCfAccessHeader: !!request.headers.get('Cf-Access-Jwt-Assertion'),
-        hasCfAccessTokenHeader: !!request.headers.get('cf-access-token'),
-        hasCookieHeader: !!request.headers.get('Cookie'),
-      }));
-    }
-
     // API routes require authentication
     if (path.startsWith('api/')) {
       if (!userEmail) {
@@ -887,10 +866,10 @@ async function getUserEmail(request) {
     const payload = JSON.parse(atob(parts[1]));
 
     // Try multiple possible email locations in the payload
+    // Note: payload.sub is intentionally excluded as it contains user ID, not email
     return payload.email
         || payload.identity?.email
         || payload.common_name
-        || payload.sub
         || null;
   } catch (e) {
     return null;
