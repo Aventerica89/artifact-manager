@@ -15,7 +15,8 @@
   ],
   "host_permissions": [
     "https://claude.ai/*",
-    "https://artifact-manager.jbmd-creations.workers.dev/*"
+    "https://artifact-manager.jbmd-creations.workers.dev/*",
+    "https://artifacts.jbcloud.app/*"
   ],
   "action": {
     "default_popup": "popup.html",
