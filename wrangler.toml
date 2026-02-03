@@ -5,6 +5,12 @@ name = "artifact-manager"
 main = "web/worker.js"
 compatibility_date = "2024-01-01"
 account_id = "e2613c1c17024c32ab14618614e2b309"
+workers_dev = true
+
+# Custom domain
+[[routes]]
+pattern = "artifacts.jbcloud.app/*"
+zone_name = "jbcloud.app"
 
 # D1 Database binding
 [[d1_databases]]
