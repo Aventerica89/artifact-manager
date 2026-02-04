@@ -1,49 +1,38 @@
 # Artifact Manager
 
-A unified platform to track and organize Claude.ai artifacts across all devices.
+Multi-platform app to track and organize Claude.ai artifacts. Syncs across browser extensions, macOS app, web app, and mobile.
 
-## Repository Structure
-
-```
-artifact-manager/
-├── macos/              # Native macOS app (SwiftUI + SwiftData)
-├── web/                # Web app (Cloudflare Worker)
-├── chrome-extension/   # Chrome/Firefox extension
-├── safari-extension/   # Safari extension
-└── mobile/             # Mobile app (React Native/Expo)
-```
-
-## Quick Links
-
-| Platform | Directory | Deploy/Build |
-|----------|-----------|--------------|
-| macOS | `macos/` | Open in Xcode, Cmd+R |
-| Web | `web/` | `cd web && wrangler deploy` |
-| Chrome | `chrome-extension/` | Load unpacked in chrome://extensions |
-| Safari | `safari-extension/` | Build in Xcode |
-| Mobile | `mobile/` | `cd mobile && npx expo start` |
-
-## Development
+## Commands
 
 ### macOS App
 ```bash
 cd macos
-swift build && swift test
-open "Artifact Manager.xcodeproj"
+swift build          # Build
+swift test           # Run tests (42 expected)
+open "Artifact Manager.xcodeproj"  # Open in Xcode
+# Cmd+R to run
 ```
 
-### Web App
+### Web App (Cloudflare Worker)
 ```bash
 cd web
-wrangler dev      # Local development
-wrangler deploy   # Deploy to Cloudflare
+npm install
+wrangler dev         # Local dev at http://localhost:8787
+wrangler deploy      # Deploy to Cloudflare
 ```
 
 ### Chrome Extension
 ```bash
 cd chrome-extension
-# Load unpacked extension in chrome://extensions
-# Enable Developer Mode first
+# Load unpacked at chrome://extensions (enable Developer Mode)
+# Test at claude.ai - console shows "Artifact Manager: Ready"
+```
+
+### Safari Extension
+```bash
+cd safari-extension
+# Open in Xcode, build and run
+# Enable in Safari > Preferences > Extensions
 ```
 
 ### Mobile App
@@ -53,59 +42,72 @@ npm install
 npx expo start
 ```
 
-## Project Sync Rules (CRITICAL)
+## Architecture
 
-All platforms share core functionality. When making changes to these features, **update ALL platforms**:
-
-### Core Features That Must Stay in Sync:
-
-1. **Name Validation** (`NameValidator`)
-   - macOS: `macos/Artifact Manager/NameValidator.swift`
-   - Web: `web/worker.js` (sanitizeName function)
-   - Extension: `chrome-extension/content.js` (isPlaceholder function)
-
-2. **Placeholder Patterns**
-   - Must detect: "Saving...", "Loading...", "Downloading...", "Untitled", empty strings
-   - All platforms should reject the same patterns
-
-3. **Artifact Model**
-   - Required fields: name, description, artifactType, sourceType, publishedUrl, artifactId, fileName, fileContent, language, framework, claudeModel, conversationUrl, notes, collectionId, isFavorite, tags, timestamps
+```
+artifact-manager/
+├── macos/              # SwiftUI + SwiftData
+├── web/                # Cloudflare Worker + D1 database
+├── chrome-extension/   # Content script for claude.ai
+├── safari-extension/   # Native Safari extension
+└── mobile/             # React Native/Expo (in progress)
+```
 
 ### Data Flow
+```
+Claude.ai ──[browser extension]──> Web App (D1) <──[import]── macOS App
+```
 
-```
-Claude.ai ──[browser extension]──> Web App (Cloudflare Worker) <──[import]── macOS App
-                                          │
-                                          └── D1 Database
-```
+## Sync Rules (CRITICAL)
+
+All platforms share core functionality. When changing these, **update ALL platforms**:
+
+| Feature | macOS | Web | Extension |
+|---------|-------|-----|-----------|
+| Name validation | `NameValidator.swift` | `worker.js` (sanitizeName) | `content.js` (isPlaceholder) |
+| Placeholder patterns | Same patterns everywhere | | |
+| Artifact model | Same required fields | | |
+
+### Placeholder Patterns (must match across all platforms)
+- "Saving...", "Loading...", "Downloading...", "Untitled", empty strings
+
+### Artifact Model Required Fields
+name, description, artifactType, sourceType, publishedUrl, artifactId, fileName, fileContent, language, framework, claudeModel, conversationUrl, notes, collectionId, isFavorite, tags, timestamps
+
+## Key Files
+
+| Platform | Entry Point | Data Layer |
+|----------|-------------|------------|
+| macOS | `Artifact Manager.xcodeproj` | SwiftData |
+| Web | `web/worker.js` | D1 (SQLite) |
+| Chrome | `chrome-extension/manifest.json` | localStorage + API |
+| Safari | `safari-extension/` | Shared with macOS |
+
+## Gotchas
+
+- Extension button placement depends on Claude.ai DOM structure - may break if they update
+- D1 database has 10MB limit per database on free tier
+- SwiftData and D1 schemas must stay compatible for import/export
+- Safari extension shares code with macOS app via shared framework
+- Content script injection timing matters - wait for claude.ai to fully load
+- `artifactId` comes from Claude's URL hash, not generated locally
 
 ## Testing
 
-### macOS
 ```bash
+# macOS - run full test suite
 cd macos && swift test
-# Expected: 42 tests passing
-```
 
-### Web
-```bash
+# Web - manual testing
 cd web && wrangler dev
-# Test at http://localhost:8787
-```
+# Then test endpoints at http://localhost:8787
 
-### Extension
-```bash
-# Load in Chrome, visit claude.ai
+# Extension - load in browser, visit claude.ai
 # Check console for "Artifact Manager: Ready"
 ```
 
 ## Version History
 
-- **Extension v1.1.0** - Button placement fix, version display, shareable HTML rendering
-- **Extension v1.0.0** - Initial release
-- **macOS v1.0.0** - Initial release with full feature parity
-
-## Related Documentation
-
-- [jbdocs: Extension Changelog](https://docs.jbcloud.app/artifact-manager-extension/changelog)
-- [jbdocs: macOS Architecture](https://docs.jbcloud.app/artifact-manager-mac/architecture)
+- Extension v1.1.0 - Button placement fix, version display, shareable HTML
+- Extension v1.0.0 - Initial release
+- macOS v1.0.0 - Full feature parity with extension
