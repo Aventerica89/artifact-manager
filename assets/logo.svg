@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#1a1a2e"/>
+
+  <!-- Back artifact (lighter) -->
+  <g transform="translate(8, 4)">
+    <rect x="32" y="28" width="48" height="60" rx="4" fill="#4a4a6a" stroke="#6366f1" stroke-width="2"/>
+    <rect x="40" y="40" width="24" height="3" rx="1.5" fill="#6366f1"/>
+    <rect x="40" y="48" width="32" height="2" rx="1" fill="#6366f1" opacity="0.5"/>
+    <rect x="40" y="54" width="28" height="2" rx="1" fill="#6366f1" opacity="0.5"/>
+  </g>
+
+  <!-- Middle artifact -->
+  <g transform="translate(4, 2)">
+    <rect x="32" y="28" width="48" height="60" rx="4" fill="#2d2d44" stroke="#818cf8" stroke-width="2"/>
+    <rect x="40" y="40" width="24" height="3" rx="1.5" fill="#818cf8"/>
+    <rect x="40" y="48" width="32" height="2" rx="1" fill="#818cf8" opacity="0.5"/>
+    <rect x="40" y="54" width="28" height="2" rx="1" fill="#818cf8" opacity="0.5"/>
+    <rect x="40" y="60" width="20" height="2" rx="1" fill="#818cf8" opacity="0.5"/>
+  </g>
+
+  <!-- Front artifact (main) -->
+  <rect x="32" y="28" width="48" height="60" rx="4" fill="#16162a" stroke="#a5b4fc" stroke-width="2"/>
+
+  <!-- Code bracket icon -->
+  <path d="M46 48 L40 54 L46 60" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M66 48 L72 54 L66 60" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M58 46 L54 62" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Title bar on front artifact -->
+  <rect x="40" y="36" width="32" height="3" rx="1.5" fill="#a5b4fc"/>
+
+  <!-- Sync indicator (bottom right) -->
+  <circle cx="100" cy="100" r="16" fill="#10b981"/>
+  <path d="M94 100 A6 6 0 1 1 100 94" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M100 91 L100 97 L106 97" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

@@ -1,11 +1,20 @@
 <p align="center">
-  <img src="chrome-extension/icons/icon128.png" alt="Artifact Manager" width="128" height="128">
+  <img src="assets/logo.svg" alt="Artifact Manager" width="128" height="128">
 </p>
 
 <h1 align="center">Artifact Manager</h1>
 
 <p align="center">
   <strong>Track and organize your Claude.ai artifacts across all devices</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Aventerica89/artifact-manager/stargazers"><img src="https://img.shields.io/github/stars/Aventerica89/artifact-manager?style=flat&color=6366f1" alt="Stars"></a>
+  <a href="https://github.com/Aventerica89/artifact-manager/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
+  <img src="https://img.shields.io/badge/macOS-13%2B-000000?logo=apple" alt="macOS">
+  <img src="https://img.shields.io/badge/Chrome-Extension-4285F4?logo=googlechrome&logoColor=white" alt="Chrome">
+  <img src="https://img.shields.io/badge/Safari-Extension-006CFF?logo=safari&logoColor=white" alt="Safari">
+  <img src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white" alt="Cloudflare">
 </p>
 
 <p align="center">
@@ -21,15 +30,21 @@
 
 Artifact Manager provides a unified way to save, organize, and sync Claude.ai artifacts (code, documents, diagrams) across your devices. Never lose track of that useful code snippet or document again.
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Extension-v1.1.0-6366f1" alt="Extension v1.1.0">
+  <img src="https://img.shields.io/badge/macOS-v1.0.0-6366f1" alt="macOS v1.0.0">
+  <img src="https://img.shields.io/badge/42-tests%20passing-10b981" alt="Tests">
+</p>
+
 ## Platforms
 
 | Platform | Status | Description |
 |----------|--------|-------------|
-| [Chrome Extension](chrome-extension/) | Ready | Capture artifacts directly from claude.ai |
-| [Safari Extension](safari-extension/) | Ready | Native Safari support for macOS/iOS |
-| [macOS App](macos/) | Ready | Native SwiftUI app with SwiftData |
-| [Web App](web/) | Ready | Cloudflare Worker with D1 database |
-| [Mobile](mobile/) | In Progress | React Native/Expo app |
+| [Chrome Extension](chrome-extension/) | ![Ready](https://img.shields.io/badge/-Ready-10b981) | Capture artifacts directly from claude.ai |
+| [Safari Extension](safari-extension/) | ![Ready](https://img.shields.io/badge/-Ready-10b981) | Native Safari support for macOS/iOS |
+| [macOS App](macos/) | ![Ready](https://img.shields.io/badge/-Ready-10b981) | Native SwiftUI app with SwiftData |
+| [Web App](web/) | ![Ready](https://img.shields.io/badge/-Ready-10b981) | Cloudflare Worker with D1 database |
+| [Mobile](mobile/) | ![In Progress](https://img.shields.io/badge/-In%20Progress-f59e0b) | React Native/Expo app |
 
 ## Features
 
