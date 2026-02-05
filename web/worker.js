@@ -126,10 +126,10 @@ export default {
     // Serve main app for root path, empty path, or /admin
     if (path === '' || path === 'admin') {
       if (!userEmail) {
-        // Show landing page for non-authenticated users
-        return new Response(getLandingPageHtml(), {
-          headers: { 'Content-Type': 'text/html' }
-        });
+        // Redirect to Cloudflare Access login for authentication
+        // After login, Cloudflare will redirect back with JWT token
+        const redirectUrl = new URL(request.url).toString();
+        return Response.redirect(`/cdn-cgi/access/login?redirect_url=${encodeURIComponent(redirectUrl)}`, 302);
       }
       return new Response(getAppHtml(userEmail), {
         headers: { 'Content-Type': 'text/html' }
