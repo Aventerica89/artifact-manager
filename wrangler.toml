@@ -7,10 +7,10 @@ compatibility_date = "2024-01-01"
 account_id = "e2613c1c17024c32ab14618614e2b309"
 workers_dev = true
 
-# Custom domain (using domains instead of routes for better Access integration)
-[[domains]]
-name = "artifacts.jbcloud.app"
-zone_name = "jbcloud.app"
+# Custom domain (using custom_domain flag for better Access integration)
+[[routes]]
+pattern = "artifacts.jbcloud.app"
+custom_domain = true
 
 # D1 Database binding
 [[d1_databases]]
