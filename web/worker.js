@@ -44,6 +44,40 @@ export default {
     // Wrap all API responses with CORS headers
     const handleRequest = async () => {
 
+    // ============ LOGIN / LOGOUT ============
+    if (path === 'login' && request.method === 'GET') {
+      return new Response(getLoginPageHtml(), {
+        headers: { 'Content-Type': 'text/html' }
+      });
+    }
+
+    if (path === 'login' && request.method === 'POST') {
+      const form = await request.formData();
+      const email = (form.get('email') || '').toString().trim().toLowerCase();
+      if (!email || !email.includes('@')) {
+        return new Response(getLoginPageHtml('Invalid email'), {
+          headers: { 'Content-Type': 'text/html' }
+        });
+      }
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': '/',
+          'Set-Cookie': `am_session=${btoa(email)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
+        }
+      });
+    }
+
+    if (path === 'logout') {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': '/',
+          'Set-Cookie': 'am_session=; Path=/; HttpOnly; Secure; Max-Age=0'
+        }
+      });
+    }
+
     // ============ PUBLIC SHARE PAGE (NO AUTH REQUIRED) ============
     if (path.match(/^share\/[a-f0-9-]{36}$/)) {
       const token = path.split('/')[1];
@@ -857,23 +891,33 @@ async function getUserEmail(request) {
     }
   }
 
-  if (!jwt) return null;
-
-  try {
-    const parts = jwt.split('.');
-    if (parts.length !== 3) return null;
-
-    const payload = JSON.parse(atob(parts[1]));
-
-    // Try multiple possible email locations in the payload
-    // Note: payload.sub is intentionally excluded as it contains user ID, not email
-    return payload.email
-        || payload.identity?.email
-        || payload.common_name
-        || null;
-  } catch (e) {
-    return null;
+  if (jwt) {
+    try {
+      const parts = jwt.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(atob(parts[1]));
+        const email = payload.email || payload.identity?.email || payload.common_name;
+        if (email) return email;
+      }
+    } catch (e) {
+      // fall through to cookie check
+    }
   }
+
+  // Fallback: check am_session cookie (simple cookie-based login)
+  const cookieHeader = request.headers.get('Cookie');
+  if (cookieHeader) {
+    const match = cookieHeader.match(/am_session=([^;]+)/);
+    if (match) {
+      try {
+        return atob(match[1]);
+      } catch (e) {
+        return null;
+      }
+    }
+  }
+
+  return null;
 }
 
 // ============ PUBLIC SHARE PAGE RENDERING ============
@@ -1798,6 +1842,47 @@ function sanitizeName(name) {
 
 // ============ LANDING PAGE HTML ============
 
+function getLoginPageHtml(error) {
+  const errorHtml = error
+    ? `<p style="color:#ef4444;margin-bottom:1rem">${error}</p>`
+    : '';
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - Artifact Manager</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:system-ui,-apple-system,sans-serif; background:#09090b; color:#fafafa; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+    .card { background:#18181b; border:1px solid #27272a; border-radius:1rem; padding:2.5rem; width:100%; max-width:400px; margin:1rem; }
+    h1 { font-size:1.5rem; margin-bottom:0.5rem; }
+    p.sub { color:#a1a1aa; margin-bottom:1.5rem; font-size:0.875rem; }
+    label { display:block; font-size:0.875rem; color:#a1a1aa; margin-bottom:0.5rem; }
+    input { width:100%; padding:0.75rem 1rem; background:#09090b; border:1px solid #27272a; border-radius:0.5rem; color:#fafafa; font-size:1rem; outline:none; }
+    input:focus { border-color:#6366f1; }
+    button { width:100%; margin-top:1rem; padding:0.75rem; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:white; border:none; border-radius:0.5rem; font-size:1rem; font-weight:600; cursor:pointer; }
+    button:hover { opacity:0.9; }
+    .back { display:block; text-align:center; margin-top:1rem; color:#a1a1aa; font-size:0.875rem; text-decoration:none; }
+    .back:hover { color:#fafafa; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Sign In</h1>
+    <p class="sub">Enter your email to access Artifact Manager</p>
+    ${errorHtml}
+    <form method="POST" action="/login">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required autofocus placeholder="you@example.com">
+      <button type="submit">Continue</button>
+    </form>
+    <a href="/" class="back">Back to home</a>
+  </div>
+</body>
+</html>`;
+}
+
 function getLandingPageHtml() {
   return `<!DOCTYPE html>
 <html lang="en" style="background:#09090b">
@@ -1874,13 +1959,13 @@ function getLandingPageHtml() {
       <h1>Save & Organize Your Claude Artifacts</h1>
       <p>One-click saving from Claude.ai. Organize with collections and tags. Share rendered HTML with anyone.</p>
       <div class="cta-buttons">
-        <a href="/admin" class="btn btn-primary">
+        <a href="/login" class="btn btn-primary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           Sign In
         </a>
-        <a href="https://github.com/Aventerica89/cf-url-shortener/tree/main/chrome-extension" class="btn btn-secondary" target="_blank">
+        <a href="https://github.com/Aventerica89/artifact-manager" class="btn btn-secondary" target="_blank">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.6 1.2 3.3.9.1-.7.4-1.2.7-1.5-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2 1-.3 2-.4 3-.4s2 .1 3 .4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6C20.6 21.8 24 17.3 24 12c0-6.6-5.4-12-12-12z"/></svg>
-          Get Extension
+          GitHub
         </a>
       </div>
     </div>
