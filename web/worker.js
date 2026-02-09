@@ -91,6 +91,13 @@ export default {
       return await renderArtifactPage(env, token, request.url);
     }
 
+    // ============ PUBLIC EXTENSION PAGE (NO AUTH REQUIRED) ============
+    if (path === 'extension') {
+      return new Response(getExtensionPageHtml(), {
+        headers: { 'Content-Type': 'text/html' }
+      });
+    }
+
     // Get authenticated user
     const userEmail = await getUserEmail(request);
 
@@ -3879,6 +3886,14 @@ function getAppHtml(userEmail) {
           </svg>
           Changelog
         </div>
+        <a class="nav-item" href="/extension" target="_blank" style="text-decoration:none;color:inherit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Extension
+        </a>
       </div>
     </nav>
 
@@ -4504,6 +4519,10 @@ function getAppHtml(userEmail) {
         loadTags(),
         loadArtifacts()
       ]);
+
+      // Handle hash deep links (#artifact-{id})
+      handleHash();
+      window.addEventListener('hashchange', handleHash);
 
       // Keyboard shortcuts
       document.addEventListener('keydown', (e) => {
@@ -6499,6 +6518,16 @@ function getAppHtml(userEmail) {
       event.target.value = '';
     }
 
+    // Hash deep-link routing (#artifact-{id})
+    function handleHash() {
+      const hash = window.location.hash;
+      const match = hash.match(/^#artifact-(\d+)$/);
+      if (!match) return;
+      const id = match[1];
+      history.replaceState(null, '', window.location.pathname);
+      viewContent(parseInt(id, 10));
+    }
+
     // Toast
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
@@ -6518,4 +6547,259 @@ function getAppHtml(userEmail) {
   </script>
 </body>
 </html>`;
+}
+
+function getExtensionPageHtml() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chrome Extension - Artifact Manager</title>
+  <link rel="icon" href="${ARTIFACT_MANAGER_FAVICON}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>${getExtensionPageStyles()}</style>
+</head>
+<body>
+  <div class="gradient-bg"></div>
+  <div class="container">
+${getExtensionPageHeader()}
+${getExtensionPageDownload()}
+${getExtensionPageChangelog()}
+    <footer class="ext-footer">
+      <a href="/">Open Web App</a>
+      <span class="dot">&middot;</span>
+      <a href="https://github.com/Aventerica89/artifact-manager" target="_blank">GitHub</a>
+    </footer>
+  </div>
+</body>
+</html>`;
+}
+
+function getExtensionPageStyles() {
+  return `
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #09090b; color: #fafafa;
+      min-height: 100vh; position: relative;
+    }
+    .gradient-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .container {
+      max-width: 680px; margin: 0 auto;
+      padding: 48px 24px; position: relative; z-index: 1;
+    }
+    .ext-header { text-align: center; margin-bottom: 40px; }
+    .ext-icon {
+      width: 64px; height: 64px; margin: 0 auto 16px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 16px; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .ext-icon svg { color: #fff; }
+    .ext-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .ext-version {
+      display: inline-block; padding: 3px 10px;
+      background: rgba(99,102,241,0.2); color: #818cf8;
+      border-radius: 12px; font-size: 13px; font-weight: 500;
+    }
+    .ext-subtitle {
+      color: #71717a; font-size: 15px; margin-top: 12px;
+    }
+    .section { margin-bottom: 36px; }
+    .section-title {
+      font-size: 18px; font-weight: 600; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title svg { color: #818cf8; }
+    .card {
+      background: rgba(24,24,27,0.8); border: 1px solid #27272a;
+      border-radius: 12px; padding: 24px;
+    }
+    .download-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; background: #6366f1; color: #fff;
+      border-radius: 8px; text-decoration: none;
+      font-weight: 600; font-size: 15px;
+      transition: background 0.15s;
+    }
+    .download-btn:hover { background: #4f46e5; }
+    .steps { margin-top: 20px; }
+    .step {
+      display: flex; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid #1e1e21;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 24px; height: 24px; flex-shrink: 0;
+      background: rgba(99,102,241,0.15); color: #818cf8;
+      border-radius: 50%; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600;
+    }
+    .step-text { color: #a1a1aa; font-size: 14px; line-height: 1.5; }
+    .step-text code {
+      background: #27272a; padding: 2px 6px;
+      border-radius: 4px; font-size: 13px; color: #e4e4e7;
+    }
+    .step-text a { color: #818cf8; }
+    .changelog-entry { margin-bottom: 24px; }
+    .changelog-entry:last-child { margin-bottom: 0; }
+    .changelog-version {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 8px;
+    }
+    .changelog-version h3 {
+      font-size: 16px; font-weight: 600; color: #e4e4e7;
+    }
+    .changelog-date { font-size: 12px; color: #52525b; }
+    .changelog-list { list-style: none; padding: 0; }
+    .changelog-list li {
+      padding: 4px 0; color: #a1a1aa; font-size: 13px;
+      display: flex; gap: 8px; line-height: 1.4;
+    }
+    .changelog-tag {
+      display: inline-block; padding: 1px 6px;
+      border-radius: 4px; font-size: 10px;
+      font-weight: 600; text-transform: uppercase;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .tag-added { background: rgba(16,185,129,0.15); color: #34d399; }
+    .tag-fixed { background: rgba(234,179,8,0.15); color: #eab308; }
+    .tag-changed { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .ext-footer {
+      text-align: center; padding-top: 24px;
+      border-top: 1px solid #27272a;
+      color: #52525b; font-size: 13px;
+    }
+    .ext-footer a { color: #6366f1; text-decoration: none; }
+    .ext-footer a:hover { text-decoration: underline; }
+    .ext-footer .dot { margin: 0 8px; }
+  `;
+}
+
+function getExtensionPageHeader() {
+  return `
+    <div class="ext-header">
+      <div class="ext-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+          <path d="M7.5 4.21L12 6.81l4.5-2.6M7.5 19.79V14.6L3 12M21 12l-4.5 2.6v5.19"/>
+          <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/>
+        </svg>
+      </div>
+      <h1 class="ext-title">Artifact Manager for Chrome</h1>
+      <span class="ext-version">v1.3.0</span>
+      <p class="ext-subtitle">Save and manage Claude.ai artifacts with one click</p>
+    </div>`;
+}
+
+function getExtensionPageDownload() {
+  const repoUrl = 'https://github.com/Aventerica89/artifact-manager';
+  return `
+    <div class="section">
+      <div class="section-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        Download
+      </div>
+      <div class="card">
+        <a href="${repoUrl}/releases/latest" target="_blank" class="download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          Download Latest Release
+        </a>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text">Download the <code>.zip</code> from the latest GitHub release and unzip it</div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text">Open <code>chrome://extensions</code> in Chrome</div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text">Enable <strong>Developer mode</strong> (toggle in top-right)</div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-text">Click <strong>Load unpacked</strong> and select the <code>chrome-extension</code> folder</div>
+          </div>
+          <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-text">Pin the extension and visit <a href="https://claude.ai" target="_blank">claude.ai</a> to start saving</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function getExtensionPageChangelog() {
+  return `
+    <div class="section">
+      <div class="section-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+        </svg>
+        Changelog
+      </div>
+      <div class="card">
+        <div class="changelog-entry">
+          <div class="changelog-version">
+            <h3>v1.3.0</h3>
+            <span class="changelog-date">2026-02-09</span>
+          </div>
+          <ul class="changelog-list">
+            <li><span class="changelog-tag tag-added">Added</span>Quick-action buttons on popup cards (Copy Code, Copy Link, Open Conversation)</li>
+            <li><span class="changelog-tag tag-added">Added</span>Toast notifications for clipboard actions in popup</li>
+            <li><span class="changelog-tag tag-added">Added</span>Extension download page with install instructions and changelog</li>
+            <li><span class="changelog-tag tag-added">Added</span>Web app hash routing for deep links from popup</li>
+          </ul>
+        </div>
+        <div class="changelog-entry">
+          <div class="changelog-version">
+            <h3>v1.2.0</h3>
+            <span class="changelog-date">2026-02-08</span>
+          </div>
+          <ul class="changelog-list">
+            <li><span class="changelog-tag tag-added">Added</span>Popup artifact browser with search, filters, tags, collections</li>
+            <li><span class="changelog-tag tag-added">Added</span>Published URL detection from Claude.ai share links</li>
+            <li><span class="changelog-tag tag-added">Added</span>Favorite toggle on popup cards</li>
+          </ul>
+        </div>
+        <div class="changelog-entry">
+          <div class="changelog-version">
+            <h3>v1.1.0</h3>
+            <span class="changelog-date">2026-02-01</span>
+          </div>
+          <ul class="changelog-list">
+            <li><span class="changelog-tag tag-fixed">Fixed</span>Save button placement integrates with existing UI</li>
+            <li><span class="changelog-tag tag-changed">Changed</span>More compact button styling</li>
+            <li><span class="changelog-tag tag-added">Added</span>Unit tests and version display in popup footer</li>
+          </ul>
+        </div>
+        <div class="changelog-entry">
+          <div class="changelog-version">
+            <h3>v1.0.0</h3>
+            <span class="changelog-date">2026-01-28</span>
+          </div>
+          <ul class="changelog-list">
+            <li><span class="changelog-tag tag-added">Added</span>Save artifacts from Claude.ai with one click</li>
+            <li><span class="changelog-tag tag-added">Added</span>Automatic artifact detection via MutationObserver</li>
+            <li><span class="changelog-tag tag-added">Added</span>Multi-method content extraction with fallbacks</li>
+            <li><span class="changelog-tag tag-added">Added</span>Connection status and statistics in popup</li>
+          </ul>
+        </div>
+      </div>
+    </div>`;
 }

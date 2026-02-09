@@ -138,6 +138,11 @@ async function getCollections() {
   return apiFetch('/api/collections');
 }
 
+// Fetch a single artifact by ID (includes file_content, published_url, conversation_url)
+async function getArtifact(id) {
+  return apiFetch(`/api/artifacts/${id}`);
+}
+
 // Listen for messages from content script and popup
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'saveArtifact') {
@@ -198,6 +203,13 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.action === 'getCollections') {
     getCollections()
+      .then(result => sendResponse(result))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+
+  if (request.action === 'getArtifact') {
+    getArtifact(request.id)
       .then(result => sendResponse(result))
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true;

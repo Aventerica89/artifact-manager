@@ -297,11 +297,36 @@ function createArtifactCard(artifact) {
     meta.appendChild(badge);
   }
 
+  // Action buttons row
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+
+  actions.appendChild(createActionBtn(
+    'Copy code',
+    'M9 9h13v13H9zM5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1',
+    (e) => { e.stopPropagation(); handleCopyCode(artifact.id); }
+  ));
+
+  actions.appendChild(createActionBtn(
+    'Copy published link',
+    'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71',
+    (e) => { e.stopPropagation(); handleCopyLink(artifact.published_url); },
+    !artifact.published_url
+  ));
+
+  actions.appendChild(createActionBtn(
+    'Open conversation',
+    'M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3',
+    (e) => { e.stopPropagation(); handleOpenConversation(artifact.conversation_url); },
+    !artifact.conversation_url
+  ));
+
   card.appendChild(header);
   card.appendChild(name);
   if (meta.childNodes.length > 0) {
     card.appendChild(meta);
   }
+  card.appendChild(actions);
 
   // Click card to open in web app
   card.addEventListener('click', () => {
@@ -475,4 +500,71 @@ function showMessage(text, type) {
   setTimeout(() => {
     message.className = 'message';
   }, 5000);
+}
+
+// --- Card Action Helpers ---
+
+function createActionBtn(title, svgPath, onClick, hidden) {
+  const btn = document.createElement('button');
+  btn.className = `card-action-btn${hidden ? ' hidden' : ''}`;
+  btn.title = title;
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '12');
+  svg.setAttribute('height', '12');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', svgPath);
+  svg.appendChild(path);
+
+  btn.appendChild(svg);
+  btn.addEventListener('click', onClick);
+  return btn;
+}
+
+async function handleCopyCode(id) {
+  try {
+    const result = await browser.runtime.sendMessage({ action: 'getArtifact', id });
+    if (!result.success) {
+      showPopupToast(result.error || 'Failed to fetch artifact', 'error');
+      return;
+    }
+    const content = result.data.file_content;
+    if (!content) {
+      showPopupToast('No code content available', 'error');
+      return;
+    }
+    await navigator.clipboard.writeText(content);
+    showPopupToast('Code copied to clipboard', 'success');
+  } catch (error) {
+    showPopupToast('Copy failed', 'error');
+  }
+}
+
+async function handleCopyLink(url) {
+  try {
+    await navigator.clipboard.writeText(url);
+    showPopupToast('Link copied to clipboard', 'success');
+  } catch {
+    showPopupToast('Copy failed', 'error');
+  }
+}
+
+function handleOpenConversation(url) {
+  browser.tabs.create({ url });
+}
+
+function showPopupToast(msg, type) {
+  const existing = document.querySelector('.popup-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = `popup-toast ${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2000);
 }

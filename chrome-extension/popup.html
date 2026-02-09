@@ -661,6 +661,71 @@
       to { transform: rotate(360deg); }
     }
 
+    /* Card Action Buttons */
+    .card-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: auto;
+      padding-top: 4px;
+      border-top: 1px solid #1e1e21;
+    }
+
+    .card-action-btn {
+      width: 22px;
+      height: 22px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: #52525b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.15s;
+    }
+
+    .card-action-btn:hover {
+      background: #27272a;
+      color: #a1a1aa;
+    }
+
+    .card-action-btn.hidden {
+      display: none;
+    }
+
+    /* Popup Toast */
+    .popup-toast {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      z-index: 100;
+      animation: toast-in 0.2s ease-out;
+      white-space: nowrap;
+    }
+
+    .popup-toast.success {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .popup-toast.error {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
     /* Hide dropdowns when empty */
     .filter-select.hidden {
       display: none;
@@ -829,7 +894,7 @@
   </div>
 
   <div class="footer">
-    <span id="version-text">v1.2.0</span> &middot; <a href="https://artifacts.jbcloud.app" target="_blank">artifacts.jbcloud.app</a> &middot; <a href="https://github.com/Aventerica89/artifact-manager/blob/main/chrome-extension/CHANGELOG.md" target="_blank">Changelog</a>
+    <span id="version-text">v1.3.0</span> &middot; <a href="https://artifacts.jbcloud.app" target="_blank">artifacts.jbcloud.app</a> &middot; <a href="https://artifacts.jbcloud.app/extension" target="_blank">Changelog</a>
   </div>
 
   <script src="popup.js"></script>

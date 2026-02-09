@@ -5,6 +5,25 @@ All notable changes to the Artifact Manager Chrome Extension will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-02-09
+
+### Added
+- Quick-action buttons on popup cards: Copy Code, Copy Published Link, Open Conversation
+- Toast notifications for clipboard actions in popup (2s auto-dismiss)
+- `/extension` page on web app with download instructions and full changelog
+- Web app hash routing — `#artifact-{id}` deep links now open artifact detail modal
+- `getArtifact` message handler in background.js for single-artifact fetch
+
+### Changed
+- Popup footer changelog link now points to `/extension` page instead of GitHub raw file
+
+## [1.2.0] - 2026-02-08
+
+### Added
+- Popup artifact browser with search, type filters, tags, and collections
+- Published URL detection from Claude.ai share links
+- Favorite toggle on popup artifact cards
+
 ## [1.1.0] - 2026-02-01
 
 ### Fixed

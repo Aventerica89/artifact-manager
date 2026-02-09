@@ -380,6 +380,10 @@
       delete artifactData._copyButton;
       delete artifactData._panel;
 
+      if (!browser.runtime?.sendMessage) {
+        throw new Error('Extension disconnected — reload this page');
+      }
+
       const response = await browser.runtime.sendMessage({
         action: 'saveArtifact',
         data: artifactData
