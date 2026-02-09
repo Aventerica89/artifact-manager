@@ -4252,7 +4252,7 @@ function getAppHtml(userEmail) {
 
       // Logout button
       document.getElementById('logoutBtn').addEventListener('click', function() {
-        window.location.href = '/cdn-cgi/access/logout';
+        window.location.href = '/logout';
       });
 
       // Header action buttons
