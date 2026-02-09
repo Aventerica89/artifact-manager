@@ -2143,6 +2143,13 @@ function getAppHtml(userEmail) {
       --text-secondary: #a1a1aa;
     }
 
+    /* Custom scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+    * { scrollbar-width: thin; scrollbar-color: #3f3f46 transparent; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--background);
@@ -2576,17 +2583,118 @@ function getAppHtml(userEmail) {
       font-size: 0.875rem;
     }
 
+    .form-group select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+      cursor: pointer;
+    }
+
+    select option {
+      background: #27272a;
+      color: #fafafa;
+      padding: 0.5rem;
+    }
+
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
       outline: none;
       border-color: var(--indigo);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
     }
 
     .form-group textarea {
       resize: vertical;
       min-height: 80px;
     }
+
+    /* Form sections in modal */
+    .form-section {
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-section:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .form-section-title {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Content editor area */
+    .content-editor-wrapper {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--background);
+    }
+    .content-editor-wrapper textarea {
+      border: none !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      min-height: 200px;
+      max-height: 400px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      padding: 1rem;
+      resize: vertical;
+    }
+    .content-editor-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.375rem 0.75rem;
+      background: var(--secondary);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+    .content-editor-toolbar .char-count {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Markdown rendered preview */
+    .md-preview {
+      padding: 1.25rem;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--foreground);
+      overflow: auto;
+      max-height: 500px;
+    }
+    .md-preview h1 { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    .md-preview h2 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.375rem; }
+    .md-preview h3 { font-size: 1.1rem; font-weight: 600; margin: 0.875rem 0 0.5rem; }
+    .md-preview h4 { font-size: 1rem; font-weight: 600; margin: 0.75rem 0 0.375rem; }
+    .md-preview p { margin: 0.5rem 0; }
+    .md-preview ul, .md-preview ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+    .md-preview li { margin: 0.25rem 0; }
+    .md-preview code { background: var(--secondary); padding: 0.125rem 0.375rem; border-radius: 3px; font-size: 0.8125rem; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .md-preview pre { background: var(--background); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 0.75rem 0; overflow-x: auto; }
+    .md-preview pre code { background: none; padding: 0; }
+    .md-preview blockquote { border-left: 3px solid var(--indigo); padding: 0.5rem 1rem; margin: 0.75rem 0; color: var(--muted-foreground); background: rgba(99, 102, 241, 0.05); border-radius: 0 var(--radius) var(--radius) 0; }
+    .md-preview a { color: var(--indigo); text-decoration: none; }
+    .md-preview a:hover { text-decoration: underline; }
+    .md-preview table { border-collapse: collapse; width: 100%; margin: 0.75rem 0; }
+    .md-preview th, .md-preview td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
+    .md-preview th { background: var(--secondary); font-weight: 600; }
+    .md-preview hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+    .md-preview img { max-width: 100%; border-radius: var(--radius); }
+    .md-preview strong { font-weight: 600; }
+    .md-preview em { font-style: italic; }
 
     /* Tags Input */
     .tags-input-container {
@@ -2696,6 +2804,30 @@ function getAppHtml(userEmail) {
     .artifacts-header h2 {
       font-size: 1.25rem;
       font-weight: 600;
+    }
+
+    .artifacts-header select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--secondary);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.5rem 2rem 0.5rem 0.75rem;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      transition: border-color 0.15s;
+    }
+    .artifacts-header select:hover {
+      border-color: #3f3f46;
+    }
+    .artifacts-header select:focus {
+      outline: none;
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
     }
 
     .view-toggle {
@@ -3722,6 +3854,7 @@ function getAppHtml(userEmail) {
             <option value="">All Types</option>
             <option value="code">Code</option>
             <option value="html">HTML/Web App</option>
+            <option value="markdown">Markdown</option>
             <option value="document">Document</option>
             <option value="image">Image</option>
             <option value="data">Data/Analysis</option>
@@ -3782,80 +3915,95 @@ function getAppHtml(userEmail) {
       <div class="modal-body">
         <form id="artifact-form">
           <input type="hidden" id="edit-id">
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>Name *</label>
-              <input type="text" id="artifact-name" required placeholder="My Awesome Artifact">
-            </div>
 
-            <div class="form-group">
-              <label>Source Type</label>
-              <select id="artifact-source">
-                <option value="published">Published (URL)</option>
-                <option value="downloaded">Downloaded (Local)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Artifact Type</label>
-              <select id="artifact-type">
-                <option value="code">Code</option>
-                <option value="html">HTML/Web App</option>
-                <option value="document">Document</option>
-                <option value="image">Image</option>
-                <option value="data">Data/Analysis</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div class="form-group full-width" id="url-group">
-              <label>Published URL</label>
-              <input type="url" id="artifact-url" placeholder="https://claude.site/artifacts/...">
-            </div>
-
-            <div class="form-group" id="filename-group" style="display: none;">
-              <label>File Name</label>
-              <input type="text" id="artifact-filename" placeholder="component.tsx">
-            </div>
-
-            <div class="form-group full-width" id="content-group" style="display: none;">
-              <label>HTML/Code Content</label>
-              <textarea id="artifact-content" rows="10" placeholder="Paste your HTML or code here..." style="font-family: monospace; font-size: 0.8125rem;"></textarea>
-            </div>
-
-            <div class="form-group full-width">
-              <label>Description</label>
-              <textarea id="artifact-description" placeholder="What does this artifact do?"></textarea>
-            </div>
-
-            <div class="form-group">
-              <label>Collection</label>
-              <select id="artifact-collection">
-                <option value="">No Collection</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Language/Framework</label>
-              <input type="text" id="artifact-language" placeholder="React, Python, etc.">
-            </div>
-
-            <div class="form-group full-width" style="position: relative;">
-              <label>Tags (press Enter to add)</label>
-              <div class="tags-input-container" id="tags-container">
-                <input type="text" id="tags-input" placeholder="Add tags..." autocomplete="off">
+          <!-- Section: Identity -->
+          <div class="form-section">
+            <div class="form-section-title">Identity</div>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Name *</label>
+                <input type="text" id="artifact-name" required placeholder="My Awesome Artifact">
               </div>
-              <div class="tag-suggestions" id="tag-suggestions"></div>
+              <div class="form-group">
+                <label>Source Type</label>
+                <select id="artifact-source">
+                  <option value="published">Published (URL)</option>
+                  <option value="downloaded">Downloaded (Local)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Artifact Type</label>
+                <select id="artifact-type">
+                  <option value="code">Code</option>
+                  <option value="html">HTML/Web App</option>
+                  <option value="markdown">Markdown</option>
+                  <option value="document">Document</option>
+                  <option value="image">Image</option>
+                  <option value="data">Data/Analysis</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label>Description</label>
+                <textarea id="artifact-description" rows="2" placeholder="Brief description of this artifact..."></textarea>
+              </div>
             </div>
+          </div>
 
-            <div class="form-group full-width">
-              <label>Conversation URL</label>
-              <input type="url" id="artifact-conversation" placeholder="https://claude.ai/chat/...">
+          <!-- Section: Source -->
+          <div class="form-section">
+            <div class="form-section-title">Source</div>
+            <div class="form-grid">
+              <div class="form-group full-width" id="url-group">
+                <label>Published URL</label>
+                <input type="url" id="artifact-url" placeholder="https://claude.site/artifacts/...">
+              </div>
+              <div class="form-group" id="filename-group" style="display: none;">
+                <label>File Name</label>
+                <input type="text" id="artifact-filename" placeholder="component.tsx">
+              </div>
+              <div class="form-group full-width" id="content-group" style="display: none;">
+                <label>Content</label>
+                <div class="content-editor-wrapper">
+                  <div class="content-editor-toolbar">
+                    <span id="content-editor-lang">Code</span>
+                    <span class="char-count" id="content-char-count">0 chars</span>
+                  </div>
+                  <textarea id="artifact-content" rows="12" placeholder="Paste your content here..."></textarea>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <label>Conversation URL</label>
+                <input type="url" id="artifact-conversation" placeholder="https://claude.ai/chat/...">
+              </div>
             </div>
+          </div>
 
-            <div class="form-group full-width">
-              <label>Notes</label>
-              <textarea id="artifact-notes" placeholder="Personal notes about this artifact..."></textarea>
+          <!-- Section: Organization -->
+          <div class="form-section">
+            <div class="form-section-title">Organization</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Collection</label>
+                <select id="artifact-collection">
+                  <option value="">No Collection</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Language/Framework</label>
+                <input type="text" id="artifact-language" placeholder="React, Python, etc.">
+              </div>
+              <div class="form-group full-width" style="position: relative;">
+                <label>Tags (press Enter to add)</label>
+                <div class="tags-input-container" id="tags-container">
+                  <input type="text" id="tags-input" placeholder="Add tags..." autocomplete="off">
+                </div>
+                <div class="tag-suggestions" id="tag-suggestions"></div>
+              </div>
+              <div class="form-group full-width">
+                <label>Notes</label>
+                <textarea id="artifact-notes" rows="3" placeholder="Personal notes about this artifact..."></textarea>
+              </div>
             </div>
           </div>
         </form>
@@ -4038,6 +4186,7 @@ function getAppHtml(userEmail) {
         <div id="content-viewer-preview" style="display: none; height: 400px; border-bottom: 1px solid var(--border);">
           <iframe id="content-preview-iframe" sandbox="allow-scripts" style="width: 100%; height: 100%; border: none; background: white;"></iframe>
         </div>
+        <div id="content-viewer-markdown" class="md-preview" style="display: none;"></div>
         <pre id="content-viewer-code" style="margin: 0; padding: 1rem; overflow: auto; max-height: 500px; background: var(--background); font-size: 0.8125rem; line-height: 1.5;"><code id="content-viewer-text"></code></pre>
       </div>
       <div class="modal-footer">
@@ -4247,6 +4396,12 @@ function getAppHtml(userEmail) {
         document.getElementById('content-group').style.display = isPublished ? 'none' : 'block';
       });
 
+      // Artifact type change updates content editor label
+      document.getElementById('artifact-type').addEventListener('change', updateContentEditorMeta);
+
+      // Content textarea char count
+      document.getElementById('artifact-content').addEventListener('input', updateContentEditorMeta);
+
       // Tags input
       setupTagsInput();
 
@@ -4441,7 +4596,7 @@ function getAppHtml(userEmail) {
     }
 
     function renderArtifactCard(a) {
-      const hasPreview = a.artifact_type === 'html' && (a.published_url || a.file_content);
+      const hasPreview = (a.artifact_type === 'html' || a.artifact_type === 'markdown') && (a.published_url || a.file_content);
       let thumbnailHTML = '';
 
       if (hasPreview) {
@@ -4727,12 +4882,65 @@ function getAppHtml(userEmail) {
       const icons = {
         code: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
         html: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+        markdown: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8v8l3-3 3 3V8"/><path d="M18 12l-2-2v4"/><path d="M16 14l2-2"/></svg>',
         document: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
         image: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
         data: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
         other: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>'
       };
       return icons[type] || icons.other;
+    }
+
+    // Lightweight markdown renderer (no external deps)
+    function renderMarkdown(md) {
+      if (!md) return '';
+      let html = md;
+      // Escape HTML first
+      html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      // Code blocks (fenced) - use \x60 for backtick inside template literal
+      var btf = String.fromCharCode(96);
+      var fenceRe = new RegExp(btf + btf + btf + '(\\\\w*)\\\\n([\\\\s\\\\S]*?)' + btf + btf + btf, 'g');
+      html = html.replace(fenceRe, function(m, lang, code) {
+        return '<pre><code>' + code.trim() + '</code></pre>';
+      });
+      // Inline code
+      var inlineRe = new RegExp(btf + '([^' + btf + ']+)' + btf, 'g');
+      html = html.replace(inlineRe, '<code>$1</code>');
+      // Headers
+      html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+      // Horizontal rule
+      html = html.replace(/^---+$/gm, '<hr>');
+      // Bold and italic
+      html = html.replace(/\\*\\*\\*(.+?)\\*\\*\\*/g, '<strong><em>$1</em></strong>');
+      html = html.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');
+      html = html.replace(/\\*(.+?)\\*/g, '<em>$1</em>');
+      // Links
+      html = html.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      // Images
+      html = html.replace(/!\\[([^\\]]*?)\\]\\(([^)]+)\\)/g, '<img src="$2" alt="$1">');
+      // Blockquotes
+      html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+      // Unordered lists
+      html = html.replace(/^[\\-\\*] (.+)$/gm, '<li>$1</li>');
+      html = html.replace(/((?:<li>.*<\\/li>\\n?)+)/g, '<ul>$1</ul>');
+      // Ordered lists
+      html = html.replace(/^\\d+\\. (.+)$/gm, '<li>$1</li>');
+      // Tables (basic)
+      html = html.replace(/^\\|(.+)\\|$/gm, function(m, row) {
+        const cells = row.split('|').map(c => c.trim());
+        if (cells.every(c => /^[\\-:]+$/.test(c))) return '';
+        const tag = 'td';
+        return '<tr>' + cells.map(c => '<' + tag + '>' + c + '</' + tag + '>').join('') + '</tr>';
+      });
+      html = html.replace(/((?:<tr>.*<\\/tr>\\n?)+)/g, '<table>$1</table>');
+      // Paragraphs
+      html = html.replace(/^(?!<[hulotbhp]|$)(.+)$/gm, '<p>$1</p>');
+      // Clean up extra newlines
+      html = html.replace(/\\n{2,}/g, '\\n');
+      return html;
     }
 
     function escapeHtml(text) {
@@ -4759,6 +4967,22 @@ function getAppHtml(userEmail) {
       // Only allow valid hex colors
       const hexPattern = /^#([0-9a-fA-F]{3}){1,2}$/;
       return hexPattern.test(color) ? color : '#6366f1';
+    }
+
+    // Content editor helpers
+    function updateContentEditorMeta() {
+      const contentEl = document.getElementById('artifact-content');
+      const langEl = document.getElementById('content-editor-lang');
+      const countEl = document.getElementById('content-char-count');
+      const typeEl = document.getElementById('artifact-type');
+      if (langEl && typeEl) {
+        const typeLabels = { code: 'Code', html: 'HTML', markdown: 'Markdown', document: 'Document', image: 'Image', data: 'Data', other: 'Other' };
+        langEl.textContent = typeLabels[typeEl.value] || 'Code';
+      }
+      if (countEl && contentEl) {
+        const len = (contentEl.value || '').length;
+        countEl.textContent = len.toLocaleString() + ' chars';
+      }
     }
 
     // Tags Input
@@ -4978,6 +5202,9 @@ function getAppHtml(userEmail) {
       document.getElementById('url-group').style.display = isPublished ? 'block' : 'none';
       document.getElementById('filename-group').style.display = isPublished ? 'none' : 'block';
       document.getElementById('content-group').style.display = isPublished ? 'none' : 'block';
+
+      // Update content editor metadata
+      updateContentEditorMeta();
 
       currentTags = artifact.tags || [];
       renderCurrentTags();
@@ -5215,9 +5442,10 @@ function getAppHtml(userEmail) {
       const codeContainer = document.getElementById('content-viewer-code');
 
       const isHtml = artifact.artifact_type === 'html' || (content.includes('<html') || content.includes('<!DOCTYPE'));
+      const isMd = artifact.artifact_type === 'markdown' || (artifact.file_name && artifact.file_name.endsWith('.md'));
       const hasContent = content && content !== 'No content available';
 
-      if (isHtml) {
+      if (isHtml || isMd) {
         previewBtn.style.display = 'inline-flex';
       } else {
         previewBtn.style.display = 'none';
@@ -5258,8 +5486,11 @@ function getAppHtml(userEmail) {
     function closeContentModal() {
       document.getElementById('content-modal').classList.remove('active');
       currentViewingArtifact = null;
-      // Clear iframe
+      // Clear iframe and markdown preview
       document.getElementById('content-preview-iframe').srcdoc = '';
+      const mdEl = document.getElementById('content-viewer-markdown');
+      mdEl.style.display = 'none';
+      mdEl.textContent = '';
     }
 
     function copyContent() {
@@ -5277,17 +5508,32 @@ function getAppHtml(userEmail) {
       const previewContainer = document.getElementById('content-viewer-preview');
       const codeContainer = document.getElementById('content-viewer-code');
       const iframe = document.getElementById('content-preview-iframe');
+      const mdContainer = document.getElementById('content-viewer-markdown');
 
       showingPreview = !showingPreview;
+      const content = currentViewingArtifact.file_content || '';
+      const isMd = currentViewingArtifact.artifact_type === 'markdown' ||
+        (currentViewingArtifact.file_name && currentViewingArtifact.file_name.endsWith('.md'));
 
       if (showingPreview) {
-        // Show preview
-        iframe.srcdoc = currentViewingArtifact.file_content || '';
-        previewContainer.style.display = 'block';
         codeContainer.style.display = 'none';
+        if (isMd) {
+          // Render markdown
+          previewContainer.style.display = 'none';
+          mdContainer.style.display = 'block';
+          mdContainer.textContent = '';
+          const rendered = renderMarkdown(content);
+          mdContainer.insertAdjacentHTML('afterbegin', rendered);
+        } else {
+          // HTML iframe preview
+          mdContainer.style.display = 'none';
+          previewContainer.style.display = 'block';
+          iframe.srcdoc = content;
+        }
       } else {
         // Show code
         previewContainer.style.display = 'none';
+        mdContainer.style.display = 'none';
         codeContainer.style.display = 'block';
       }
     }
