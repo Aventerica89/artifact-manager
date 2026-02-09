@@ -1662,6 +1662,83 @@ async function renderArtifactPage(env, token, requestUrl) {
   const name = escapeHtmlServer(artifact.name);
   const content = artifact.file_content || '';
   const isHtml = artifact.artifact_type === 'html' || (artifact.language && artifact.language.toLowerCase() === 'html');
+  const isMarkdown = artifact.artifact_type === 'markdown' || (artifact.language && artifact.language.toLowerCase() === 'markdown') || artifact.file_name?.endsWith('.md');
+
+  // If it's Markdown content, render it with markdown parser
+  if (isMarkdown && content) {
+    return new Response(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${name} - Artifact Manager</title>
+        <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: system-ui, -apple-system, sans-serif; background: #09090b; min-height: 100vh; }
+          .toolbar { background: #18181b; border-bottom: 1px solid #27272a; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+          .toolbar-left { display: flex; align-items: center; gap: 1rem; }
+          .toolbar h1 { font-size: 1rem; font-weight: 600; color: #fafafa; }
+          .badge { font-size: 0.75rem; padding: 0.25rem 0.5rem; background: #27272a; color: #a1a1aa; border-radius: 0.25rem; }
+          .powered-by { font-size: 0.75rem; color: #71717a; }
+          .powered-by a { color: #6366f1; text-decoration: none; }
+          .content { padding: 2rem; max-width: 900px; margin: 0 auto; }
+
+          /* Markdown Styles */
+          .markdown-body { color: #fafafa; line-height: 1.6; }
+          .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+            margin-top: 1.5em; margin-bottom: 0.5em; font-weight: 600; line-height: 1.25; color: #fafafa;
+          }
+          .markdown-body h1 { font-size: 2em; border-bottom: 1px solid #27272a; padding-bottom: 0.3em; }
+          .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid #27272a; padding-bottom: 0.3em; }
+          .markdown-body h3 { font-size: 1.25em; }
+          .markdown-body h4 { font-size: 1em; }
+          .markdown-body h5 { font-size: 0.875em; }
+          .markdown-body h6 { font-size: 0.85em; color: #a1a1aa; }
+          .markdown-body p { margin-top: 0; margin-bottom: 1em; }
+          .markdown-body a { color: #6366f1; text-decoration: none; }
+          .markdown-body a:hover { text-decoration: underline; }
+          .markdown-body ul, .markdown-body ol { padding-left: 2em; margin-bottom: 1em; }
+          .markdown-body li { margin-bottom: 0.25em; }
+          .markdown-body code { background: #18181b; padding: 0.2em 0.4em; border-radius: 0.25rem; font-family: 'SF Mono', Consolas, monospace; font-size: 0.875em; color: #f472b6; }
+          .markdown-body pre { background: #18181b; border: 1px solid #27272a; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; margin-bottom: 1em; }
+          .markdown-body pre code { background: none; padding: 0; color: #fafafa; }
+          .markdown-body blockquote { border-left: 3px solid #6366f1; padding-left: 1em; color: #a1a1aa; margin: 1em 0; }
+          .markdown-body hr { border: none; border-top: 1px solid #27272a; margin: 2em 0; }
+          .markdown-body table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
+          .markdown-body table th, .markdown-body table td { border: 1px solid #27272a; padding: 0.5em; text-align: left; }
+          .markdown-body table th { background: #18181b; font-weight: 600; }
+          .markdown-body img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 1em 0; }
+          .markdown-body strong { font-weight: 600; }
+          .markdown-body em { font-style: italic; }
+        </style>
+      </head>
+      <body>
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <h1>${name}</h1>
+            <span class="badge">Markdown</span>
+          </div>
+          <span class="powered-by">Powered by <a href="https://artifacts.jbcloud.app" target="_blank">Artifact Manager</a></span>
+        </div>
+        <div class="content">
+          <div class="markdown-body" id="markdown-content"></div>
+        </div>
+        <script>
+          const markdownText = ${JSON.stringify(content)};
+          marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: true,
+            mangle: false
+          });
+          document.getElementById('markdown-content').innerHTML = marked.parse(markdownText);
+        </script>
+      </body>
+      </html>
+    `, { headers: { 'Content-Type': 'text/html' } });
+  }
 
   // If it's HTML content, render it in a sandboxed iframe
   if (isHtml && content) {
@@ -3502,6 +3579,7 @@ function getAppHtml(userEmail) {
             <option value="">All Types</option>
             <option value="code">Code</option>
             <option value="html">HTML/Web App</option>
+            <option value="markdown">Markdown</option>
             <option value="document">Document</option>
             <option value="image">Image</option>
             <option value="data">Data/Analysis</option>
@@ -3581,6 +3659,7 @@ function getAppHtml(userEmail) {
               <select id="artifact-type">
                 <option value="code">Code</option>
                 <option value="html">HTML/Web App</option>
+                <option value="markdown">Markdown</option>
                 <option value="document">Document</option>
                 <option value="image">Image</option>
                 <option value="data">Data/Analysis</option>
@@ -4879,16 +4958,17 @@ function getAppHtml(userEmail) {
       const codeContainer = document.getElementById('content-viewer-code');
 
       const isHtml = artifact.artifact_type === 'html' || (content.includes('<html') || content.includes('<!DOCTYPE'));
+      const isMarkdown = artifact.artifact_type === 'markdown' || artifact.language === 'Markdown' || artifact.file_name?.endsWith('.md');
       const hasContent = content && content !== 'No content available';
 
-      if (isHtml) {
+      if (isHtml || isMarkdown) {
         previewBtn.style.display = 'inline-flex';
       } else {
         previewBtn.style.display = 'none';
       }
 
-      // Show Open in New Tab and Share buttons for HTML artifacts with content
-      if (isHtml && hasContent) {
+      // Show Open in New Tab and Share buttons for HTML/Markdown artifacts with content
+      if ((isHtml || isMarkdown) && hasContent) {
         openNewTabBtn.style.display = 'inline-flex';
         shareBtn.style.display = 'inline-flex';
 
@@ -4945,8 +5025,53 @@ function getAppHtml(userEmail) {
       showingPreview = !showingPreview;
 
       if (showingPreview) {
-        // Show preview
-        iframe.srcdoc = currentViewingArtifact.file_content || '';
+        const isMarkdown = currentViewingArtifact.artifact_type === 'markdown' ||
+                          currentViewingArtifact.language === 'Markdown' ||
+                          currentViewingArtifact.file_name?.endsWith('.md');
+
+        if (isMarkdown) {
+          // Render markdown with marked.js
+          const markdownContent = currentViewingArtifact.file_content || '';
+          iframe.srcdoc = \`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+              <style>
+                body { font-family: system-ui, -apple-system, sans-serif; padding: 2rem; max-width: 900px; margin: 0 auto; background: white; color: #1a1a1a; line-height: 1.6; }
+                h1, h2, h3, h4, h5, h6 { margin-top: 1.5em; margin-bottom: 0.5em; font-weight: 600; line-height: 1.25; }
+                h1 { font-size: 2em; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3em; }
+                h2 { font-size: 1.5em; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3em; }
+                h3 { font-size: 1.25em; }
+                p { margin-bottom: 1em; }
+                a { color: #6366f1; text-decoration: none; }
+                a:hover { text-decoration: underline; }
+                code { background: #f1f5f9; padding: 0.2em 0.4em; border-radius: 0.25rem; font-family: 'SF Mono', Consolas, monospace; font-size: 0.875em; color: #db2777; }
+                pre { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+                pre code { background: none; padding: 0; color: inherit; }
+                blockquote { border-left: 3px solid #6366f1; padding-left: 1em; color: #64748b; margin: 1em 0; }
+                table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+                table th, table td { border: 1px solid #e5e7eb; padding: 0.5em; text-align: left; }
+                table th { background: #f8fafc; font-weight: 600; }
+                img { max-width: 100%; height: auto; }
+                ul, ol { padding-left: 2em; margin-bottom: 1em; }
+              </style>
+            </head>
+            <body>
+              <div id="content"></div>
+              <script>
+                marked.setOptions({ breaks: true, gfm: true });
+                document.getElementById('content').innerHTML = marked.parse(\${JSON.stringify(markdownContent)});
+              </script>
+            </body>
+            </html>
+          \`;
+        } else {
+          // Show HTML preview
+          iframe.srcdoc = currentViewingArtifact.file_content || '';
+        }
         previewContainer.style.display = 'block';
         codeContainer.style.display = 'none';
       } else {

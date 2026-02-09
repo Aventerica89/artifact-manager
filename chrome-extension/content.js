@@ -216,7 +216,7 @@
       data.artifact_type = 'code';
       data.language = 'CSS';
     } else if (panelText.includes('markdown') || panelText.includes('.md')) {
-      data.artifact_type = 'document';
+      data.artifact_type = 'markdown';
       data.language = 'Markdown';
     }
 
