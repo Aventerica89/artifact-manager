@@ -242,7 +242,7 @@
                       Array.from(panel.querySelectorAll('button')).find(b => b.textContent.includes('Copy'));
       if (copyBtn) {
         copyBtn.click();
-        await new Promise(r => setTimeout(r, 150)); // Wait for clipboard
+        await new Promise(r => setTimeout(r, 500)); // Wait for clipboard
         const clipboardText = await navigator.clipboard.readText();
         if (clipboardText && clipboardText.length > 10) {
           console.log('Artifact Manager: Content extracted via clipboard');
@@ -559,7 +559,7 @@
     setupObserver();
 
     // Re-scan periodically (Claude.ai is very dynamic)
-    setInterval(processArtifacts, 3000);
+    setInterval(processArtifacts, 5000);
 
     console.log('Artifact Manager: Ready');
   }

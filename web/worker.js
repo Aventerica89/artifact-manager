@@ -54,7 +54,7 @@ export default {
     if (path === 'login' && request.method === 'POST') {
       const form = await request.formData();
       const email = (form.get('email') || '').toString().trim().toLowerCase();
-      if (!email || !email.includes('@')) {
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return new Response(getLoginPageHtml('Invalid email'), {
           headers: { 'Content-Type': 'text/html' }
         });
@@ -302,7 +302,11 @@ async function handleApiRequest(path, request, env, userEmail, url) {
 
       // POST /api/artifacts - Create new artifact
       if (path === 'api/artifacts' && request.method === 'POST') {
-        const body = await request.json();
+        const rawBody = await request.text();
+        if (rawBody.length > 2 * 1024 * 1024) {
+          return Response.json({ error: 'Request too large (max 2MB)' }, { status: 413 });
+        }
+        const body = JSON.parse(rawBody);
         let {
           name, description, artifact_type, source_type,
           published_url, artifact_id, file_name, file_size, file_content,
@@ -312,6 +316,10 @@ async function handleApiRequest(path, request, env, userEmail, url) {
 
         if (!name || !name.trim()) {
           return Response.json({ error: 'Name is required' }, { status: 400 });
+        }
+
+        if (file_content && file_content.length > 1024 * 1024) {
+          return Response.json({ error: 'File content too large (max 1MB)' }, { status: 413 });
         }
 
         // Sanitize name to prevent placeholders (server-side validation as backup)
@@ -483,12 +491,11 @@ async function handleApiRequest(path, request, env, userEmail, url) {
       if (path.match(/^api\/artifacts\/\d+\/share$/) && request.method === 'POST') {
         const id = path.split('/')[2];
 
-        // Generate 12-char alphanumeric token (like YouTube video IDs)
+        // Generate 12-char alphanumeric token (crypto-secure)
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let shareToken = '';
-        for (let i = 0; i < 12; i++) {
-          shareToken += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
+        const randomBytes = new Uint8Array(12);
+        crypto.getRandomValues(randomBytes);
+        const shareToken = Array.from(randomBytes, b => chars[b % chars.length]).join('');
 
         await env.DB.prepare(`
           UPDATE artifacts SET share_token = ?, shared_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
@@ -1760,7 +1767,7 @@ async function renderArtifactPage(env, token, requestUrl) {
             <span class="powered-by">Powered by <a href="https://artifacts.jbcloud.app" target="_blank">Artifact Manager</a></span>
           </div>
         </div>
-        <iframe class="render-frame" sandbox="allow-scripts allow-same-origin" srcdoc="${escapeHtmlServer(content).replace(/"/g, '&quot;')}"></iframe>
+        <iframe class="render-frame" sandbox="allow-scripts" srcdoc="${escapeHtmlServer(content).replace(/"/g, '&quot;')}"></iframe>
       </body>
       </html>
     `, { headers: { 'Content-Type': 'text/html' } });
