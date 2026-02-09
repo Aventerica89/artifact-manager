@@ -122,10 +122,14 @@ export default {
         orientation: 'portrait-primary',
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          { src: ARTIFACT_MANAGER_FAVICON, sizes: 'any', type: 'image/svg+xml', purpose: 'any' }
         ]
       }), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=86400'
+        }
       });
     }
 
@@ -135,12 +139,12 @@ export default {
       const size = path === 'icon-192.png' ? 192 : 512;
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">
         <defs>
-          <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="bg-${size}" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style="stop-color:#6366f1"/>
             <stop offset="100%" style="stop-color:#8b5cf6"/>
           </linearGradient>
         </defs>
-        <rect width="${size}" height="${size}" rx="${size * 0.15}" fill="url(#bg)"/>
+        <rect width="${size}" height="${size}" rx="${size * 0.15}" fill="url(#bg-${size})"/>
         <g transform="translate(${size * 0.25}, ${size * 0.2}) scale(${size / 48})" fill="none" stroke="white" stroke-width="1.5">
           <path d="M12 2l10 6v12l-10 6-10-6V8l10-6z"/>
           <path d="M12 2v10m0 10V12m10-4l-10 4m-10 0l10-4"/>
@@ -150,6 +154,17 @@ export default {
       return new Response(svg, {
         headers: {
           'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=86400'
+        }
+      });
+    }
+
+    // Serve favicon.ico for browsers that request it
+    if (path === 'favicon.ico') {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': '/icon-192.png',
           'Cache-Control': 'public, max-age=86400'
         }
       });
@@ -2067,8 +2082,7 @@ function getAppHtml(userEmail) {
   <link rel="icon" type="image/svg+xml" href="${ARTIFACT_MANAGER_FAVICON}">
 
   <!-- PWA Meta Tags -->
-  <!-- PWA manifest disabled due to Cloudflare Access CORS issues -->
-  <!-- <link rel="manifest" href="/manifest.json"> -->
+  <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#09090b">
   <meta name="mobile-web-app-capable" content="yes">
 
@@ -2077,6 +2091,7 @@ function getAppHtml(userEmail) {
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Artifacts">
   <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="shortcut icon" type="image/svg+xml" href="${ARTIFACT_MANAGER_FAVICON}">
 
   <!-- Prevent phone number detection -->
   <meta name="format-detection" content="telephone=no">
@@ -2701,6 +2716,105 @@ function getAppHtml(userEmail) {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1rem;
+    }
+
+    .favorites-section {
+      margin-bottom: 2rem;
+    }
+
+    .favorites-section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      color: var(--amber);
+    }
+
+    .favorites-section-header h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .tag-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .tag-filter {
+      padding: 0.5rem 0.875rem;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+    }
+
+    .tag-filter:hover {
+      background: var(--accent);
+      color: var(--foreground);
+    }
+
+    .tag-filter.active {
+      background: var(--indigo);
+      color: white;
+      border-color: var(--indigo);
+    }
+
+    .artifact-thumbnail {
+      width: 100%;
+      height: 120px;
+      background: var(--background);
+      border-radius: calc(var(--radius) - 2px);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .artifact-thumbnail:hover {
+      border-color: var(--indigo);
+      transform: scale(1.02);
+    }
+
+    .artifact-thumbnail iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: none;
+      transform: scale(0.25);
+      transform-origin: top left;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 400%;
+      height: 400%;
+    }
+
+    .artifact-thumbnail-placeholder {
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .artifact-thumbnail-icon {
+      width: 48px;
+      height: 48px;
+      opacity: 0.3;
     }
 
     .artifact-card {
@@ -3579,6 +3693,20 @@ function getAppHtml(userEmail) {
       <!-- Active Filters -->
       <div class="filter-pills" id="active-filters"></div>
 
+      <!-- Tag Filters -->
+      <div class="tag-filters" id="tag-filters" style="display: none;"></div>
+
+      <!-- Favorites Section -->
+      <div class="favorites-section" id="favorites-section" style="display: none;">
+        <div class="favorites-section-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          <h3>Favorites</h3>
+        </div>
+        <div class="artifacts-grid" id="favorites-grid"></div>
+      </div>
+
       <!-- Artifacts -->
       <div class="artifacts-header">
         <h2 id="artifacts-title">All Artifacts</h2>
@@ -4187,9 +4315,12 @@ function getAppHtml(userEmail) {
         allCollections.map(c => \`<option value="\${escapeAttr(c.id)}">\${escapeHtml(c.name)}</option>\`).join('');
     }
 
+    let activeTagFilters = new Set();
+
     async function loadTags() {
       allTags = await fetch('/api/tags').then(r => r.json());
       renderTagsNav();
+      renderTagFilters();
     }
 
     function renderTagsNav() {
@@ -4215,6 +4346,47 @@ function getAppHtml(userEmail) {
       \`).join('');
     }
 
+    function renderTagFilters() {
+      const container = document.getElementById('tag-filters');
+      if (allTags.length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+      container.innerHTML = \`
+        <div style="color: var(--muted-foreground); font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; margin-right: 0.5rem;">
+          Filter by tags:
+        </div>
+        \${allTags.map(t => \`
+          <button class="tag-filter \${activeTagFilters.has(t.name) ? 'active' : ''}" onclick="toggleTagFilter('\${escapeAttr(t.name)}')">
+            \${escapeHtml(t.name)} (\${t.usage_count || 0})
+          </button>
+        \`).join('')}
+        \${activeTagFilters.size > 0 ? \`
+          <button class="tag-filter" onclick="clearTagFilters()" style="background: var(--rose); color: white; border-color: var(--rose);">
+            Clear All
+          </button>
+        \` : ''}
+      \`;
+    }
+
+    function toggleTagFilter(tagName) {
+      if (activeTagFilters.has(tagName)) {
+        activeTagFilters.delete(tagName);
+      } else {
+        activeTagFilters.add(tagName);
+      }
+      renderTagFilters();
+      loadArtifacts();
+    }
+
+    function clearTagFilters() {
+      activeTagFilters.clear();
+      renderTagFilters();
+      loadArtifacts();
+    }
+
     async function loadArtifacts() {
       const sort = document.getElementById('sort-select').value;
       const search = document.getElementById('search-input').value;
@@ -4237,7 +4409,20 @@ function getAppHtml(userEmail) {
         url += '&favorite=true';
       }
 
-      allArtifacts = await fetch(url).then(r => r.json());
+      let artifacts = await fetch(url).then(r => r.json());
+
+      // Apply tag filters on the client side if any are active
+      if (activeTagFilters.size > 0) {
+        artifacts = artifacts.filter(a => {
+          if (!a.tags || a.tags.length === 0) return false;
+          // Artifact must have ALL selected tags (AND logic)
+          return Array.from(activeTagFilters).every(tagFilter =>
+            a.tags.some(artifactTag => artifactTag === tagFilter)
+          );
+        });
+      }
+
+      allArtifacts = artifacts;
       currentPage = 1;
 
       // Clear selection when data changes to avoid operating on hidden items
@@ -4248,12 +4433,132 @@ function getAppHtml(userEmail) {
       updateActiveFilters();
     }
 
+    function renderArtifactCard(a) {
+      const hasPreview = a.artifact_type === 'html' && (a.published_url || a.file_content);
+      let thumbnailHTML = '';
+
+      if (hasPreview) {
+        if (a.published_url) {
+          thumbnailHTML = \`
+            <div class="artifact-thumbnail" onclick="openArtifactPreview('\${escapeAttr(a.published_url)}', '\${escapeHtml(a.name)}')">
+              <iframe src="\${escapeAttr(a.published_url)}" sandbox=""></iframe>
+            </div>
+          \`;
+        } else if (a.file_content) {
+          const safeContent = escapeHtml(a.file_content).replace(/'/g, '&apos;');
+          thumbnailHTML = \`
+            <div class="artifact-thumbnail" onclick="openArtifactPreviewFromContent(\${a.id}, '\${escapeHtml(a.name)}')">
+              <div class="artifact-thumbnail-placeholder">
+                <div class="artifact-thumbnail-icon">\${getTypeIcon(a.artifact_type)}</div>
+                <div>Click to preview</div>
+              </div>
+            </div>
+          \`;
+        }
+      }
+
+      return \`
+        <div class="artifact-card \${selectedArtifactIds.has(a.id) ? 'selected' : ''}" data-artifact-id="\${a.id}">
+          <div class="artifact-card-header">
+            <label class="select-checkbox" onclick="event.stopPropagation()">
+              <input type="checkbox" \${selectedArtifactIds.has(a.id) ? 'checked' : ''} onchange="toggleSelectArtifact(\${a.id})">
+              <span class="checkmark"></span>
+            </label>
+            <div class="artifact-icon \${a.artifact_type}">
+              \${getTypeIcon(a.artifact_type)}
+            </div>
+            <div class="artifact-info">
+              <div class="artifact-name">\${escapeHtml(a.name)}</div>
+              <div class="artifact-meta">
+                <span class="source-badge \${a.source_type}">\${a.source_type}</span>
+                \${a.language ? \`<span>\${escapeHtml(a.language)}</span>\` : ''}
+              </div>
+            </div>
+            <div class="artifact-actions">
+              <button class="favorite-btn \${a.is_favorite ? 'active' : ''}" onclick="toggleFavorite(\${a.id})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="\${a.is_favorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="artifact-card-body">
+            \${thumbnailHTML}
+            \${a.description ? \`<div class="artifact-description">\${escapeHtml(a.description)}</div>\` : ''}
+            \${a.tags && a.tags.length > 0 ? \`
+              <div class="artifact-tags">
+                \${a.tags.map(t => \`<span class="artifact-tag">\${escapeHtml(t)}</span>\`).join('')}
+              </div>
+            \` : ''}
+          </div>
+          <div class="artifact-card-actions">
+            \${a.conversation_url ? \`
+              <a href="\${escapeAttr(a.conversation_url)}" target="_blank" class="btn btn-secondary btn-sm" title="Open conversation in Claude">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Claude
+              </a>
+            \` : ''}
+            \${a.published_url ? \`
+              <a href="\${escapeAttr(a.published_url)}" target="_blank" class="btn btn-secondary btn-sm" title="View published artifact">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                Published
+              </a>
+            \` : ''}
+            \${a.file_content ? \`
+              <button class="btn btn-primary btn-sm" onclick="viewContent(\${a.id})" title="View artifact content">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                View
+              </button>
+            \` : ''}
+          </div>
+          <div class="artifact-card-footer">
+            <div>
+              \${a.collection_name ? \`
+                <span class="collection-badge">
+                  <span class="collection-dot" style="background: \${safeColor(a.collection_color)}; width: 6px; height: 6px;"></span>
+                  \${escapeHtml(a.collection_name)}
+                </span>
+              \` : '<span style="color: var(--muted-foreground)">No collection</span>'}
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-ghost btn-sm" onclick="openEditModal(\${a.id})">Edit</button>
+              <button class="btn btn-ghost btn-sm" onclick="deleteArtifact(\${a.id})" style="color: var(--rose);">Delete</button>
+            </div>
+          </div>
+        </div>
+      \`;
+    }
+
     function renderArtifacts() {
+      // Separate favorites from other artifacts
+      const favoriteArtifacts = allArtifacts.filter(a => a.is_favorite);
+      const nonFavoriteArtifacts = allArtifacts.filter(a => !a.is_favorite);
+
+      // Render favorites section
+      const favoritesSection = document.getElementById('favorites-section');
+      const favoritesGrid = document.getElementById('favorites-grid');
+      if (favoriteArtifacts.length > 0) {
+        favoritesSection.style.display = 'block';
+        favoritesGrid.innerHTML = favoriteArtifacts.map(a => renderArtifactCard(a)).join('');
+      } else {
+        favoritesSection.style.display = 'none';
+      }
+
+      // Render main grid with non-favorites
       const grid = document.getElementById('artifacts-grid');
       const start = (currentPage - 1) * perPage;
-      const pageArtifacts = allArtifacts.slice(start, start + perPage);
+      const pageArtifacts = nonFavoriteArtifacts.slice(start, start + perPage);
 
-      if (allArtifacts.length === 0) {
+      if (nonFavoriteArtifacts.length === 0 && favoriteArtifacts.length === 0) {
         const searchValue = document.getElementById('search-input').value;
         const typeFilter = document.getElementById('type-filter').value;
         const hasFilters = searchValue || typeFilter || currentFilter.type !== 'all';
@@ -4296,90 +4601,29 @@ function getAppHtml(userEmail) {
         return;
       }
 
-      grid.innerHTML = pageArtifacts.map(a => \`
-        <div class="artifact-card \${selectedArtifactIds.has(a.id) ? 'selected' : ''}" data-artifact-id="\${a.id}">
-          <div class="artifact-card-header">
-            <label class="select-checkbox" onclick="event.stopPropagation()">
-              <input type="checkbox" \${selectedArtifactIds.has(a.id) ? 'checked' : ''} onchange="toggleSelectArtifact(\${a.id})">
-              <span class="checkmark"></span>
-            </label>
-            <div class="artifact-icon \${a.artifact_type}">
-              \${getTypeIcon(a.artifact_type)}
-            </div>
-            <div class="artifact-info">
-              <div class="artifact-name">\${escapeHtml(a.name)}</div>
-              <div class="artifact-meta">
-                <span class="source-badge \${a.source_type}">\${a.source_type}</span>
-                \${a.language ? \`<span>\${escapeHtml(a.language)}</span>\` : ''}
-              </div>
-            </div>
-            <div class="artifact-actions">
-              <button class="favorite-btn \${a.is_favorite ? 'active' : ''}" onclick="toggleFavorite(\${a.id})">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="\${a.is_favorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div class="artifact-card-body">
-            \${a.description ? \`<div class="artifact-description">\${escapeHtml(a.description)}</div>\` : ''}
-            \${a.tags && a.tags.length > 0 ? \`
-              <div class="artifact-tags">
-                \${a.tags.map(t => \`<span class="artifact-tag">\${escapeHtml(t)}</span>\`).join('')}
-              </div>
-            \` : ''}
-          </div>
-          <div class="artifact-card-actions">
-            \${a.conversation_url ? \`
-              <a href="\${escapeAttr(a.conversation_url)}" target="_blank" class="btn btn-secondary btn-sm" title="Open conversation in Claude">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-                Claude
-              </a>
-            \` : ''}
-            \${a.published_url ? \`
-              <a href="\${escapeAttr(a.published_url)}" target="_blank" class="btn btn-secondary btn-sm" title="View published artifact">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="2" y1="12" x2="22" y2="12"/>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-                Published
-              </a>
-            \` : ''}
-            \${a.file_content ? \`
-              <button class="btn btn-primary btn-sm" onclick="viewContent(\${a.id})" title="View artifact content">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-                View
-              </button>
-            \` : ''}
-          </div>
-          <div class="artifact-card-footer">
-            <div>
-              \${a.collection_name ? \`
-                <span class="collection-badge">
-                  <span class="collection-dot" style="background: \${safeColor(a.collection_color)}; width: 6px; height: 6px;"></span>
-                  \${escapeHtml(a.collection_name)}
-                </span>
-              \` : '<span style="color: var(--muted-foreground)">No collection</span>'}
-            </div>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="btn btn-ghost btn-sm" onclick="openEditModal(\${a.id})">Edit</button>
-              <button class="btn btn-ghost btn-sm" onclick="deleteArtifact(\${a.id})" style="color: var(--rose);">Delete</button>
-            </div>
-          </div>
-        </div>
-      \`).join('');
+      grid.innerHTML = pageArtifacts.map(a => renderArtifactCard(a)).join('');
 
       renderPagination();
     }
 
+    function openArtifactPreview(url, name) {
+      window.open(url, '_blank', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no');
+    }
+
+    function openArtifactPreviewFromContent(artifactId, name) {
+      const artifact = allArtifacts.find(a => a.id === artifactId);
+      if (artifact && artifact.file_content) {
+        const blob = new Blob([artifact.file_content], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no');
+        // Clean up the URL after a delay
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+    }
+
     function renderPagination() {
-      const totalPages = Math.ceil(allArtifacts.length / perPage);
+      const nonFavoriteArtifacts = allArtifacts.filter(a => !a.is_favorite);
+      const totalPages = Math.ceil(nonFavoriteArtifacts.length / perPage);
       if (totalPages <= 1) {
         document.getElementById('pagination').innerHTML = '';
         return;
