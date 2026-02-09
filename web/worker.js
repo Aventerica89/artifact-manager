@@ -2697,6 +2697,8 @@ function getAppHtml(userEmail) {
     .md-preview img { max-width: 100%; border-radius: var(--radius); }
     .md-preview strong { font-weight: 600; }
     .md-preview em { font-style: italic; }
+    .md-preview svg { max-width: 100%; height: auto; }
+    .md-preview .mermaid { background: transparent; text-align: center; }
 
     /* Tags Input */
     .tags-input-container {
@@ -3061,6 +3063,7 @@ function getAppHtml(userEmail) {
     .artifact-icon.code { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
     .artifact-icon.html { background: rgba(99, 102, 241, 0.15); color: var(--indigo); }
     .artifact-icon.markdown { background: rgba(56, 189, 248, 0.15); color: var(--sky, #38bdf8); }
+    .artifact-icon.svg { background: rgba(251, 191, 36, 0.15); color: var(--amber); }
     .artifact-icon.document { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
     .artifact-icon.image { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
     .artifact-icon.data { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
@@ -3869,6 +3872,7 @@ function getAppHtml(userEmail) {
             <option value="code">Code</option>
             <option value="html">HTML/Web App</option>
             <option value="markdown">Markdown</option>
+            <option value="svg">SVG</option>
             <option value="document">Document</option>
             <option value="image">Image</option>
             <option value="data">Data/Analysis</option>
@@ -3951,6 +3955,7 @@ function getAppHtml(userEmail) {
                   <option value="code">Code</option>
                   <option value="html">HTML/Web App</option>
                   <option value="markdown">Markdown</option>
+                  <option value="svg">SVG</option>
                   <option value="document">Document</option>
                   <option value="image">Image</option>
                   <option value="data">Data/Analysis</option>
@@ -4618,7 +4623,7 @@ function getAppHtml(userEmail) {
     }
 
     function renderArtifactCard(a) {
-      const hasPreview = (a.artifact_type === 'html' || a.artifact_type === 'markdown') && (a.published_url || a.file_content);
+      const hasPreview = (a.artifact_type === 'html' || a.artifact_type === 'markdown' || a.artifact_type === 'svg') && (a.published_url || a.file_content);
       let thumbnailHTML = '';
 
       if (hasPreview) {
@@ -4798,10 +4803,13 @@ function getAppHtml(userEmail) {
       var artifact = allArtifacts.find(function(a) { return a.id === artifactId; });
       if (!artifact || !artifact.file_content) return;
 
-      var isMd = artifact.artifact_type === 'markdown' ||
-        (artifact.file_name && artifact.file_name.endsWith('.md'));
+      var pType = detectPreviewType(artifact);
       var content = artifact.file_content;
-      var blobContent = isMd ? buildMarkdownHtmlPage(content, name) : content;
+      var blobContent = content;
+      if (pType === 'markdown') blobContent = buildMarkdownHtmlPage(content, name);
+      else if (pType === 'svg') {
+        blobContent = '<!DOCTYPE html><html><head><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#09090b}svg{max-width:90vw;max-height:90vh}</style></head><body>' + content + '</body></html>';
+      }
       var blob = new Blob([blobContent], { type: 'text/html' });
       var url = URL.createObjectURL(blob);
       window.open(url, '_blank');
@@ -4908,6 +4916,7 @@ function getAppHtml(userEmail) {
         code: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
         html: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
         markdown: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8v8l3-3 3 3V8"/><path d="M18 12l-2-2v4"/><path d="M16 14l2-2"/></svg>',
+        svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>',
         document: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
         image: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
         data: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
@@ -4926,6 +4935,7 @@ function getAppHtml(userEmail) {
       var btf = String.fromCharCode(96);
       var fenceRe = new RegExp(btf + btf + btf + '(\\\\w*)\\\\n([\\\\s\\\\S]*?)' + btf + btf + btf, 'g');
       html = html.replace(fenceRe, function(m, lang, code) {
+        if (lang === 'mermaid') return '<pre class="mermaid">' + code.trim() + '</pre>';
         return '<pre><code>' + code.trim() + '</code></pre>';
       });
       // Inline code
@@ -4966,6 +4976,100 @@ function getAppHtml(userEmail) {
       // Clean up extra newlines
       html = html.replace(/\\n{2,}/g, '\\n');
       return html;
+    }
+
+    // Render CSV/TSV content as an HTML table
+    function renderCsv(text) {
+      if (!text) return '<p>No data</p>';
+      var sep = text.indexOf('\\t') > -1 ? '\\t' : ',';
+      var rows = text.trim().split('\\n');
+      var html = '<table>';
+      rows.forEach(function(row, i) {
+        var cells = row.split(sep);
+        var tag = i === 0 ? 'th' : 'td';
+        html += '<tr>' + cells.map(function(c) {
+          return '<' + tag + '>' + c.trim().replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</' + tag + '>';
+        }).join('') + '</tr>';
+      });
+      return html + '</table>';
+    }
+
+    // Render JSON with indentation and syntax coloring
+    function renderJson(text) {
+      if (!text) return '<pre>null</pre>';
+      try {
+        var obj = JSON.parse(text);
+        var pretty = JSON.stringify(obj, null, 2);
+        // Syntax color: strings, numbers, booleans, null, keys
+        var colored = pretty
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"([^"]+)":/g, '<span style="color:#818cf8">"$1"</span>:')
+          .replace(/: "([^"]*)"/g, ': <span style="color:#34d399">"$1"</span>')
+          .replace(/: (\\d+\\.?\\d*)/g, ': <span style="color:#fbbf24">$1</span>')
+          .replace(/: (true|false)/g, ': <span style="color:#f472b6">$1</span>')
+          .replace(/: (null)/g, ': <span style="color:#a1a1aa">$1</span>');
+        return '<pre style="line-height:1.6">' + colored + '</pre>';
+      } catch (e) {
+        return '<pre>' + text.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</pre>';
+      }
+    }
+
+    // Render diff/patch with color-coded lines
+    function renderDiff(text) {
+      if (!text) return '<pre>No diff</pre>';
+      var lines = text.split('\\n');
+      var html = '<pre style="line-height:1.6">';
+      lines.forEach(function(line) {
+        var safe = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        if (line.startsWith('+++') || line.startsWith('---')) {
+          html += '<span style="color:#818cf8;font-weight:600">' + safe + '</span>\\n';
+        } else if (line.startsWith('@@')) {
+          html += '<span style="color:#a78bfa;background:rgba(139,92,246,0.1);display:inline-block;width:100%">' + safe + '</span>\\n';
+        } else if (line.startsWith('+')) {
+          html += '<span style="color:#34d399;background:rgba(16,185,129,0.1);display:inline-block;width:100%">' + safe + '</span>\\n';
+        } else if (line.startsWith('-')) {
+          html += '<span style="color:#f87171;background:rgba(239,68,68,0.1);display:inline-block;width:100%">' + safe + '</span>\\n';
+        } else {
+          html += safe + '\\n';
+        }
+      });
+      return html + '</pre>';
+    }
+
+    // Detect what kind of preview this artifact supports
+    function detectPreviewType(artifact) {
+      var type = artifact.artifact_type || '';
+      var fname = (artifact.file_name || '').toLowerCase();
+      var content = artifact.file_content || '';
+
+      if (type === 'html' || content.includes('<html') || content.includes('<!DOCTYPE')) return 'html';
+      if (type === 'markdown' || fname.endsWith('.md')) return 'markdown';
+      if (type === 'svg' || fname.endsWith('.svg') || content.trimStart().startsWith('<svg')) return 'svg';
+      if (fname.endsWith('.csv') || fname.endsWith('.tsv')) return 'csv';
+      if (fname.endsWith('.json') || type === 'data') {
+        try { JSON.parse(content); return 'json'; } catch(e) {}
+      }
+      if (fname.endsWith('.diff') || fname.endsWith('.patch') || content.startsWith('diff --git') || content.startsWith('--- ')) return 'diff';
+      return null;
+    }
+
+    // Generate a filename from artifact name + type
+    function generateFilename(name, artifactType, language) {
+      if (!name) name = 'artifact';
+      // Slugify: lowercase, replace non-alphanumeric with hyphens, collapse multiple
+      var slug = name.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 60);
+      if (!slug) slug = 'artifact';
+
+      var extMap = {
+        html: '.html', markdown: '.md', svg: '.svg', react: '.jsx',
+        code: '.' + (language || 'txt').toLowerCase(),
+        other: '.txt'
+      };
+      var ext = extMap[artifactType] || '.txt';
+      return slug + ext;
     }
 
     function escapeHtml(text) {
@@ -5252,16 +5356,25 @@ function getAppHtml(userEmail) {
         .map(a => a.name);
       const uniqueName = NameValidator.generateUniqueName(sanitizedName, existingNames);
 
+      var artifactType = document.getElementById('artifact-type').value;
+      var language = document.getElementById('artifact-language').value || null;
+      var fileName = document.getElementById('artifact-filename').value || null;
+
+      // Auto-generate filename if empty
+      if (!fileName && document.getElementById('artifact-source').value !== 'published') {
+        fileName = generateFilename(uniqueName, artifactType, language);
+      }
+
       const data = {
         name: uniqueName,
         source_type: document.getElementById('artifact-source').value,
-        artifact_type: document.getElementById('artifact-type').value,
+        artifact_type: artifactType,
         published_url: document.getElementById('artifact-url').value || null,
-        file_name: document.getElementById('artifact-filename').value || null,
+        file_name: fileName,
         file_content: document.getElementById('artifact-content').value || null,
         description: document.getElementById('artifact-description').value || null,
         collection_id: document.getElementById('artifact-collection').value || null,
-        language: document.getElementById('artifact-language').value || null,
+        language: language,
         conversation_url: document.getElementById('artifact-conversation').value || null,
         notes: document.getElementById('artifact-notes').value || null,
         tags: currentTags
@@ -5466,11 +5579,11 @@ function getAppHtml(userEmail) {
       const previewContainer = document.getElementById('content-viewer-preview');
       const codeContainer = document.getElementById('content-viewer-code');
 
-      const isHtml = artifact.artifact_type === 'html' || (content.includes('<html') || content.includes('<!DOCTYPE'));
-      const isMd = artifact.artifact_type === 'markdown' || (artifact.file_name && artifact.file_name.endsWith('.md'));
+      var previewType = detectPreviewType(artifact);
       const hasContent = content && content !== 'No content available';
 
-      if (isHtml || isMd) {
+      // Show preview toggle for all previewable types
+      if (previewType && hasContent) {
         previewBtn.style.display = 'inline-flex';
       } else {
         previewBtn.style.display = 'none';
@@ -5484,15 +5597,15 @@ function getAppHtml(userEmail) {
         downloadBtn.style.display = 'none';
       }
 
-      // Show Open in New Tab for HTML and Markdown with content
-      if ((isHtml || isMd) && hasContent) {
+      // Show Open in New Tab for HTML, Markdown, SVG with content
+      if (previewType && (previewType === 'html' || previewType === 'markdown' || previewType === 'svg') && hasContent) {
         openNewTabBtn.style.display = 'inline-flex';
       } else {
         openNewTabBtn.style.display = 'none';
       }
 
       // Show Share only for HTML artifacts
-      if (isHtml && hasContent) {
+      if (previewType === 'html' && hasContent) {
         shareBtn.style.display = 'inline-flex';
         try {
           const shareRes = await fetch('/api/artifacts/' + id + '/share');
@@ -5541,42 +5654,71 @@ function getAppHtml(userEmail) {
     function togglePreview() {
       if (!currentViewingArtifact) return;
 
-      const previewContainer = document.getElementById('content-viewer-preview');
-      const codeContainer = document.getElementById('content-viewer-code');
-      const iframe = document.getElementById('content-preview-iframe');
-      const mdContainer = document.getElementById('content-viewer-markdown');
+      var previewContainer = document.getElementById('content-viewer-preview');
+      var codeContainer = document.getElementById('content-viewer-code');
+      var iframe = document.getElementById('content-preview-iframe');
+      var mdContainer = document.getElementById('content-viewer-markdown');
 
       showingPreview = !showingPreview;
-      const content = currentViewingArtifact.file_content || '';
-      const isMd = currentViewingArtifact.artifact_type === 'markdown' ||
-        (currentViewingArtifact.file_name && currentViewingArtifact.file_name.endsWith('.md'));
+      var content = currentViewingArtifact.file_content || '';
+      var pType = detectPreviewType(currentViewingArtifact);
 
-      if (showingPreview) {
-        codeContainer.style.display = 'none';
-        if (isMd) {
-          // Render markdown
-          previewContainer.style.display = 'none';
-          mdContainer.style.display = 'block';
-          mdContainer.textContent = '';
-          const rendered = renderMarkdown(content);
-          mdContainer.insertAdjacentHTML('afterbegin', rendered);
-        } else {
-          // HTML iframe preview
-          mdContainer.style.display = 'none';
-          previewContainer.style.display = 'block';
-          iframe.srcdoc = content;
-        }
-      } else {
-        // Show code
+      if (!showingPreview) {
         previewContainer.style.display = 'none';
         mdContainer.style.display = 'none';
         codeContainer.style.display = 'block';
+        return;
+      }
+
+      codeContainer.style.display = 'none';
+
+      if (pType === 'html') {
+        mdContainer.style.display = 'none';
+        previewContainer.style.display = 'block';
+        iframe.srcdoc = content;
+      } else if (pType === 'svg') {
+        // SVG renders directly in the rich preview div
+        mdContainer.style.display = 'block';
+        mdContainer.textContent = '';
+        previewContainer.style.display = 'none';
+        var svgWrapper = '<div style="display:flex;align-items:center;justify-content:center;min-height:300px;padding:2rem;background:#18181b;border-radius:8px">' + content + '</div>';
+        mdContainer.insertAdjacentHTML('afterbegin', svgWrapper);
+      } else if (pType === 'markdown') {
+        previewContainer.style.display = 'none';
+        mdContainer.style.display = 'block';
+        mdContainer.textContent = '';
+        mdContainer.insertAdjacentHTML('afterbegin', renderMarkdown(content));
+      } else if (pType === 'csv') {
+        previewContainer.style.display = 'none';
+        mdContainer.style.display = 'block';
+        mdContainer.textContent = '';
+        mdContainer.insertAdjacentHTML('afterbegin', renderCsv(content));
+      } else if (pType === 'json') {
+        previewContainer.style.display = 'none';
+        mdContainer.style.display = 'block';
+        mdContainer.textContent = '';
+        mdContainer.insertAdjacentHTML('afterbegin', renderJson(content));
+      } else if (pType === 'diff') {
+        previewContainer.style.display = 'none';
+        mdContainer.style.display = 'block';
+        mdContainer.textContent = '';
+        mdContainer.insertAdjacentHTML('afterbegin', renderDiff(content));
+      } else {
+        // Fallback: show code
+        previewContainer.style.display = 'none';
+        mdContainer.style.display = 'none';
+        codeContainer.style.display = 'block';
+        showingPreview = false;
       }
     }
 
     // Build a full HTML page wrapping rendered markdown
     function buildMarkdownHtmlPage(mdContent, title) {
       var rendered = renderMarkdown(mdContent);
+      var hasMermaid = rendered.indexOf('class="mermaid"') > -1;
+      var mermaidScript = hasMermaid
+        ? '<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";mermaid.initialize({startOnLoad:true,theme:"dark"});</' + 'script>'
+        : '';
       return '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
         '<title>' + (title || 'Markdown Preview') + '</title>' +
         '<style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;' +
@@ -5587,12 +5729,14 @@ function getAppHtml(userEmail) {
         'code{background:#1e1e2e;padding:0.2em 0.4em;border-radius:4px;font-size:0.9em}' +
         'pre{background:#1e1e2e;padding:1rem;border-radius:8px;overflow-x:auto}' +
         'pre code{background:none;padding:0}' +
+        'pre.mermaid{background:transparent;text-align:center}' +
         'blockquote{border-left:3px solid #6366f1;padding:0.5rem 1rem;margin:1rem 0;color:#a1a1aa}' +
         'table{border-collapse:collapse;width:100%}' +
         'th,td{border:1px solid #27272a;padding:0.5rem 0.75rem;text-align:left}' +
         'a{color:#818cf8}img{max-width:100%;border-radius:8px}' +
         'hr{border:none;border-top:1px solid #27272a;margin:2rem 0}' +
-        'ul,ol{padding-left:1.5rem}li{margin:0.25rem 0}</style></head>' +
+        'ul,ol{padding-left:1.5rem}li{margin:0.25rem 0}</style>' +
+        mermaidScript + '</head>' +
         '<body>' + rendered + '</body></html>';
     }
 
@@ -5600,16 +5744,28 @@ function getAppHtml(userEmail) {
     async function openInNewTab() {
       if (!currentViewingArtifact) return;
       var content = currentViewingArtifact.file_content || '';
-      var isMd = currentViewingArtifact.artifact_type === 'markdown' ||
-        (currentViewingArtifact.file_name && currentViewingArtifact.file_name.endsWith('.md'));
+      var pType = detectPreviewType(currentViewingArtifact);
 
       // For markdown, render to HTML and open as blob
-      if (isMd) {
+      if (pType === 'markdown') {
         var htmlPage = buildMarkdownHtmlPage(content, currentViewingArtifact.name);
         var blob = new Blob([htmlPage], { type: 'text/html' });
         var url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+        return;
+      }
+
+      // For SVG, wrap in minimal HTML page and open as blob
+      if (pType === 'svg') {
+        var svgPage = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' +
+          (currentViewingArtifact.name || 'SVG') + '</title>' +
+          '<style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#09090b}svg{max-width:90vw;max-height:90vh}</style></head>' +
+          '<body>' + content + '</body></html>';
+        var svgBlob = new Blob([svgPage], { type: 'text/html' });
+        var svgUrl = URL.createObjectURL(svgBlob);
+        window.open(svgUrl, '_blank');
+        setTimeout(function() { URL.revokeObjectURL(svgUrl); }, 5000);
         return;
       }
 
