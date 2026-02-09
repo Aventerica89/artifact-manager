@@ -2491,6 +2491,15 @@ function getAppHtml(userEmail) {
       color: var(--foreground);
     }
 
+    .btn-danger {
+      background: var(--rose);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #e11d48;
+    }
+
     .btn-sm {
       padding: 0.375rem 0.75rem;
       font-size: 0.75rem;
@@ -3377,6 +3386,124 @@ function getAppHtml(userEmail) {
       border-color: var(--indigo);
     }
 
+    /* Changelog View */
+    .changelog-view {
+      padding: 2rem 0;
+      max-width: 720px;
+    }
+
+    .changelog-header {
+      margin-bottom: 2rem;
+    }
+
+    .changelog-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-bottom: 0.25rem;
+    }
+
+    .changelog-header p {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+
+    .changelog-entry {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 2rem;
+      border-left: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .changelog-entry:last-child {
+      margin-bottom: 0;
+    }
+
+    .changelog-dot {
+      position: absolute;
+      left: -5px;
+      top: 0.25rem;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--indigo);
+    }
+
+    .changelog-version {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.375rem;
+    }
+
+    .changelog-version-badge {
+      display: inline-flex;
+      padding: 0.125rem 0.5rem;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--indigo);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .changelog-date {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+
+    .changelog-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 0.75rem;
+    }
+
+    .changelog-changes {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .changelog-change {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+
+    .changelog-type {
+      display: inline-flex;
+      padding: 0.0625rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .changelog-type.feat {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+    }
+
+    .changelog-type.fix {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--rose);
+    }
+
+    .changelog-type.improve {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--indigo);
+    }
+
+    .changelog-type.breaking {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+    }
+
     /* Filter Pills */
     .filter-pills {
       display: flex;
@@ -3740,6 +3867,19 @@ function getAppHtml(userEmail) {
         <div class="nav-section-title">Popular Tags</div>
         <div id="tags-nav"></div>
       </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">App</div>
+        <div class="nav-item" data-filter="changelog" onclick="setFilter('changelog')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            <line x1="9" y1="12" x2="15" y2="12"/>
+            <line x1="9" y1="16" x2="13" y2="16"/>
+          </svg>
+          Changelog
+        </div>
+      </div>
     </nav>
 
     <div class="sidebar-footer">
@@ -3915,6 +4055,8 @@ function getAppHtml(userEmail) {
       <div class="artifacts-grid" id="artifacts-grid"></div>
 
       <div class="pagination" id="pagination"></div>
+
+      <div class="changelog-view" id="changelog-view" style="display: none;"></div>
     </div>
   </main>
 
@@ -4135,27 +4277,27 @@ function getAppHtml(userEmail) {
         </button>
       </div>
       <div class="modal-body">
-        <p style="margin-bottom: 1.5rem;">Share "<strong id="share-collection-name"></strong>" publicly. Anyone with the link will be able to view this collection.</p>
+        <p style="margin-bottom: 1.5rem; color: var(--muted-foreground);">Share "<strong style="color: var(--foreground);" id="share-collection-name"></strong>" publicly. Anyone with the link will be able to view this collection.</p>
 
         <div id="share-url-container" style="display: none; margin-bottom: 1.5rem;">
-          <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Public URL</label>
+          <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Public URL</label>
           <div style="display: flex; gap: 0.5rem;">
-            <input type="text" id="share-url" readonly style="flex: 1; background: var(--secondary); font-family: monospace; font-size: 0.875rem;" />
+            <input type="text" id="share-url" readonly style="flex: 1; padding: 0.5rem 0.75rem; background: var(--secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--foreground); font-family: monospace; font-size: 0.875rem;" />
             <button class="btn btn-secondary" onclick="copyShareUrl()">Copy</button>
           </div>
-          <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">This link allows anyone to view your collection without signing in.</p>
+          <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--muted-foreground);">This link allows anyone to view your collection without signing in.</p>
         </div>
 
         <div id="share-settings" style="display: none;">
           <div class="form-group">
-            <label>
+            <label style="display: flex; align-items: center; color: var(--foreground); cursor: pointer;">
               <input type="checkbox" id="share-show-thumbnails" checked />
               <span style="margin-left: 0.5rem;">Show artifact previews</span>
             </label>
           </div>
 
           <div class="form-group">
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Layout Style</label>
+            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Layout Style</label>
             <select id="share-layout" style="width: 100%;">
               <option value="grouped">Grouped by Tags (Recommended)</option>
               <option value="grid">Grid View</option>
@@ -4310,6 +4452,7 @@ function getAppHtml(userEmail) {
 
     // State
     let allArtifacts = [];
+    var contentPreviewUrls = [];
     let allCollections = [];
     let allTags = [];
     let currentTags = [];
@@ -4634,16 +4777,24 @@ function getAppHtml(userEmail) {
             </div>
           \`;
         } else if (a.file_content) {
-          const safeContent = escapeHtml(a.file_content).replace(/'/g, '&apos;');
           thumbnailHTML = \`
             <div class="artifact-thumbnail" onclick="openArtifactPreviewFromContent(\${a.id}, '\${escapeHtml(a.name)}')">
-              <div class="artifact-thumbnail-placeholder">
-                <div class="artifact-thumbnail-icon">\${getTypeIcon(a.artifact_type)}</div>
-                <div>Click to preview</div>
-              </div>
+              <iframe class="content-preview-iframe" data-artifact-id="\${a.id}"
+                sandbox="allow-scripts" loading="lazy"></iframe>
             </div>
           \`;
         }
+      }
+
+      if (!thumbnailHTML) {
+        thumbnailHTML = \`
+          <div class="artifact-thumbnail" style="cursor: default;">
+            <div class="artifact-thumbnail-placeholder">
+              <div class="artifact-thumbnail-icon">\${getTypeIcon(a.artifact_type)}</div>
+              <div>No Preview</div>
+            </div>
+          </div>
+        \`;
       }
 
       return \`
@@ -4793,6 +4944,7 @@ function getAppHtml(userEmail) {
       grid.innerHTML = pageArtifacts.map(a => renderArtifactCard(a)).join('');
 
       renderPagination();
+      populateContentPreviews();
     }
 
     function openArtifactPreview(url, name) {
@@ -4814,6 +4966,33 @@ function getAppHtml(userEmail) {
       var url = URL.createObjectURL(blob);
       window.open(url, '_blank');
       setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+    }
+
+    function populateContentPreviews() {
+      contentPreviewUrls.forEach(function(u) { URL.revokeObjectURL(u); });
+      contentPreviewUrls = [];
+      var iframes = document.querySelectorAll('.content-preview-iframe');
+      iframes.forEach(function(iframe) {
+        var id = parseInt(iframe.getAttribute('data-artifact-id'), 10);
+        var artifact = allArtifacts.find(function(a) { return a.id === id; });
+        if (!artifact || !artifact.file_content) return;
+        var pType = detectPreviewType(artifact);
+        var content = artifact.file_content;
+        var blobContent;
+        if (pType === 'html') {
+          blobContent = content;
+        } else if (pType === 'svg') {
+          blobContent = '<!DOCTYPE html><html><head><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#09090b}svg{max-width:90vw;max-height:90vh}</style></head><body>' + content + '</body></html>';
+        } else if (pType === 'markdown') {
+          blobContent = buildMarkdownHtmlPage(content, artifact.name);
+        } else {
+          return;
+        }
+        var blob = new Blob([blobContent], { type: 'text/html' });
+        var url = URL.createObjectURL(blob);
+        contentPreviewUrls.push(url);
+        iframe.src = url;
+      });
     }
 
     function renderPagination() {
@@ -4845,6 +5024,122 @@ function getAppHtml(userEmail) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    var CHANGELOG_ENTRIES = [
+      {
+        version: 'v1.3.0',
+        date: '2026-02-08',
+        title: 'Preview Types & Markdown Upgrade',
+        changes: [
+          { type: 'feat', text: 'SVG inline preview with pan and zoom' },
+          { type: 'feat', text: 'CSV preview with formatted table view' },
+          { type: 'feat', text: 'JSON preview with syntax highlighting and collapsible tree' },
+          { type: 'feat', text: 'Diff preview with side-by-side comparison' },
+          { type: 'feat', text: 'Mermaid diagram rendering in markdown' },
+          { type: 'feat', text: 'Auto-generated filenames on save from Claude' },
+          { type: 'feat', text: 'Download button for all content types' },
+          { type: 'fix', text: 'Collection dot spacing in sidebar' },
+          { type: 'fix', text: 'Card preview thumbnails not rendering' },
+          { type: 'fix', text: 'Markdown open/download buttons' }
+        ]
+      },
+      {
+        version: 'v1.2.0',
+        date: '2026-02-08',
+        title: 'Edit Modal Redesign',
+        changes: [
+          { type: 'feat', text: 'Completely redesigned edit modal with tabbed layout' },
+          { type: 'feat', text: 'Full markdown support with live preview' },
+          { type: 'feat', text: 'Custom scrollbars throughout the app' },
+          { type: 'improve', text: 'Better form layout with metadata and content tabs' }
+        ]
+      },
+      {
+        version: 'v1.1.0',
+        date: '2026-02-08',
+        title: 'Collections, Cards & Security',
+        changes: [
+          { type: 'feat', text: 'Collection color dots in sidebar navigation' },
+          { type: 'feat', text: 'Card preview thumbnails in grid view' },
+          { type: 'feat', text: 'Multi-select for bulk delete and categorize' },
+          { type: 'fix', text: 'Logout button now uses cookie auth route' },
+          { type: 'fix', text: 'Security hardening across worker and extension' },
+          { type: 'fix', text: 'Bulk operation validation and count handling' }
+        ]
+      },
+      {
+        version: 'v1.0.0',
+        date: '2026-02-08',
+        title: 'Cookie Auth & Login Stability',
+        changes: [
+          { type: 'feat', text: 'Cookie-based login as fallback when CF Access is not configured' },
+          { type: 'feat', text: 'Redesigned public share page with modern dark UI' },
+          { type: 'fix', text: 'Login redirect loop with Cloudflare Access' },
+          { type: 'fix', text: 'CF_Authorization cookie check for browser auth' },
+          { type: 'fix', text: 'White flash on page load (FOUC prevention)' },
+          { type: 'fix', text: 'Preview button contrast on share page' }
+        ]
+      },
+      {
+        version: 'v0.9.0',
+        date: '2026-02-02',
+        title: 'Custom Domain & Extension Fixes',
+        changes: [
+          { type: 'feat', text: 'Custom domain artifacts.jbcloud.app' },
+          { type: 'feat', text: 'Remove conversation button from public share page' },
+          { type: 'fix', text: 'Chrome extension host_permissions for custom domain' },
+          { type: 'fix', text: 'Save button placement — skip modals and dialogs' },
+          { type: 'fix', text: 'Published URL detection in extension' },
+          { type: 'fix', text: 'Wrangler config moved to repo root for CI/CD' }
+        ]
+      },
+      {
+        version: 'v0.8.0',
+        date: '2026-02-01',
+        title: 'Initial Release',
+        changes: [
+          { type: 'feat', text: 'Cloudflare Worker app with D1 database' },
+          { type: 'feat', text: 'Chrome extension to save artifacts from Claude.ai' },
+          { type: 'feat', text: 'Collections and tags for organization' },
+          { type: 'feat', text: 'Favorites and search' },
+          { type: 'feat', text: 'Public share pages for artifacts' },
+          { type: 'feat', text: 'Cloudflare Access authentication' }
+        ]
+      }
+    ];
+
+    function renderChangelog() {
+      var container = document.getElementById('changelog-view');
+      var html = '<div class="changelog-header">';
+      html += '<h2>Changelog</h2>';
+      html += '<p>New features, improvements, and fixes.</p>';
+      html += '</div>';
+
+      for (var i = 0; i < CHANGELOG_ENTRIES.length; i++) {
+        var entry = CHANGELOG_ENTRIES[i];
+        html += '<div class="changelog-entry">';
+        html += '<div class="changelog-dot"></div>';
+        html += '<div class="changelog-version">';
+        html += '<span class="changelog-version-badge">' + escapeHtml(entry.version) + '</span>';
+        html += '<span class="changelog-date">' + escapeHtml(entry.date) + '</span>';
+        html += '</div>';
+        html += '<div class="changelog-title">' + escapeHtml(entry.title) + '</div>';
+        html += '<div class="changelog-changes">';
+
+        for (var j = 0; j < entry.changes.length; j++) {
+          var change = entry.changes[j];
+          html += '<div class="changelog-change">';
+          html += '<span class="changelog-type ' + escapeHtml(change.type) + '">';
+          html += escapeHtml(change.type) + '</span>';
+          html += '<span>' + escapeHtml(change.text) + '</span>';
+          html += '</div>';
+        }
+
+        html += '</div></div>';
+      }
+
+      container.innerHTML = html;
+    }
+
     function setFilter(type, value = null) {
       currentFilter = { type, value };
 
@@ -4863,6 +5158,41 @@ function getAppHtml(userEmail) {
           item.classList.remove('active');
         }
       });
+
+      // Toggle changelog view vs artifacts view
+      var changelogView = document.getElementById('changelog-view');
+      var statsGrid = document.querySelector('.stats-grid');
+      var activeFilters = document.getElementById('active-filters');
+      var tagFilters = document.getElementById('tag-filters');
+      var favoritesSection = document.getElementById('favorites-section');
+      var artifactsHeader = document.querySelector('.artifacts-header');
+      var bulkToolbar = document.getElementById('bulk-actions-toolbar');
+      var artifactsGrid = document.getElementById('artifacts-grid');
+      var pagination = document.getElementById('pagination');
+
+      if (type === 'changelog') {
+        if (statsGrid) statsGrid.style.display = 'none';
+        if (activeFilters) activeFilters.style.display = 'none';
+        if (tagFilters) tagFilters.style.display = 'none';
+        if (favoritesSection) favoritesSection.style.display = 'none';
+        if (artifactsHeader) artifactsHeader.style.display = 'none';
+        if (bulkToolbar) bulkToolbar.style.display = 'none';
+        if (artifactsGrid) artifactsGrid.style.display = 'none';
+        if (pagination) pagination.style.display = 'none';
+        if (changelogView) {
+          changelogView.style.display = 'block';
+          renderChangelog();
+        }
+        return;
+      }
+
+      // Show artifacts UI, hide changelog
+      if (changelogView) changelogView.style.display = 'none';
+      if (statsGrid) statsGrid.style.display = '';
+      if (activeFilters) activeFilters.style.display = '';
+      if (artifactsHeader) artifactsHeader.style.display = '';
+      if (artifactsGrid) artifactsGrid.style.display = '';
+      if (pagination) pagination.style.display = '';
 
       // Update title
       const titles = {
