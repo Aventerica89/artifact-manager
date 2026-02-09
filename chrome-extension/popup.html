@@ -15,33 +15,424 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #09090b;
       color: #fafafa;
-      width: 320px;
+      width: 440px;
       min-height: 200px;
     }
 
+    /* Header */
     .header {
-      padding: 16px;
+      padding: 12px 16px;
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    }
+
+    .header-top {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
     .header-icon {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     .header h1 {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
     }
 
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 2px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      padding: 10px 12px;
+      border-bottom: 1px solid #27272a;
+    }
+
+    .search-input-wrap {
+      position: relative;
+    }
+
+    .search-input-wrap svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #71717a;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 7px 10px 7px 32px;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      color: #fafafa;
+      font-size: 12px;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #6366f1;
+    }
+
+    .search-input::placeholder {
+      color: #52525b;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      padding: 8px 12px;
+      border-bottom: 1px solid #27272a;
+    }
+
+    .type-pills {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+
+    .type-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .type-pill {
+      padding: 4px 10px;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      background: transparent;
+      color: #a1a1aa;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .type-pill.active {
+      background: #6366f1;
+      border-color: #6366f1;
+      color: #fff;
+    }
+
+    .type-pill:hover:not(.active) {
+      border-color: #3f3f46;
+      color: #d4d4d8;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .fav-toggle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      background: transparent;
+      color: #a1a1aa;
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .fav-toggle.active {
+      background: rgba(234, 179, 8, 0.15);
+      border-color: #eab308;
+      color: #eab308;
+    }
+
+    .fav-toggle:hover:not(.active) {
+      border-color: #3f3f46;
+    }
+
+    .filter-select {
+      flex: 1;
+      min-width: 0;
+      padding: 4px 6px;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      color: #a1a1aa;
+      font-size: 11px;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      padding-right: 20px;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: #6366f1;
+    }
+
+    .filter-select option {
+      background: #18181b;
+      color: #fafafa;
+    }
+
+    /* Artifacts Grid */
+    .artifacts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px 12px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .artifacts-grid::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .artifacts-grid::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .artifacts-grid::-webkit-scrollbar-thumb {
+      background: #3f3f46;
+      border-radius: 2px;
+    }
+
+    .artifacts-grid::-webkit-scrollbar-thumb:hover {
+      background: #6366f1;
+    }
+
+    /* Artifact Card */
+    .artifact-card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .artifact-card:hover {
+      border-color: #3f3f46;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-type-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .card-type-icon.code { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+    .card-type-icon.html { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
+    .card-type-icon.image { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .card-type-icon.document { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    .card-type-icon.other { background: rgba(161, 161, 170, 0.2); color: #a1a1aa; }
+
+    .card-fav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #3f3f46;
+      padding: 0;
+      line-height: 1;
+      font-size: 14px;
+      transition: color 0.15s;
+    }
+
+    .card-fav-btn:hover {
+      color: #eab308;
+    }
+
+    .card-fav-btn.favorited {
+      color: #eab308;
+    }
+
+    .card-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: #e4e4e7;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .card-collection-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .card-collection-name {
+      font-size: 9px;
+      color: #71717a;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 60px;
+    }
+
+    .card-lang-badge {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: #27272a;
+      color: #a1a1aa;
+      margin-left: auto;
+    }
+
+    /* Empty / Auth States */
+    .empty-state {
+      padding: 32px 16px;
+      text-align: center;
+      color: #71717a;
+    }
+
+    .empty-state svg {
+      margin-bottom: 8px;
+      color: #3f3f46;
+    }
+
+    .empty-state p {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .empty-state .action-link {
+      color: #6366f1;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* Artifacts Footer */
+    .artifacts-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-top: 1px solid #27272a;
+    }
+
+    .artifacts-count {
+      font-size: 11px;
+      color: #71717a;
+    }
+
+    .open-app-link {
+      font-size: 11px;
+      color: #6366f1;
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .open-app-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Loading skeleton */
+    .skeleton-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px 12px;
+    }
+
+    .skeleton-card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 10px;
+      height: 80px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Settings Tab (existing styles preserved) */
     .content {
       padding: 16px;
     }
@@ -234,7 +625,7 @@
     }
 
     .footer {
-      padding: 12px 16px;
+      padding: 10px 16px;
       border-top: 1px solid #27272a;
       font-size: 11px;
       color: #71717a;
@@ -269,78 +660,171 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* Hide dropdowns when empty */
+    .filter-select.hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
+  <!-- Header with Tabs -->
   <div class="header">
-    <div class="header-icon">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-        <polyline points="7.5 4.21 12 6.81 16.5 4.21"/>
-        <polyline points="7.5 19.79 7.5 14.6 3 12"/>
-        <polyline points="21 12 16.5 14.6 16.5 19.79"/>
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-        <line x1="12" y1="22.08" x2="12" y2="12"/>
-      </svg>
+    <div class="header-top">
+      <div class="header-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="7.5 4.21 12 6.81 16.5 4.21"/>
+          <polyline points="7.5 19.79 7.5 14.6 3 12"/>
+          <polyline points="21 12 16.5 14.6 16.5 19.79"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+      </div>
+      <h1>Artifact Manager</h1>
     </div>
-    <h1>Artifact Manager</h1>
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="artifacts">Artifacts</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </div>
   </div>
 
-  <div class="content">
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
+  <!-- Artifacts Tab -->
+  <div id="tab-artifacts" class="tab-content active">
+    <!-- Auth Required State -->
+    <div id="auth-state" class="empty-state" style="display: none;">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <p>Log in to browse artifacts.<br><span class="action-link" id="auth-open-link">Open Artifact Manager</span></p>
     </div>
 
-    <div id="main-content" style="display: none;">
-      <div id="status-card" class="status-card">
-        <div class="status-header">
-          <div class="status-dot"></div>
-          <span class="status-label">Connection Status</span>
-        </div>
-        <div id="status-text" class="status-text">Checking...</div>
-        <div id="stats" class="stats" style="display: none;">
-          <div class="stat">
-            <div class="stat-value" id="stat-total">0</div>
-            <div class="stat-label">Total</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value" id="stat-favorites">0</div>
-            <div class="stat-label">Favorites</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value" id="stat-collections">0</div>
-            <div class="stat-label">Collections</div>
-          </div>
+    <!-- Connected Content -->
+    <div id="artifacts-content" style="display: none;">
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="search-input" id="search-input" placeholder="Search artifacts...">
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="api-url">Artifact Manager URL</label>
-        <input type="url" id="api-url" placeholder="https://artifact-manager.example.com">
-        <div class="help-text">The URL where your Artifact Manager is hosted</div>
+      <div class="filter-bar">
+        <div class="type-pills" id="type-pills">
+          <button class="type-pill active" data-type="">All</button>
+          <button class="type-pill" data-type="code">Code</button>
+          <button class="type-pill" data-type="html">HTML</button>
+          <button class="type-pill" data-type="image">Image</button>
+          <button class="type-pill" data-type="document">Document</button>
+        </div>
+        <div class="filter-row">
+          <button class="fav-toggle" id="fav-toggle">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            Favs
+          </button>
+          <select class="filter-select" id="tag-filter">
+            <option value="">All Tags</option>
+          </select>
+          <select class="filter-select" id="collection-filter">
+            <option value="">All Collections</option>
+          </select>
+        </div>
       </div>
 
-      <div class="btn-group">
-        <button class="btn btn-secondary" id="test-btn">
-          Test Connection
-        </button>
-        <button class="btn btn-primary" id="save-btn">
-          Save Settings
-        </button>
+      <!-- Loading Skeleton -->
+      <div id="artifacts-loading" class="skeleton-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
 
-      <div id="message" class="message"></div>
+      <!-- Artifact Grid -->
+      <div id="artifacts-grid" class="artifacts-grid" style="display: none;"></div>
 
-      <div class="divider"></div>
-
-      <button class="btn btn-secondary" id="open-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-          <polyline points="15 3 21 3 21 9"/>
-          <line x1="10" y1="14" x2="21" y2="3"/>
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
         </svg>
-        Open Artifact Manager
-      </button>
+        <p id="empty-text">No artifacts found</p>
+      </div>
+
+      <div class="artifacts-footer">
+        <span class="artifacts-count" id="artifacts-count">Showing 0</span>
+        <a class="open-app-link" id="footer-open-link">
+          Open Full App
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Tab -->
+  <div id="tab-settings" class="tab-content">
+    <div class="content">
+      <div id="settings-content">
+        <div id="status-card" class="status-card">
+          <div class="status-header">
+            <div class="status-dot"></div>
+            <span class="status-label">Connection Status</span>
+          </div>
+          <div id="status-text" class="status-text">Checking...</div>
+          <div id="stats" class="stats" style="display: none;">
+            <div class="stat">
+              <div class="stat-value" id="stat-total">0</div>
+              <div class="stat-label">Total</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value" id="stat-favorites">0</div>
+              <div class="stat-label">Favorites</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value" id="stat-collections">0</div>
+              <div class="stat-label">Collections</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="api-url">Artifact Manager URL</label>
+          <input type="url" id="api-url" placeholder="https://artifact-manager.example.com">
+          <div class="help-text">The URL where your Artifact Manager is hosted</div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" id="test-btn">
+            Test Connection
+          </button>
+          <button class="btn btn-primary" id="save-btn">
+            Save Settings
+          </button>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div class="divider"></div>
+
+        <button class="btn btn-secondary" id="open-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Open Artifact Manager
+        </button>
+      </div>
     </div>
   </div>
 

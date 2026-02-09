@@ -22,58 +22,128 @@ async function saveSettings(settings) {
   await browser.storage.sync.set(settings);
 }
 
-// Save artifact to Artifact Manager
-async function saveArtifact(data) {
+// Shared API fetch helper — handles auth redirects, CORS, and error normalization
+async function apiFetch(path, options = {}) {
   const settings = await getSettings();
   const apiUrl = settings.apiUrl.replace(/\/$/, '');
 
-  // Add default collection if set
-  if (settings.defaultCollection && !data.collection_id) {
-    data.collection_id = settings.defaultCollection;
+  const fetchOptions = {
+    credentials: 'include',
+    ...options,
+  };
+
+  // Add JSON content-type for requests with a body
+  if (fetchOptions.body) {
+    fetchOptions.headers = {
+      'Content-Type': 'application/json',
+      ...fetchOptions.headers,
+    };
   }
 
   try {
-    const response = await fetch(`${apiUrl}/api/artifacts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
-      body: JSON.stringify(data)
-    });
+    const response = await fetch(`${apiUrl}${path}`, fetchOptions);
+
+    // Cloudflare Access redirect detection
+    if (response.type === 'opaqueredirect' || response.status === 302 || response.status === 303) {
+      return { success: false, error: 'Not authenticated', needsAuth: true };
+    }
+
+    if (response.status === 0) {
+      return { success: false, error: 'Not authenticated', needsAuth: true };
+    }
 
     if (response.status === 401) {
-      // User needs to authenticate
-      throw new Error('Not authenticated. Please log in to Artifact Manager first.');
+      return { success: false, error: 'Not authenticated', needsAuth: true };
     }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `HTTP ${response.status}`);
+      return { success: false, error: errorData.error || `HTTP ${response.status}` };
     }
 
-    const result = await response.json();
-    return { success: true, id: result.id };
+    const data = await response.json();
+    return { success: true, data };
   } catch (error) {
     console.error('Artifact Manager: API error', error);
 
-    // Check if it's a CORS error
-    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      throw new Error('Connection failed. Make sure you are logged into Artifact Manager and CORS is enabled.');
+    if (error.message.includes('Failed to fetch') ||
+        error.message.includes('NetworkError') ||
+        error.message.includes('did not match')) {
+      return { success: false, error: 'Not authenticated', needsAuth: true };
     }
 
-    throw error;
+    return { success: false, error: error.message };
   }
 }
 
-// Listen for messages from content script
+// Save artifact to Artifact Manager
+async function saveArtifact(data) {
+  const settings = await getSettings();
+
+  // Add default collection if set
+  if (settings.defaultCollection && !data.collection_id) {
+    data = { ...data, collection_id: settings.defaultCollection };
+  }
+
+  const result = await apiFetch('/api/artifacts', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+
+  if (!result.success) {
+    throw new Error(result.error);
+  }
+
+  return { success: true, id: result.data.id };
+}
+
+// Test connection to Artifact Manager
+async function testConnection() {
+  const result = await apiFetch('/api/stats', { redirect: 'manual' });
+
+  if (!result.success) {
+    return result;
+  }
+
+  return { success: true, stats: result.data };
+}
+
+// Fetch artifacts with optional filters
+async function getArtifacts(filters = {}) {
+  const params = new URLSearchParams();
+
+  if (filters.search) params.set('search', filters.search);
+  if (filters.type) params.set('type', filters.type);
+  if (filters.favorite) params.set('favorite', 'true');
+  if (filters.tag) params.set('tag', filters.tag);
+  if (filters.collection) params.set('collection', filters.collection);
+  params.set('sort', filters.sort || 'newest');
+
+  const qs = params.toString();
+  return apiFetch(`/api/artifacts${qs ? `?${qs}` : ''}`);
+}
+
+// Toggle favorite on an artifact
+async function toggleFavorite(id) {
+  return apiFetch(`/api/artifacts/${id}/favorite`, { method: 'POST' });
+}
+
+// Fetch all tags
+async function getTags() {
+  return apiFetch('/api/tags');
+}
+
+// Fetch all collections
+async function getCollections() {
+  return apiFetch('/api/collections');
+}
+
+// Listen for messages from content script and popup
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'saveArtifact') {
     saveArtifact(request.data)
       .then(result => sendResponse(result))
       .catch(error => sendResponse({ success: false, error: error.message }));
-
-    // Return true to indicate we'll respond asynchronously
     return true;
   }
 
@@ -104,51 +174,35 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true;
   }
-});
 
-// Test connection to Artifact Manager
-async function testConnection() {
-  const settings = await getSettings();
-  const apiUrl = settings.apiUrl.replace(/\/$/, '');
-
-  try {
-    // Use manual redirect handling to detect Cloudflare Access redirects
-    const response = await fetch(`${apiUrl}/api/stats`, {
-      method: 'GET',
-      credentials: 'include',
-      redirect: 'manual'
-    });
-
-    // Check for redirect (Cloudflare Access will redirect to login)
-    if (response.type === 'opaqueredirect' || response.status === 302 || response.status === 303) {
-      return { success: false, error: 'Not authenticated. Click "Open Artifact Manager" to log in.', needsAuth: true };
-    }
-
-    if (response.status === 401) {
-      return { success: false, error: 'Not authenticated', needsAuth: true };
-    }
-
-    if (response.status === 0) {
-      // Opaque response - likely a CORS or redirect issue
-      return { success: false, error: 'Not authenticated. Click "Open Artifact Manager" to log in.', needsAuth: true };
-    }
-
-    if (!response.ok) {
-      return { success: false, error: `HTTP ${response.status}` };
-    }
-
-    const stats = await response.json();
-    return { success: true, stats };
-  } catch (error) {
-    // Handle specific error types
-    if (error.message.includes('Failed to fetch') ||
-        error.message.includes('NetworkError') ||
-        error.message.includes('did not match')) {
-      return { success: false, error: 'Not authenticated. Click "Open Artifact Manager" to log in.', needsAuth: true };
-    }
-    return { success: false, error: error.message };
+  if (request.action === 'getArtifacts') {
+    getArtifacts(request.filters)
+      .then(result => sendResponse(result))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
   }
-}
+
+  if (request.action === 'toggleFavorite') {
+    toggleFavorite(request.id)
+      .then(result => sendResponse(result))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+
+  if (request.action === 'getTags') {
+    getTags()
+      .then(result => sendResponse(result))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+
+  if (request.action === 'getCollections') {
+    getCollections()
+      .then(result => sendResponse(result))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+});
 
 // Handle extension icon click - open popup
 browser.action.onClicked.addListener((tab) => {
