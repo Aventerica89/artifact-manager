@@ -2307,6 +2307,8 @@ function getAppHtml(userEmail) {
       width: 8px;
       height: 8px;
       border-radius: 50%;
+      margin-right: 0.5rem;
+      flex-shrink: 0;
     }
 
     .sidebar-footer {
@@ -2948,12 +2950,23 @@ function getAppHtml(userEmail) {
       font-size: 0.75rem;
       text-align: center;
       padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
     .artifact-thumbnail-icon {
-      width: 48px;
-      height: 48px;
       opacity: 0.3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .artifact-thumbnail-icon svg {
+      width: 32px;
+      height: 32px;
     }
 
     .artifact-card {
@@ -3047,6 +3060,7 @@ function getAppHtml(userEmail) {
 
     .artifact-icon.code { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
     .artifact-icon.html { background: rgba(99, 102, 241, 0.15); color: var(--indigo); }
+    .artifact-icon.markdown { background: rgba(56, 189, 248, 0.15); color: var(--sky, #38bdf8); }
     .artifact-icon.document { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
     .artifact-icon.image { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
     .artifact-icon.data { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
@@ -4206,6 +4220,14 @@ function getAppHtml(userEmail) {
             </svg>
             Open in New Tab
           </button>
+          <button class="btn btn-secondary" id="download-content-btn" onclick="downloadContent()" style="display: none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download
+          </button>
           <button class="btn btn-secondary" id="share-artifact-btn" onclick="toggleShareArtifact()" style="display: none;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="18" cy="5" r="3"/>
@@ -4603,7 +4625,7 @@ function getAppHtml(userEmail) {
         if (a.published_url) {
           thumbnailHTML = \`
             <div class="artifact-thumbnail" onclick="openArtifactPreview('\${escapeAttr(a.published_url)}', '\${escapeHtml(a.name)}')">
-              <iframe src="\${escapeAttr(a.published_url)}" sandbox=""></iframe>
+              <iframe src="\${escapeAttr(a.published_url)}" sandbox="allow-scripts" loading="lazy"></iframe>
             </div>
           \`;
         } else if (a.file_content) {
@@ -4773,14 +4795,17 @@ function getAppHtml(userEmail) {
     }
 
     function openArtifactPreviewFromContent(artifactId, name) {
-      const artifact = allArtifacts.find(a => a.id === artifactId);
-      if (artifact && artifact.file_content) {
-        const blob = new Blob([artifact.file_content], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no');
-        // Clean up the URL after a delay
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      }
+      var artifact = allArtifacts.find(function(a) { return a.id === artifactId; });
+      if (!artifact || !artifact.file_content) return;
+
+      var isMd = artifact.artifact_type === 'markdown' ||
+        (artifact.file_name && artifact.file_name.endsWith('.md'));
+      var content = artifact.file_content;
+      var blobContent = isMd ? buildMarkdownHtmlPage(content, name) : content;
+      var blob = new Blob([blobContent], { type: 'text/html' });
+      var url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
     }
 
     function renderPagination() {
@@ -5451,12 +5476,24 @@ function getAppHtml(userEmail) {
         previewBtn.style.display = 'none';
       }
 
-      // Show Open in New Tab and Share buttons for HTML artifacts with content
-      if (isHtml && hasContent) {
-        openNewTabBtn.style.display = 'inline-flex';
-        shareBtn.style.display = 'inline-flex';
+      // Show Download for any artifact with content
+      const downloadBtn = document.getElementById('download-content-btn');
+      if (hasContent) {
+        downloadBtn.style.display = 'inline-flex';
+      } else {
+        downloadBtn.style.display = 'none';
+      }
 
-        // Load share status
+      // Show Open in New Tab for HTML and Markdown with content
+      if ((isHtml || isMd) && hasContent) {
+        openNewTabBtn.style.display = 'inline-flex';
+      } else {
+        openNewTabBtn.style.display = 'none';
+      }
+
+      // Show Share only for HTML artifacts
+      if (isHtml && hasContent) {
+        shareBtn.style.display = 'inline-flex';
         try {
           const shareRes = await fetch('/api/artifacts/' + id + '/share');
           if (shareRes.ok) {
@@ -5469,7 +5506,6 @@ function getAppHtml(userEmail) {
         }
         updateShareButton();
       } else {
-        openNewTabBtn.style.display = 'none';
         shareBtn.style.display = 'none';
       }
 
@@ -5538,43 +5574,74 @@ function getAppHtml(userEmail) {
       }
     }
 
-    // Open artifact in new tab (requires share token)
+    // Build a full HTML page wrapping rendered markdown
+    function buildMarkdownHtmlPage(mdContent, title) {
+      var rendered = renderMarkdown(mdContent);
+      return '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+        '<title>' + (title || 'Markdown Preview') + '</title>' +
+        '<style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;' +
+        'max-width:860px;margin:2rem auto;padding:0 1.5rem;line-height:1.7;' +
+        'color:#e4e4e7;background:#09090b}' +
+        'h1,h2,h3,h4{color:#fafafa;margin:1.5em 0 0.5em}' +
+        'h1{border-bottom:1px solid #27272a;padding-bottom:0.3em}' +
+        'code{background:#1e1e2e;padding:0.2em 0.4em;border-radius:4px;font-size:0.9em}' +
+        'pre{background:#1e1e2e;padding:1rem;border-radius:8px;overflow-x:auto}' +
+        'pre code{background:none;padding:0}' +
+        'blockquote{border-left:3px solid #6366f1;padding:0.5rem 1rem;margin:1rem 0;color:#a1a1aa}' +
+        'table{border-collapse:collapse;width:100%}' +
+        'th,td{border:1px solid #27272a;padding:0.5rem 0.75rem;text-align:left}' +
+        'a{color:#818cf8}img{max-width:100%;border-radius:8px}' +
+        'hr{border:none;border-top:1px solid #27272a;margin:2rem 0}' +
+        'ul,ol{padding-left:1.5rem}li{margin:0.25rem 0}</style></head>' +
+        '<body>' + rendered + '</body></html>';
+    }
+
+    // Open artifact in new tab
     async function openInNewTab() {
       if (!currentViewingArtifact) return;
+      var content = currentViewingArtifact.file_content || '';
+      var isMd = currentViewingArtifact.artifact_type === 'markdown' ||
+        (currentViewingArtifact.file_name && currentViewingArtifact.file_name.endsWith('.md'));
 
-      // Check if already shared
-      let renderUrl = currentViewingArtifact.renderUrl;
+      // For markdown, render to HTML and open as blob
+      if (isMd) {
+        var htmlPage = buildMarkdownHtmlPage(content, currentViewingArtifact.name);
+        var blob = new Blob([htmlPage], { type: 'text/html' });
+        var url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+        return;
+      }
 
+      // For HTML, check if already shared
+      var renderUrl = currentViewingArtifact.renderUrl;
       if (renderUrl) {
-        // Already have a render URL, open directly
         window.open(renderUrl, '_blank');
         return;
       }
 
-      // Open window immediately to avoid popup blocker
-      // (must be synchronous with user click)
-      const newWindow = window.open('about:blank', '_blank');
+      var newWindow = window.open('about:blank', '_blank');
       if (!newWindow) {
         showToast('Popup blocked - please allow popups', 'error');
         return;
       }
 
-      // Show loading state in new window
-      newWindow.document.write('<html><head><title>Loading...</title></head><body style="background:#1a1a2e;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;"><p>Generating share link...</p></body></html>');
+      // Show loading in new window via DOM (safe)
+      var loadingP = newWindow.document.createElement('p');
+      loadingP.textContent = 'Generating share link...';
+      newWindow.document.body.style.cssText = 'background:#09090b;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0';
+      newWindow.document.body.appendChild(loadingP);
 
-      // Generate share token
       try {
-        const res = await fetch('/api/artifacts/' + currentViewingArtifact.id + '/share', {
+        var res = await fetch('/api/artifacts/' + currentViewingArtifact.id + '/share', {
           method: 'POST'
         });
-
         if (res.ok) {
-          const data = await res.json();
+          var data = await res.json();
           renderUrl = data.renderUrl;
           currentViewingArtifact.share_token = data.shareToken;
           currentViewingArtifact.renderUrl = renderUrl;
           updateShareButton();
-          // Navigate the already-opened window to the render URL
           newWindow.location.href = renderUrl;
         } else {
           newWindow.close();
@@ -5584,6 +5651,36 @@ function getAppHtml(userEmail) {
         newWindow.close();
         showToast('Failed to generate share link', 'error');
       }
+    }
+
+    // Download artifact content as file
+    function downloadContent() {
+      if (!currentViewingArtifact) return;
+      var content = currentViewingArtifact.file_content || '';
+      var name = currentViewingArtifact.file_name || currentViewingArtifact.name || 'artifact';
+      var type = currentViewingArtifact.artifact_type;
+
+      // Pick file extension
+      var ext = '.txt';
+      if (type === 'html') ext = '.html';
+      else if (type === 'markdown') ext = '.md';
+      else if (type === 'code') ext = '.' + (currentViewingArtifact.language || 'txt').toLowerCase();
+      else if (type === 'svg') ext = '.svg';
+      else if (type === 'react') ext = '.jsx';
+
+      // Ensure filename has extension
+      if (!name.includes('.')) name = name + ext;
+
+      var blob = new Blob([content], { type: 'text/plain' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      showToast('Downloaded ' + name, 'success');
     }
 
     // Toggle share status for artifact
