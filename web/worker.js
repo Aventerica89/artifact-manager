@@ -204,6 +204,51 @@ export default {
   }
 };
 
+const ARTIFACT_SORT_MAP = {
+  newest:  'a.created_at DESC',
+  oldest:  'a.created_at ASC',
+  name:    'a.name ASC',
+  updated: 'a.updated_at DESC',
+  type:    'a.artifact_type ASC, a.name ASC'
+};
+
+// Build the parameterized SQL query for listing artifacts with optional filters
+function buildArtifactQuery(userEmail, { collection, tag, type, source, favorite, search, sort }) {
+  let query = `
+    SELECT
+      a.*,
+      c.name as collection_name,
+      c.slug as collection_slug,
+      c.color as collection_color,
+      GROUP_CONCAT(t.name) as tag_names
+    FROM artifacts a
+    LEFT JOIN collections c ON a.collection_id = c.id
+    LEFT JOIN artifact_tags at ON a.id = at.artifact_id
+    LEFT JOIN tags t ON at.tag_id = t.id
+    WHERE a.user_email = ?
+  `;
+  const params = [userEmail];
+
+  if (collection) { query += ' AND c.slug = ?';           params.push(collection); }
+  if (type)       { query += ' AND a.artifact_type = ?';  params.push(type); }
+  if (source)     { query += ' AND a.source_type = ?';    params.push(source); }
+  if (favorite === 'true') { query += ' AND a.is_favorite = 1'; }
+  if (search) {
+    query += ' AND (a.name LIKE ? OR a.description LIKE ? OR a.notes LIKE ? OR a.language LIKE ? OR a.file_name LIKE ?)';
+    const term = `%${search}%`;
+    params.push(term, term, term, term, term);
+  }
+  if (tag) {
+    query += ' AND a.id IN (SELECT artifact_id FROM artifact_tags at2 JOIN tags t2 ON at2.tag_id = t2.id WHERE t2.name = ? AND t2.user_email = ?)';
+    params.push(tag, userEmail);
+  }
+
+  query += ' GROUP BY a.id';
+  query += ` ORDER BY a.is_favorite DESC, ${ARTIFACT_SORT_MAP[sort] || ARTIFACT_SORT_MAP.newest}`;
+
+  return { query, params };
+}
+
 // Handle API requests (separated for CORS wrapping)
 async function handleApiRequest(path, request, env, userEmail, url) {
 
@@ -211,69 +256,19 @@ async function handleApiRequest(path, request, env, userEmail, url) {
 
       // GET /api/artifacts - List all artifacts with filters
       if (path === 'api/artifacts' && request.method === 'GET') {
-        const collection = url.searchParams.get('collection');
-        const tag = url.searchParams.get('tag');
-        const type = url.searchParams.get('type');
-        const source = url.searchParams.get('source');
-        const favorite = url.searchParams.get('favorite');
-        const sort = url.searchParams.get('sort') || 'newest';
-        const search = url.searchParams.get('search');
-
-        let query = `
-          SELECT
-            a.*,
-            c.name as collection_name,
-            c.slug as collection_slug,
-            c.color as collection_color,
-            GROUP_CONCAT(t.name) as tag_names
-          FROM artifacts a
-          LEFT JOIN collections c ON a.collection_id = c.id
-          LEFT JOIN artifact_tags at ON a.id = at.artifact_id
-          LEFT JOIN tags t ON at.tag_id = t.id
-          WHERE a.user_email = ?
-        `;
-        const params = [userEmail];
-
-        if (collection) {
-          query += ' AND c.slug = ?';
-          params.push(collection);
-        }
-        if (type) {
-          query += ' AND a.artifact_type = ?';
-          params.push(type);
-        }
-        if (source) {
-          query += ' AND a.source_type = ?';
-          params.push(source);
-        }
-        if (favorite === 'true') {
-          query += ' AND a.is_favorite = 1';
-        }
-        if (search) {
-          query += ' AND (a.name LIKE ? OR a.description LIKE ? OR a.notes LIKE ? OR a.language LIKE ? OR a.file_name LIKE ?)';
-          const searchTerm = `%${search}%`;
-          params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
-        }
-        if (tag) {
-          query += ' AND a.id IN (SELECT artifact_id FROM artifact_tags at2 JOIN tags t2 ON at2.tag_id = t2.id WHERE t2.name = ? AND t2.user_email = ?)';
-          params.push(tag, userEmail);
-        }
-
-        query += ' GROUP BY a.id';
-
-        // Sorting
-        const sortMap = {
-          newest: 'a.created_at DESC',
-          oldest: 'a.created_at ASC',
-          name: 'a.name ASC',
-          updated: 'a.updated_at DESC',
-          type: 'a.artifact_type ASC, a.name ASC'
+        const filters = {
+          collection: url.searchParams.get('collection'),
+          tag:        url.searchParams.get('tag'),
+          type:       url.searchParams.get('type'),
+          source:     url.searchParams.get('source'),
+          favorite:   url.searchParams.get('favorite'),
+          sort:       url.searchParams.get('sort') || 'newest',
+          search:     url.searchParams.get('search'),
         };
-        query += ` ORDER BY a.is_favorite DESC, ${sortMap[sort] || sortMap.newest}`;
 
+        const { query, params } = buildArtifactQuery(userEmail, filters);
         const { results } = await env.DB.prepare(query).bind(...params).all();
 
-        // Parse tags from comma-separated string
         const artifacts = results.map(a => ({
           ...a,
           tags: a.tag_names ? a.tag_names.split(',') : []

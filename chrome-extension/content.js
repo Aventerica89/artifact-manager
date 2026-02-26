@@ -116,6 +116,16 @@
     return 'Untitled Artifact';
   }
 
+  // Apply a claude.site/artifacts URL to the data object, extracting the artifact ID
+  function applyPublishedUrl(data, url) {
+    data.published_url = url;
+    data.source_type = 'published';
+    const match = url.match(/\/artifacts\/([a-zA-Z0-9-]+)/);
+    if (match) {
+      data.artifact_id = match[1];
+    }
+  }
+
   // Extract artifact data from the panel
   function extractArtifactData(panel) {
     const data = {
@@ -130,65 +140,49 @@
     };
 
     // Check if current URL contains artifact info
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('artifactId')) {
-      data.artifact_id = url.searchParams.get('artifactId');
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.has('artifactId')) {
+      data.artifact_id = currentUrl.searchParams.get('artifactId');
     }
 
-    // Strategy 1: Look for direct claude.site links in the panel
-    const panelLinks = panel.querySelectorAll('a[href*="claude.site/artifacts"]');
-    if (panelLinks.length > 0) {
-      data.published_url = panelLinks[0].href;
-      data.source_type = 'published';
-
-      // Extract artifact ID from URL
-      const match = data.published_url.match(/\/artifacts\/([a-zA-Z0-9-]+)/);
-      if (match) {
-        data.artifact_id = match[1];
-      }
+    // Strategy 1: Direct claude.site links in the panel
+    const panelLink = panel.querySelector('a[href*="claude.site/artifacts"]');
+    if (panelLink) {
+      applyPublishedUrl(data, panelLink.href);
     }
 
-    // Strategies 2 & 3: Find published URL from links
+    // Strategy 2: "Open in new tab" links (target="_blank")
     if (!data.published_url) {
-      const setPublishedData = (url) => {
-        data.published_url = url;
-        data.source_type = 'published';
-        const match = url.match(/\/artifacts\/([a-zA-Z0-9-]+)/);
-        if (match) {
-          data.artifact_id = match[1];
-        }
-      };
-
-      // Strategy 2: Check "Open in new tab" links (target="_blank")
       const linkFromTarget = Array.from(panel.querySelectorAll('a[target="_blank"]'))
         .find(link => link.href?.includes('claude.site/artifacts'));
-
       if (linkFromTarget) {
-        setPublishedData(linkFromTarget.href);
-      } else {
-        // Strategy 3: Check links with SVG icons (globe/external link icons)
-        const linkFromSvg = Array.from(panel.querySelectorAll('a svg'))
-          .map(svg => svg.closest('a'))
-          .find(link => link?.href?.includes('claude.site/artifacts'));
-        if (linkFromSvg) {
-          setPublishedData(linkFromSvg.href);
-        }
+        applyPublishedUrl(data, linkFromTarget.href);
       }
     }
 
-    // Strategy 4: Check all page links for claude.site
+    // Strategy 3: Links with SVG icons (globe/external link icons)
     if (!data.published_url) {
-      const links = document.querySelectorAll('a[href*="claude.site"]');
-      if (links.length > 0) {
-        data.published_url = links[0].href;
+      const linkFromSvg = Array.from(panel.querySelectorAll('a svg'))
+        .map(svg => svg.closest('a'))
+        .find(link => link?.href?.includes('claude.site/artifacts'));
+      if (linkFromSvg) {
+        applyPublishedUrl(data, linkFromSvg.href);
+      }
+    }
+
+    // Strategy 4: Any page link to claude.site (broader fallback)
+    if (!data.published_url) {
+      const pageLink = document.querySelector('a[href*="claude.site"]');
+      if (pageLink) {
+        data.published_url = pageLink.href;
         data.source_type = 'published';
       }
     }
 
-    // Strategy 5: Check if there's a share/publish URL visible in text
+    // Strategy 5: URL visible in page text
     if (!data.published_url) {
-      const allText = document.body.innerText;
-      const claudeSiteMatch = allText.match(/https:\/\/claude\.site\/artifacts\/[a-zA-Z0-9-]+/);
+      const claudeSiteMatch = document.body.innerText
+        .match(/https:\/\/claude\.site\/artifacts\/[a-zA-Z0-9-]+/);
       if (claudeSiteMatch) {
         data.published_url = claudeSiteMatch[0];
         data.source_type = 'published';
@@ -245,12 +239,11 @@
         await new Promise(r => setTimeout(r, 500)); // Wait for clipboard
         const clipboardText = await navigator.clipboard.readText();
         if (clipboardText && clipboardText.length > 10) {
-          console.log('Artifact Manager: Content extracted via clipboard');
           return clipboardText;
         }
       }
     } catch (e) {
-      console.log('Artifact Manager: Clipboard method failed:', e.message);
+      // Clipboard unavailable or denied — fall through to next method
     }
 
     // Method 2: Extract from iframe srcdoc or content
@@ -263,7 +256,6 @@
           if (doc?.documentElement) {
             const content = doc.documentElement.outerHTML;
             if (content && content.length > 50) {
-              console.log('Artifact Manager: Content extracted from iframe document');
               return content;
             }
           }
@@ -273,12 +265,11 @@
 
         // Try srcdoc attribute
         if (iframe.srcdoc && iframe.srcdoc.length > 50) {
-          console.log('Artifact Manager: Content extracted from iframe srcdoc');
           return iframe.srcdoc;
         }
       }
     } catch (e) {
-      console.log('Artifact Manager: Iframe method failed:', e.message);
+      // Iframe inaccessible — fall through to next method
     }
 
     // Method 3: Check for code block in panel (for code artifacts)
@@ -287,27 +278,24 @@
                        panel.querySelector('code') ||
                        panel.querySelector('pre');
       if (codeBlock?.textContent && codeBlock.textContent.length > 10) {
-        console.log('Artifact Manager: Content extracted from code block');
         return codeBlock.textContent;
       }
     } catch (e) {
-      console.log('Artifact Manager: Code block method failed:', e.message);
+      // No code block found — fall through to next method
     }
 
     // Method 4: Fetch from published URL if available
     if (publishedUrl && publishedUrl.includes('claude.site/artifacts')) {
       try {
-        console.log('Artifact Manager: Attempting to fetch from published URL...');
         const response = await fetch(publishedUrl);
         if (response.ok) {
           const html = await response.text();
           if (html && html.length > 50) {
-            console.log('Artifact Manager: Content extracted from published URL');
             return html;
           }
         }
       } catch (e) {
-        console.log('Artifact Manager: Published URL fetch failed:', e.message);
+        // Network error or CORS — fall through to next method
       }
     }
 
@@ -316,15 +304,13 @@
       const textElements = panel.querySelectorAll('[class*="code"], [class*="content"], [class*="text"]');
       for (const el of textElements) {
         if (el.textContent && el.textContent.length > 50 && !el.querySelector('button')) {
-          console.log('Artifact Manager: Content extracted from text element');
           return el.textContent;
         }
       }
     } catch (e) {
-      console.log('Artifact Manager: Text element method failed:', e.message);
+      // No text content found
     }
 
-    console.warn('Artifact Manager: All content extraction methods failed');
     return null;
   }
 
@@ -372,8 +358,6 @@
       const content = await extractContent(panel, publishedUrl);
       if (content) {
         artifactData.file_content = content;
-      } else {
-        console.warn('Artifact Manager: No content could be extracted, saving metadata only');
       }
 
       // Clean up internal properties
@@ -554,8 +538,6 @@
 
   // Initialize
   function init() {
-    console.log('Artifact Manager: Initializing...');
-
     // Initial scan
     setTimeout(processArtifacts, 1000);
 
@@ -564,8 +546,6 @@
 
     // Re-scan periodically (Claude.ai is very dynamic)
     setInterval(processArtifacts, 5000);
-
-    console.log('Artifact Manager: Ready');
   }
 
   if (document.readyState === 'loading') {

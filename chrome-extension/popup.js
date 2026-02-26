@@ -162,43 +162,39 @@ function showArtifactsLoading(show) {
   document.getElementById('artifacts-grid').style.display = show ? 'none' : 'grid';
 }
 
+function buildSelect(select, items, currentValue, defaultLabel, valueKey, labelFn) {
+  select.textContent = '';
+  const defaultOpt = document.createElement('option');
+  defaultOpt.value = '';
+  defaultOpt.textContent = defaultLabel;
+  select.appendChild(defaultOpt);
+  items.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item[valueKey];
+    opt.textContent = labelFn(item);
+    select.appendChild(opt);
+  });
+  select.value = currentValue;
+  select.classList.toggle('hidden', items.length === 0);
+}
+
 function populateFilterDropdowns() {
-  const tagSelect = document.getElementById('tag-filter');
-  const colSelect = document.getElementById('collection-filter');
-
-  // Preserve current selection
-  const currentTag = state.filters.tag;
-  const currentCol = state.filters.collection;
-
-  // Tags
-  tagSelect.textContent = '';
-  const tagDefault = document.createElement('option');
-  tagDefault.value = '';
-  tagDefault.textContent = 'All Tags';
-  tagSelect.appendChild(tagDefault);
-  state.tags.forEach(tag => {
-    const opt = document.createElement('option');
-    opt.value = tag.name;
-    opt.textContent = `${tag.name} (${tag.usage_count})`;
-    tagSelect.appendChild(opt);
-  });
-  tagSelect.value = currentTag;
-  tagSelect.classList.toggle('hidden', state.tags.length === 0);
-
-  // Collections
-  colSelect.textContent = '';
-  const colDefault = document.createElement('option');
-  colDefault.value = '';
-  colDefault.textContent = 'All Collections';
-  colSelect.appendChild(colDefault);
-  state.collections.forEach(col => {
-    const opt = document.createElement('option');
-    opt.value = col.slug;
-    opt.textContent = `${col.name} (${col.artifact_count})`;
-    colSelect.appendChild(opt);
-  });
-  colSelect.value = currentCol;
-  colSelect.classList.toggle('hidden', state.collections.length === 0);
+  buildSelect(
+    document.getElementById('tag-filter'),
+    state.tags,
+    state.filters.tag,
+    'All Tags',
+    'name',
+    tag => `${tag.name} (${tag.usage_count})`
+  );
+  buildSelect(
+    document.getElementById('collection-filter'),
+    state.collections,
+    state.filters.collection,
+    'All Collections',
+    'slug',
+    col => `${col.name} (${col.artifact_count})`
+  );
 }
 
 function renderArtifactGrid() {

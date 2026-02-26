@@ -143,76 +143,35 @@ async function getArtifact(id) {
   return apiFetch(`/api/artifacts/${id}`);
 }
 
+// Dispatch table for async message handlers that call sendResponse
+const MESSAGE_HANDLERS = {
+  saveArtifact:    (req) => saveArtifact(req.data),
+  getSettings:     (_)   => getSettings(),
+  saveSettings:    (req) => saveSettings(req.settings).then(() => ({ success: true })),
+  testConnection:  (_)   => testConnection(),
+  getArtifacts:    (req) => getArtifacts(req.filters),
+  toggleFavorite:  (req) => toggleFavorite(req.id),
+  getTags:         (_)   => getTags(),
+  getCollections:  (_)   => getCollections(),
+  getArtifact:     (req) => getArtifact(req.id),
+};
+
 // Listen for messages from content script and popup
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'saveArtifact') {
-    saveArtifact(request.data)
+  const handler = MESSAGE_HANDLERS[request.action];
+  if (handler) {
+    handler(request)
       .then(result => sendResponse(result))
       .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
+    return true; // Keep message channel open for async response
   }
 
-  if (request.action === 'getSettings') {
-    getSettings()
-      .then(settings => sendResponse(settings))
-      .catch(error => sendResponse({ error: error.message }));
-    return true;
-  }
-
-  if (request.action === 'saveSettings') {
-    saveSettings(request.settings)
-      .then(() => sendResponse({ success: true }))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
-  }
-
+  // openArtifactManager: fire-and-forget, no sendResponse needed
   if (request.action === 'openArtifactManager') {
     getSettings().then(settings => {
       browser.tabs.create({ url: settings.apiUrl });
     });
     return false;
-  }
-
-  if (request.action === 'testConnection') {
-    testConnection()
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
-  }
-
-  if (request.action === 'getArtifacts') {
-    getArtifacts(request.filters)
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
-  }
-
-  if (request.action === 'toggleFavorite') {
-    toggleFavorite(request.id)
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
-  }
-
-  if (request.action === 'getTags') {
-    getTags()
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
-  }
-
-  if (request.action === 'getCollections') {
-    getCollections()
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
-  }
-
-  if (request.action === 'getArtifact') {
-    getArtifact(request.id)
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
   }
 });
 
@@ -225,6 +184,5 @@ browser.action.onClicked.addListener((tab) => {
 browser.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
     await saveSettings(DEFAULT_SETTINGS);
-    console.log('Artifact Manager: Extension installed with default settings');
   }
 });
