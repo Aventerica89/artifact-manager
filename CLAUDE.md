@@ -92,6 +92,12 @@ name, description, artifactType, sourceType, publishedUrl, artifactId, fileName,
 - Content script injection timing matters - wait for claude.ai to fully load
 - `artifactId` comes from Claude's URL hash, not generated locally
 
+## Claude Code Automation
+
+- Run `/sync-check` to verify name validation and artifact model fields are consistent across all platforms
+- JS files are auto-formatted with prettier on every edit (PostToolUse hook in `.claude/settings.json`)
+- `package.json` at root exists only for prettier — not a web app entrypoint
+
 ## Testing
 
 ```bash
