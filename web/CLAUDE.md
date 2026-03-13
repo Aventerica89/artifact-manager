@@ -41,10 +41,26 @@ When making changes to core functionality, **ALWAYS apply the same changes to bo
 - **UI Framework**: Web uses vanilla HTML/JS, macOS uses SwiftUI
 - **Deployment**: Web via Wrangler, macOS via Xcode
 
+## Local Dev
+
+```bash
+wrangler login          # One-time auth
+wrangler dev            # Serves at http://localhost:8787 (run from repo root)
+```
+
+## Database
+
+```bash
+wrangler d1 migrations apply artifact-manager --local   # Apply migrations locally
+wrangler d1 migrations apply artifact-manager           # Apply to production
+```
+Migrations: `web/migrations.sql`
+
 ## Deployment
 
 ### Web Version (This Project)
 ```bash
+# Run from repo root (wrangler.toml is at repo root)
 CLOUDFLARE_ACCOUNT_ID=e2613c1c17024c32ab14618614e2b309 wrangler deploy
 ```
 
@@ -68,10 +84,3 @@ wrangler dev  # Local development
 swift test    # Run unit tests
 ```
 
-## Recent Changes
-
-### 2026-01-28: Placeholder Name Validation
-- Added NameValidator to prevent "Saving...", "Loading...", "Downloading..." names
-- Added cleanup utility UI with scan and fix functionality
-- Server-side validation in POST/PUT endpoints
-- ✅ Synced to macOS version

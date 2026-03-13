@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // empty'); [[ \"$file\" == *.js ]] && npx --prefix /Users/jb/repos/artifact-manager prettier --write \"$file\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -15,10 +15,10 @@ open "Artifact Manager.xcodeproj"  # Open in Xcode
 
 ### Web App (Cloudflare Worker)
 ```bash
-cd web
+# wrangler.toml is at repo root - run wrangler from repo root, not web/
 npm install
 wrangler dev         # Local dev at http://localhost:8787
-wrangler deploy      # Deploy to Cloudflare
+CLOUDFLARE_ACCOUNT_ID=e2613c1c17024c32ab14618614e2b309 wrangler deploy
 ```
 
 ### Chrome Extension
@@ -106,8 +106,3 @@ cd web && wrangler dev
 # Check console for "Artifact Manager: Ready"
 ```
 
-## Version History
-
-- Extension v1.1.0 - Button placement fix, version display, shareable HTML
-- Extension v1.0.0 - Initial release
-- macOS v1.0.0 - Full feature parity with extension
